@@ -110,21 +110,21 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         }
     }
 
-    public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
-    {
-        DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
-        IQueryable<TModel> query = null;
-        foreach (var includeExpression in includes)
-        {
-            query = dbSet.Include(includeExpression);
-        }
-        return query.FirstOrDefaultAsync(expression);
-    }
+    //public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
+    //{
+    //    DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
+    //    IQueryable<TModel> query = null;
+    //    foreach (var includeExpression in includes)
+    //    {
+    //        query = dbSet.Include(includeExpression);
+    //    }
+    //    return query.FirstOrDefaultAsync(expression);
+    //}
 
-    public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression)
-    {
-        return DatabaseContext.Set<TModel>().FirstOrDefaultAsync(expression);
-    }
+    //public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression)
+    //{
+    //    return DatabaseContext.Set<TModel>().FirstOrDefaultAsync(expression);
+    //}
 
     public virtual Task<List<TModel>> GetList()
     {
