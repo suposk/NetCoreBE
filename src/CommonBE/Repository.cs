@@ -126,15 +126,9 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     //    return DatabaseContext.Set<TModel>().FirstOrDefaultAsync(expression);
     //}
 
-    public virtual Task<List<TModel>> GetList()
-    {
-        return DatabaseContext.Set<TModel>().OrderByDescending(a => a.CreatedAt).ToListAsync();
-    }
+    public virtual Task<List<TModel>> GetList() => DatabaseContext.Set<TModel>().OrderByDescending(a => a.CreatedAt).ToListAsync();
 
-    public virtual async Task<TModel> GetId(int id)
-    {
-        return await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
-    }
+    public virtual async Task<TModel> GetId(int id) => await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
 
     public virtual Task<List<TModel>> GetByUserId(string userId)
     {
@@ -204,86 +198,4 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
             (entity as EntitySoftDeleteBase).Email = null;
     }
 
-    #region old Save
-    //public virtual async Task<bool> SaveChangesAsync()
-    //{
-    //    //return await DatabaseContext.SaveChangesAsync() >= 0;
-    //    try
-    //    {
-    //        var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
-    //        return saved;
-    //        // move on
-    //    }
-    //    catch (DbUpdateException e)
-    //    {
-    //        // get latest version of record for display
-    //        return false;
-    //    }
-    //    catch (Exception ee)
-    //    {
-    //        return false;
-    //    }
-    //    //catch (DbUpdateConcurrencyException ex)
-    //    //{
-    //    //    //foreach (var entry in ex.Entries)
-    //    //    //{
-    //    //    //    if (entry.Entity is EntityBase)
-    //    //    //    {
-    //    //    //        var proposedValues = entry.CurrentValues;
-    //    //    //        var databaseValues = entry.GetDatabaseValues();
-
-    //    //    //        try
-    //    //    //        {
-    //    //    //            var rwNew = proposedValues.GetValue<byte[]>(nameof(EntityBase.RowVersion));
-    //    //    //            var rwDb = databaseValues.GetValue<byte[]>(nameof(EntityBase.RowVersion));
-    //    //    //            if (rwNew != null && rwDb != null)
-    //    //    //            {
-    //    //    //                rwNew = rwDb;
-    //    //    //                var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
-    //    //    //                return saved;
-    //    //    //            }
-    //    //    //        }
-    //    //    //        catch (Exception ex2)
-    //    //    //        {
-
-    //    //    //        }
-
-
-    //    //    //        //foreach (IProperty property in proposedValues.Properties)
-    //    //    //        //{
-    //    //    //        //    var proposedValue = proposedValues[property];
-    //    //    //        //    var databaseValue = databaseValues[property];
-
-    //    //    //        //    // TODO: decide which value should be written to database
-    //    //    //        //    // proposedValues[property] = <value to be saved>;
-    //    //    //        //    if (property.Name == nameof(EntityBase.RowVersion))
-    //    //    //        //    {
-    //    //    //        //        proposedValue = databaseValue;
-    //    //    //        //        var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
-    //    //    //        //        return saved;
-    //    //    //        //    }
-    //    //    //        //}
-
-    //    //    //        //// Refresh original values to bypass next concurrency check
-    //    //    //        //entry.OriginalValues.SetValues(databaseValues);
-    //    //    //    }
-    //    //    //    else
-    //    //    //    {
-    //    //    //        throw new NotSupportedException(
-    //    //    //            "Don't know how to handle concurrency conflicts for "
-    //    //    //            + entry.Metadata.Name);
-    //    //    //    }
-    //    //    //}
-    //    //    //ex.Entries.Single().Reload();
-    //    //    //var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
-    //    //    //return saved;
-    //    //    return false;
-    //    //}
-    //    catch (Exception ee)
-    //    {
-    //        return false;
-    //    }
-    //}
-
-    #endregion
 }
