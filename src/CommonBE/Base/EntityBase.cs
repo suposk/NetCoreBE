@@ -4,7 +4,7 @@
 [Index(nameof(Id))]
 [Index(nameof(CreatedAt))]
 [Index(nameof(CreatedBy))]
-public abstract class EntityBase : IEntity<Guid>
+public abstract class EntityBase : IEntity<string?>
 {
     private readonly List<DomainEvent> _domainEvents = new();
 
@@ -13,8 +13,14 @@ public abstract class EntityBase : IEntity<Guid>
     public void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
     public void RemoveDomainEvent(DomainEvent domainEvent) => _domainEvents.Remove(domainEvent);
     public void ClearDomainEvents() => _domainEvents.Clear();
-        
-    public virtual Guid Id { get; set; }
+
+    //public virtual Guid Id { get; set; }
+
+    /// <summary>
+    /// Will store GUID as string
+    /// </summary>
+    [MaxLength(36)]
+    public virtual string? Id { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
