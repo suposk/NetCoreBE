@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetCoreBE.Api.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServerMigrations
+namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20231017183927_Version1")]
-    partial class Version1
+    partial class ApiDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

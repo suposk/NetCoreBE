@@ -1,6 +1,7 @@
 ﻿//API
-Add-Migration Init -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlServerMigrations
-Add-Migration Version1 -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlServerMigrations
+Add-Migration Init -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlServer
+
+Add-Migration Init -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlLite
 
 Update-Database -Context ApiDbContext
 Remove-Migration -Context ApiDbContext

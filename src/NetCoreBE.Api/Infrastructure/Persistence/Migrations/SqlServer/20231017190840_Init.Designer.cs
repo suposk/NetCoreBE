@@ -9,10 +9,10 @@ using NetCoreBE.Api.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServerMigrations
+namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20231017155047_Init")]
+    [Migration("20231017190840_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -55,6 +55,11 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServerMigration
                     b.Property<string>("RequestedFor")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.HasKey("Id");
 

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServerMigrations
+namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
 {
     /// <inheritdoc />
     public partial class Init : Migration
@@ -22,7 +22,8 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServerMigration
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
+                    ModifiedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {

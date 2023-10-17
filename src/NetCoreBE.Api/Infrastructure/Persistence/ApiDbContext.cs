@@ -1,6 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.EntityFrameworkCore;
+
 namespace NetCoreBE.Api.Infrastructure.Persistence;
 
 #nullable disable
@@ -31,6 +33,11 @@ public class ApiDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        //builder.Entity<Ticket>()
+        //    .Property(c => c.Version)
+        //        .HasDefaultValue(0)
+        //        .IsRowVersion();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

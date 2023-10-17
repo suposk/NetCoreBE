@@ -69,7 +69,7 @@ services.AddDbContext<ApiDbContext>((p, m) =>
     //m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
     
     if (DbTypeEnum == DbTypeEnum.SqlLite)
-        m.UseSqlite(configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
+        m.UseSqlite(configuration.GetConnectionString("ApiDbCsLite"), x => x.MigrationsAssembly(_namespace));
     else if (DbTypeEnum == DbTypeEnum.InMemory)
         m.UseInMemoryDatabase(databaseName: configuration.GetConnectionString("ApiDbCs"));
     else
