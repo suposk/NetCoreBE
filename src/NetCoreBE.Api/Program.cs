@@ -1,9 +1,14 @@
+using CleanArchitecture.Blazor.Infrastructure.Persistence.Interceptors;
 using MediatR.Pipeline;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
+using NetCoreBE.Api.Infrastructure.Persistence;
 using System.Reflection;
 using System.Security.Claims;
+using System.Xml.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +20,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var services = builder.Services;
+var configuration = builder.Configuration;
+var myType = typeof(Program);
+var _namespace = myType.Namespace;
+
 services.AddAuthorization(options =>
 {
     // By default, all incoming requests will be authorized according to the default policy
@@ -23,6 +32,7 @@ services.AddAuthorization(options =>
 
     //options.AddPolicy(PoliciesCsro.IsAdminPolicy, policy => policy.RequireClaim(ClaimTypes.Role, RolesCsro.Admin));
 });
+
 services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd")
     .EnableTokenAcquisitionToCallDownstreamApi()
@@ -31,9 +41,35 @@ services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBear
 services.AddHttpContextAccessor();
 services.AddScoped<IApiIdentity, ApiIdentity>();
 services.AddScoped<IDateTimeService, DateTimeService>();
+
 services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-//services.AddMediatR(Assembly.GetExecutingAssembly());
+//services.AddScoped<IDbContextFactory<ApiDbContext>>();
+//services.AddTransient(provider =>
+//    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
+
+services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+
+if (configuration.GetValue<bool>("UseInMemoryDatabase"))
+{
+    services.AddDbContext<ApiDbContext>(options =>
+    {
+        options.UseInMemoryDatabase("BlazorDashboardDb");
+        options.EnableSensitiveDataLogging();
+    });
+}
+else
+{
+    services.AddDbContext<ApiDbContext>((p, m) =>
+    {
+        //var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+        m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
+        //m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
+
+        m.UseSqlServer(configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
+    });
+}
+
 
 services.AddMediatR(config =>
 {
@@ -47,21 +83,6 @@ services.AddMediatR(config =>
     //config.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
     //config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
 });
-
-var scopeFactory = builder.Services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
-using (var scope = scopeFactory.CreateScope())
-{
-    try
-    {
-        var sp = scope.ServiceProvider;
-        //var dbContext = sp.GetRequiredService<DatabaseContext>();
-        //dbContext.Database.Migrate();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex.Message);
-    }
-}
 
 var app = builder.Build();
 
@@ -77,5 +98,23 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var sp = scope.ServiceProvider;
+        var dbContext = sp.GetRequiredService<ApiDbContext>();
+        dbContext.Database.Migrate();
+        if (app.Environment.IsDevelopment())
+        {
+            //seed data
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+}
 
 app.Run();

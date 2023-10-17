@@ -1,0 +1,5 @@
+﻿//API
+Add-Migration Init -Context ApiDbContext -OutputDir Migrations\SqlServerMigrations
+
+Update-Database -Context ApiDbContext
+Remove-Migration -Context ApiDbContext
