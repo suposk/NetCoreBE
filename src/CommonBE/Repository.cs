@@ -6,7 +6,7 @@ public interface IRepository<TModel> where TModel : class
 {
     DbContext DatabaseContext { get; }
 
-    Task<TModel> GetId(int id);
+    Task<TModel> GetId(string id);
     virtual Task<List<TModel>> GetByUserId(string userId) { throw new NotImplementedException(); }
     Task<List<TModel>> GetList();
     void Add(TModel entity, string UserId = null);
@@ -27,7 +27,7 @@ public interface IRepository<TModel> where TModel : class
 
 public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
 {
-    public DbContext DatabaseContext { get; private set; }
+    public DbContext DatabaseContext { get; }
     public IApiIdentity ApiIdentity { get; }
     public IDateTimeService DateTimeService { get; }
 
@@ -126,9 +126,10 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     //    return DatabaseContext.Set<TModel>().FirstOrDefaultAsync(expression);
     //}
 
-    public virtual Task<List<TModel>> GetList() => DatabaseContext.Set<TModel>().OrderByDescending(a => a.CreatedAt).ToListAsync();
+    public virtual Task<List<TModel>> GetList() => DatabaseContext.Set<TModel>().AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
 
-    public virtual async Task<TModel> GetId(int id) => await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
+    //public virtual async Task<TModel> GetId(string id) => await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
+    public virtual Task<TModel> GetId(string id) => DatabaseContext.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
 
     public virtual Task<List<TModel>> GetByUserId(string userId)
     {
@@ -139,7 +140,7 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
 
         //var b = entity as EntityBase;
         //if (b != null)
-        return DatabaseContext.Set<TModel>().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
+        return DatabaseContext.Set<TModel>().AsNoTracking().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
         //return null;
     }
 
