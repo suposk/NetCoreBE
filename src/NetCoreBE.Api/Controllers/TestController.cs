@@ -25,7 +25,10 @@ public class TestController : ControllerBase
         try
         {
             var item = await _ticketRepository.GetId(_id);
-            var copy = CopyObjectHelper.CreateDeepCopyXml(item);
+            //var copy = CopyObjectHelper.CreateDeepCopyXml(item);
+            Ticket copy = new Ticket {  CreatedAt = item.CreatedAt , Description = item.Description, Id = item.Id, 
+                IsOnBehalf = item.IsOnBehalf, ModifiedAt = item.ModifiedAt, RequestedFor = item.RequestedFor, Version = item.Version };
+
             item.Description = $"{item.Description} -> Mod old {item.Version}";
             var up = await _ticketRepository.UpdateAsync(item);
             var itemUpdated = await _ticketRepository.GetId(_id);
