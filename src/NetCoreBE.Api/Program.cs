@@ -98,7 +98,7 @@ using (var scope = app.Services.CreateScope())
         if (app.Environment.IsDevelopment())
         {
             var ticketRepo = sp.GetRequiredService<ITicketRepository>();
-
+            await ticketRepo.Seed(2);
             //seed data
         }
     }
