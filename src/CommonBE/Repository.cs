@@ -29,13 +29,11 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     public IApiIdentity ApiIdentity { get; }
     public IDateTimeService DateTimeService { get; }
 
-    public MassTransit.NewId NewIdGenerator { get; } = new();
-
     public Repository(DbContext context, IApiIdentity apiIdentity, IDateTimeService dateTimeService)
     {
         DatabaseContext = context ?? throw new ArgumentNullException(nameof(context));
         ApiIdentity = apiIdentity ?? throw new ArgumentNullException(nameof(apiIdentity));
-        DateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+        DateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));        
     }
 
     public virtual void Add(TModel entity, string UserId = null)
@@ -62,9 +60,13 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     {
         //if (entity.Id != 0)
         //    throw new ArgumentException($"Id {entity.Id} can not be set while add operation.");        
-        if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)            
+        if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)
+        {
             //entity.Id = Guid.NewGuid().ToString();
-            entity.Id = NewIdGenerator.ToSequentialGuid().ToString();
+            //entity.Id = NewIdGenerator.ToSequentialGuid().ToString();
+            var next  = MassTransit.NewId.Next();
+            entity.Id = next.ToString();
+        }
         entity.CreatedBy = UserId ?? ApiIdentity.GetUserNameOrIp();
         entity.CreatedAt ??= DateTimeService.UtcNow;
     }

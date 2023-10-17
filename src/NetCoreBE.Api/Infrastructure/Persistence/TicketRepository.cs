@@ -34,14 +34,14 @@ namespace CSRO.Server.Services
             {
                 var ticket = new Ticket
                 {
-                    Id = Guid.Empty.ToString(),
+                    //Id = Guid.Empty.ToString(),
                     Description = $"Description {i}",
                     RequestedFor = $"RequestedFor {i}",
                     IsOnBehalf = i % 2 == 0,
                     CreatedBy = "Seed",
                 };
-                ticket.Id = ticket.Id.Remove(0, 1);
-                ticket.Id = ticket.Id.Insert(0, i.ToString());
+                //ticket.Id = ticket.Id.Remove(0, 1);
+                //ticket.Id = ticket.Id.Insert(0, i.ToString());
                 list.Add(ticket);
             }
             _repository.AddRange(list);
