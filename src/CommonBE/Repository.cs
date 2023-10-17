@@ -1,4 +1,6 @@
-﻿namespace CommonBE;
+﻿using MassTransit;
+
+namespace CommonBE;
 
 public interface IRepository<TModel> where TModel : class
 {
@@ -60,13 +62,10 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     {
         //if (entity.Id != 0)
         //    throw new ArgumentException($"Id {entity.Id} can not be set while add operation.");        
-        if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)
-        {
-            //entity.Id = Guid.NewGuid().ToString();
-            //entity.Id = NewIdGenerator.ToSequentialGuid().ToString();
-            var next  = MassTransit.NewId.Next();
-            entity.Id = next.ToString();
-        }
+        if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)        
+            //entity.Id = Guid.NewGuid().ToString();            
+            entity.Id = NewId.Next().ToString();
+        
         entity.CreatedBy = UserId ?? ApiIdentity.GetUserNameOrIp();
         entity.CreatedAt ??= DateTimeService.UtcNow;
     }
