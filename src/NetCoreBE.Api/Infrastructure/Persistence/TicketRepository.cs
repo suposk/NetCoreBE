@@ -40,7 +40,6 @@ namespace CSRO.Server.Services
                     Description = $"Description {i}",
                     RequestedFor = $"RequestedFor {i}",
                     IsOnBehalf = i % 2 == 0,
-                    CreatedBy = UserId,
                 };
                 if (countExisintg == 0)
                 {
@@ -50,7 +49,7 @@ namespace CSRO.Server.Services
                 }
                 list.Add(ticket);
             }
-            _repository.AddRange(list);
+            _repository.AddRange(list, UserId);
             await _repository.SaveChangesAsync();
             return;
         }   
