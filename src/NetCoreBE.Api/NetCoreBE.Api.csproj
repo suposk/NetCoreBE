@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <Folder Include="Application\Features\" />
-    <Folder Include="Infrastructure\Persistence\Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

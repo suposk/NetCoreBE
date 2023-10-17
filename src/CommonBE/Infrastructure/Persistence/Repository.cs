@@ -22,6 +22,8 @@ public interface IRepository<TModel> where TModel : class
     //Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression);
     //Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
     void ResetAtByUser(TModel entity);
+
+    Task<int> CountAsync();
 }
 
 
@@ -202,4 +204,8 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
             (entity as EntitySoftDeleteBase).Email = null;
     }
 
+    public Task<int> CountAsync()
+    {
+        return DatabaseContext.Set<TModel>().AsNoTracking().CountAsync();
+    }
 }
