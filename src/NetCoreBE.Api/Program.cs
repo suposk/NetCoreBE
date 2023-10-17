@@ -1,5 +1,7 @@
 using MediatR.Pipeline;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Web;
 using System.Reflection;
 using System.Security.Claims;
 
@@ -21,24 +23,30 @@ services.AddAuthorization(options =>
 
     //options.AddPolicy(PoliciesCsro.IsAdminPolicy, policy => policy.RequireClaim(ClaimTypes.Role, RolesCsro.Admin));
 });
+services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd")
+    .EnableTokenAcquisitionToCallDownstreamApi()
+    .AddInMemoryTokenCaches();
 
 services.AddHttpContextAccessor();
 services.AddScoped<IApiIdentity, ApiIdentity>();
 services.AddScoped<IDateTimeService, DateTimeService>();
 services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-////services.AddMediatR(Assembly.GetExecutingAssembly());
+//services.AddMediatR(Assembly.GetExecutingAssembly());
 
-//services.AddMediatR(config => {
-//config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-//config.NotificationPublisher = new ParallelNoWaitPublisher();
-//config.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
-//config.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
-//config.AddOpenBehavior(typeof(RequestExceptionProcessorBehavior<,>));
-//config.AddOpenBehavior(typeof(ValidationBehaviour<,>));
-//config.AddOpenBehavior(typeof(MemoryCacheBehaviour<,>));
-//config.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
-//config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
+services.AddMediatR(config =>
+{
+    config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    config.NotificationPublisher = new ParallelNoWaitPublisher();
+    //config.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
+    //config.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
+    config.AddOpenBehavior(typeof(RequestExceptionProcessorBehavior<,>));
+    //config.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+    //config.AddOpenBehavior(typeof(MemoryCacheBehaviour<,>));
+    //config.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
+    //config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
+});
 
 var scopeFactory = builder.Services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 using (var scope = scopeFactory.CreateScope())

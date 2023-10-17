@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace NetCoreBE.Api.Domain.Entities;
 
+[AllowAnonymous]
 public class WeatherForecast
 {
     public DateOnly Date { get; set; }
