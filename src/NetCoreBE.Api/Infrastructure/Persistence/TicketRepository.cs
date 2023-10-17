@@ -5,7 +5,7 @@ namespace CSRO.Server.Services
 {
     public interface ITicketRepository : IRepository<Ticket>
     {
-        Task Seed(int count = 10);
+        Task Seed(int count = 10, string UserId = "Seed");
     }
 
     public class TicketRepository : Repository<Ticket>, ITicketRepository
@@ -28,7 +28,7 @@ namespace CSRO.Server.Services
             return _repository.GetList();
         }
 
-        public async Task Seed(int count = 10)
+        public async Task Seed(int count = 10, string UserId = "Seed")
         {
             var countExisintg = await _repository.CountAsync();
 
@@ -40,7 +40,7 @@ namespace CSRO.Server.Services
                     Description = $"Description {i}",
                     RequestedFor = $"RequestedFor {i}",
                     IsOnBehalf = i % 2 == 0,
-                    CreatedBy = "Seed",
+                    CreatedBy = UserId,
                 };
                 if (countExisintg == 0)
                 {

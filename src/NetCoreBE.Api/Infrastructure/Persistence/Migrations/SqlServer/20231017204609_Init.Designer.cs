@@ -12,7 +12,7 @@ using NetCoreBE.Api.Infrastructure.Persistence;
 namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20231017192931_Init")]
+    [Migration("20231017204609_Init")]
     partial class Init
     {
         /// <inheritdoc />
