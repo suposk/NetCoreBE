@@ -44,7 +44,7 @@ namespace CSRO.Server.Services
                 if (countExisintg == 0)
                 {
                     ticket.Id = Guid.Empty.ToString();
-                    ticket.Id = ticket.Id.Remove(0, 1);
+                    ticket.Id = ticket.Id.Remove(0, i.ToString().Length);
                     ticket.Id = ticket.Id.Insert(0, i.ToString());
                 }
                 list.Add(ticket);
