@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonBE", "CommonBE\CommonBE.csproj", "{02EE2889-95AD-4C2D-B019-D04118BFFC12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCoreBE.Api", "NetCoreBE.Api\NetCoreBE.Api.csproj", "{0EC246F4-8F52-4122-A955-6943783250CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{02EE2889-95AD-4C2D-B019-D04118BFFC12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02EE2889-95AD-4C2D-B019-D04118BFFC12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02EE2889-95AD-4C2D-B019-D04118BFFC12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EC246F4-8F52-4122-A955-6943783250CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EC246F4-8F52-4122-A955-6943783250CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EC246F4-8F52-4122-A955-6943783250CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EC246F4-8F52-4122-A955-6943783250CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
