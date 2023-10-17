@@ -10,7 +10,8 @@ public class TestController : ControllerBase
 {
     private readonly ITicketRepository _ticketRepository;
     private readonly ITicketRepository _ticketRepository2;
-    string _id = "bfc90000-9ba5-98fa-24d8-08dbcf447f65";
+    //string _id = "bfc90000-9ba5-98fa-24d8-08dbcf447f65";
+    string _id = "bfc90000-9ba5-98fa-9843-08dbcf4521f0"; //lite
 
     public TestController(ITicketRepository ticketRepository, ITicketRepository ticketRepository2)
     {
