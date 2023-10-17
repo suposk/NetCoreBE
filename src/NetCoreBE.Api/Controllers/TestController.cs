@@ -10,7 +10,7 @@ public class TestController : ControllerBase
 {
     private readonly ITicketRepository _ticketRepository;
     private readonly ITicketRepository _ticketRepository2;
-    string _id = "bfc90000-9ba5-98fa-06a0-08dbcf3daf45";
+    string _id = "bfc90000-9ba5-98fa-7df9-08dbcf4072d6";
 
     public TestController(ITicketRepository ticketRepository, ITicketRepository ticketRepository2)
     {
@@ -25,17 +25,17 @@ public class TestController : ControllerBase
         try
         {
             var item = await _ticketRepository.GetId(_id);
-            //var copy = CopyObjectHelper.CreateDeepCopyXml(item);
-            Ticket copy = new Ticket {  CreatedAt = item.CreatedAt , Description = item.Description, Id = item.Id, 
-                IsOnBehalf = item.IsOnBehalf, ModifiedAt = item.ModifiedAt, RequestedFor = item.RequestedFor, Version = item.Version };
+            var copy = CopyObjectHelper.CreateDeepCopyXml(item);
+            //Ticket copy = new Ticket {  CreatedAt = item.CreatedAt , Description = item.Description, Id = item.Id, 
+            //    IsOnBehalf = item.IsOnBehalf, ModifiedAt = item.ModifiedAt, RequestedFor = item.RequestedFor, Version = item.Version };
 
-            item.Description = $"{item.Description} -> Mod old {item.Version}";
+            item.Description = $"{item.Description} -> Mod old ";
             var up = await _ticketRepository.UpdateAsync(item);
             var itemUpdated = await _ticketRepository.GetId(_id);
             var ctx = _ticketRepository.DatabaseContext;
             ctx.ChangeTracker.Clear();
 
-            copy.Description = $"{item.Description} -> copy {item.Version}";
+            copy.Description = $"{item.Description} -> copy ";
             copy = await _ticketRepository2.UpdateAsync(copy);
         }
         catch (Exception ex)
