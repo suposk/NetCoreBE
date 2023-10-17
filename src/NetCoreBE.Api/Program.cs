@@ -1,4 +1,6 @@
 using CleanArchitecture.Blazor.Infrastructure.Persistence.Interceptors;
+using CommonBE.Infrastructure.Persistence;
+using CommonBE.Infrastructure.Enums;
 using CSRO.Server.Services;
 using CSRO.Server.Services.Base;
 using MediatR.Pipeline;
@@ -50,13 +52,28 @@ services.AddScoped<ITicketRepository, TicketRepository>();
 //services.AddTransient(provider =>
 //    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
 services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
+try
+{
+    DbTypeEnum = configuration.GetValue<DbTypeEnum>(nameof(DbTypeEnum));
+}
+catch { }
+
+if (DbTypeEnum == DbTypeEnum.Unknown)
+    throw new Exception($"Unable to read {nameof(DbTypeEnum)} from config. Please set value to SqlServer, InMemory for testing or.....");
+
 services.AddDbContext<ApiDbContext>((p, m) =>
 {
     //var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
     m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
     //m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
-
-    m.UseSqlServer(configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
+    
+    if (DbTypeEnum == DbTypeEnum.SqlLite)
+        m.UseSqlite(configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
+    else if (DbTypeEnum == DbTypeEnum.InMemory)
+        m.UseInMemoryDatabase(databaseName: configuration.GetConnectionString("ApiDbCs"));
+    else
+        m.UseSqlServer(configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
 });
 
 services.AddMediatR(config =>

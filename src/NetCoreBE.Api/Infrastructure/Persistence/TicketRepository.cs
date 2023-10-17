@@ -1,4 +1,5 @@
-﻿using NetCoreBE.Api.Infrastructure.Persistence;
+﻿using CommonBE.Infrastructure.Persistence;
+using NetCoreBE.Api.Infrastructure.Persistence;
 
 namespace CSRO.Server.Services
 {

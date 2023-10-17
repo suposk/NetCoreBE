@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 
-namespace CommonBE;
+namespace CommonBE.Infrastructure.Persistence;
 
 public interface IRepository<TModel> where TModel : class
 {
@@ -35,7 +35,7 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     {
         DatabaseContext = context ?? throw new ArgumentNullException(nameof(context));
         ApiIdentity = apiIdentity ?? throw new ArgumentNullException(nameof(apiIdentity));
-        DateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));        
+        DateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
     }
 
     public virtual void Add(TModel entity, string UserId = null)
@@ -44,7 +44,7 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         if (entity is IEntityEmailBase)
         {
             var email = ApiIdentity.GetCurrentUserEmail().Result; //it is fine, method is synch anyway                                
-            var casted = entity as IEntityEmailBase;            
+            var casted = entity as IEntityEmailBase;
             if (string.IsNullOrWhiteSpace(casted?.Email)) //Email.IsNullOrEmptyExt())
                 casted.Email = email;
         }
@@ -62,10 +62,10 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     {
         //if (entity.Id != 0)
         //    throw new ArgumentException($"Id {entity.Id} can not be set while add operation.");        
-        if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)        
+        if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)
             //entity.Id = Guid.NewGuid().ToString();            
             entity.Id = NewId.Next().ToString();
-        
+
         entity.CreatedBy = UserId ?? ApiIdentity.GetUserNameOrIp();
         entity.CreatedAt ??= DateTimeService.UtcNow;
     }
