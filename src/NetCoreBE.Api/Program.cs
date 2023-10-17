@@ -1,4 +1,6 @@
 using CleanArchitecture.Blazor.Infrastructure.Persistence.Interceptors;
+using CSRO.Server.Services;
+using CSRO.Server.Services.Base;
 using MediatR.Pipeline;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -42,34 +44,20 @@ services.AddHttpContextAccessor();
 services.AddScoped<IApiIdentity, ApiIdentity>();
 services.AddScoped<IDateTimeService, DateTimeService>();
 
-services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
+services.AddScoped(typeof(IRepository<>), typeof(ApiBaseRepository<>));
+services.AddScoped<ITicketRepository, TicketRepository>();
 //services.AddScoped<IDbContextFactory<ApiDbContext>>();
 //services.AddTransient(provider =>
 //    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
-
 services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
-
-if (configuration.GetValue<bool>("UseInMemoryDatabase"))
+services.AddDbContext<ApiDbContext>((p, m) =>
 {
-    services.AddDbContext<ApiDbContext>(options =>
-    {
-        options.UseInMemoryDatabase("BlazorDashboardDb");
-        options.EnableSensitiveDataLogging();
-    });
-}
-else
-{
-    services.AddDbContext<ApiDbContext>((p, m) =>
-    {
-        //var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
-        m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
-        //m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
+    //var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+    m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
+    //m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
 
-        m.UseSqlServer(configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
-    });
-}
-
+    m.UseSqlServer(configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
+});
 
 services.AddMediatR(config =>
 {
@@ -104,10 +92,13 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var sp = scope.ServiceProvider;
+
         var dbContext = sp.GetRequiredService<ApiDbContext>();
         dbContext.Database.Migrate();
         if (app.Environment.IsDevelopment())
         {
+            var ticketRepo = sp.GetRequiredService<ITicketRepository>();
+
             //seed data
         }
     }
@@ -117,4 +108,5 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.Run();
+await app.RunAsync();
+//app.Run();
