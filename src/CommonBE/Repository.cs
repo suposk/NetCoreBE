@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace CommonBE;
+﻿namespace CommonBE;
 
 public interface IRepository<TModel> where TModel : class
 {
@@ -31,6 +29,8 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     public IApiIdentity ApiIdentity { get; }
     public IDateTimeService DateTimeService { get; }
 
+    public MassTransit.NewId NewIdGenerator { get; } = new();
+
     public Repository(DbContext context, IApiIdentity apiIdentity, IDateTimeService dateTimeService)
     {
         DatabaseContext = context ?? throw new ArgumentNullException(nameof(context));
@@ -44,8 +44,7 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         if (entity is IEntityEmailBase)
         {
             var email = ApiIdentity.GetCurrentUserEmail().Result; //it is fine, method is synch anyway                                
-            var casted = entity as IEntityEmailBase;
-            //if (casted.Email.IsNullOrEmptyExt())
+            var casted = entity as IEntityEmailBase;            
             if (string.IsNullOrWhiteSpace(casted?.Email)) //Email.IsNullOrEmptyExt())
                 casted.Email = email;
         }
@@ -62,7 +61,10 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     private void SetAddProperties(TModel entity, string UserId)
     {
         //if (entity.Id != 0)
-        //    throw new ArgumentException($"Id {entity.Id} can not be set while add operation.");
+        //    throw new ArgumentException($"Id {entity.Id} can not be set while add operation.");        
+        if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)            
+            //entity.Id = Guid.NewGuid().ToString();
+            entity.Id = NewIdGenerator.ToSequentialGuid().ToString();
         entity.CreatedBy = UserId ?? ApiIdentity.GetUserNameOrIp();
         entity.CreatedAt ??= DateTimeService.UtcNow;
     }
