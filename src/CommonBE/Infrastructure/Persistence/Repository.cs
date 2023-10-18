@@ -13,14 +13,13 @@ public interface IRepository<TModel> where TModel : class
     void AddRange(IEnumerable<TModel> entitys, string UserId = null);
     void Remove(TModel entity, string UserId = null);
     void Update(TModel entity, string UserId = null);
-
     Task<TModel> AddAsync(TModel entity, string UserId = null);
     Task<TModel> UpdateAsync(TModel entity, string UserId = null);
     Task<bool> SaveChangesAsync();
-    //Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
-    //Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression);
-    //Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression);
-    //Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
+    Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
+    Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression);
+    Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression);
+    Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
     void ResetAtByUser(TModel entity);
 
     Task<int> CountAsync();
@@ -128,56 +127,40 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         return await SaveChangesAsync().ConfigureAwait(false);
     }
 
-    //public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
-    //{
-    //    DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
-    //    IQueryable<TModel> query = null;
-    //    foreach (var includeExpression in includes)
-    //    {
-    //        query = dbSet.Include(includeExpression);
-    //    }
-    //    return query.FirstOrDefaultAsync(expression);
-    //}
+    public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
+    {
+        DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
+        IQueryable<TModel> query = null;
+        foreach (var includeExpression in includes)        
+            query = dbSet.Include(includeExpression);        
+        return query.AsNoTracking().FirstOrDefaultAsync(expression);
+    }
 
-    //public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression)
-    //{
-    //    return DatabaseContext.Set<TModel>().FirstOrDefaultAsync(expression);
-    //}
-
+    public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression) =>
+        DatabaseContext.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(expression);
+    
     public virtual Task<List<TModel>> GetList() => DatabaseContext.Set<TModel>().AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
 
     //public virtual async Task<TModel> GetId(string id) => await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
     public virtual Task<TModel> GetId(string id) => DatabaseContext.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
 
-    public virtual Task<List<TModel>> GetByUserId(string userId)
+    public virtual Task<List<TModel>> GetByUserId(string userId) 
+        => DatabaseContext.Set<TModel>().AsNoTracking().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
+
+    public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression) 
+        => DatabaseContext.Set<TModel>().AsNoTracking().Where(expression).OrderByDescending(a => a.CreatedAt).ToListAsync();
+    
+    public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
     {
-        //var softDelete = entity as EntitySoftDeleteBase;
-        //if (softDelete != null)
-        //    //return DatabaseContext.Set<TModel>().Where(a => softDelete.IsDeleted != true && softDelete.CreatedBy.Contains(userId)).ToListAsync();
-        //    return DatabaseContext.Set<TModel>().Where(a => a.CreatedBy.Contains(userId)).ToListAsync();
+        DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
+        IQueryable<TModel> query = null;
+        foreach (var includeExpression in includes)
+        {
+            query = dbSet.Include(includeExpression);
+        }
 
-        //var b = entity as EntityBase;
-        //if (b != null)
-        return DatabaseContext.Set<TModel>().AsNoTracking().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
-        //return null;
+        return query.Where(expression).ToListAsync();
     }
-
-    //public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression)
-    //{
-    //    return DatabaseContext.Set<TModel>().Where(expression).OrderByDescending(a => a.CreatedAt).ToListAsync();
-    //}
-
-    //public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
-    //{
-    //    DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
-    //    IQueryable<TModel> query = null;
-    //    foreach (var includeExpression in includes)
-    //    {
-    //        query = dbSet.Include(includeExpression);
-    //    }
-
-    //    return query.Where(expression).ToListAsync();
-    //}
 
     public virtual async Task<bool> SaveChangesAsync()
     {
@@ -185,7 +168,6 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         {
             var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
             return saved;
-            // move on
         }
         catch (DbUpdateException e)
         {
@@ -217,8 +199,6 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
             (entity as EntitySoftDeleteBase).Email = null;
     }
 
-    public Task<int> CountAsync()
-    {
-        return DatabaseContext.Set<TModel>().AsNoTracking().CountAsync();
-    }
+    public Task<int> CountAsync() => DatabaseContext.Set<TModel>().AsNoTracking().CountAsync();
+    
 }
