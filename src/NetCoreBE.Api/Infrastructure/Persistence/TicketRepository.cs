@@ -1,11 +1,10 @@
 ﻿using CommonBE.Infrastructure.Persistence;
-using NetCoreBE.Api.Infrastructure.Persistence;
 
-namespace CSRO.Server.Services
+namespace NetCoreBE.Api.Infrastructure.Persistence
 {
     public interface ITicketRepository : IRepository<Ticket>
     {
-        Task Seed(int count = 10, string UserId = "Seed");
+        Task<List<Ticket>> Seed(int count, int? max, string UserId = "Seed");
     }
 
     public class TicketRepository : Repository<Ticket>, ITicketRepository
@@ -15,8 +14,8 @@ namespace CSRO.Server.Services
 
         public TicketRepository(IRepository<Ticket> repository, ApiDbContext context, IApiIdentity apiIdentity, IDateTimeService dateTimeService) : base(context, apiIdentity, dateTimeService)
         {
-            _repository = repository;            
-            _context = context;            
+            _repository = repository;
+            _context = context;
         }
 
         public override Task<List<Ticket>> GetList()
@@ -28,9 +27,14 @@ namespace CSRO.Server.Services
             return _repository.GetList();
         }
 
-        public async Task Seed(int count = 10, string UserId = "Seed")
+        public async Task<List<Ticket>> Seed(int count, int? max, string UserId = "Seed")
         {
+            if (count <= 0)
+                return default;
+
             var countExisintg = await _repository.CountAsync();
+            if (max.HasValue && countExisintg >= max)
+                return default;
 
             var list = new List<Ticket>();
             for (int i = 1; i <= count; i++)
@@ -51,7 +55,7 @@ namespace CSRO.Server.Services
             }
             _repository.AddRange(list, UserId);
             await _repository.SaveChangesAsync();
-            return;
-        }   
+            return list;
+        }
     }
 }

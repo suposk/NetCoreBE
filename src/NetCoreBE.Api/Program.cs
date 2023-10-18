@@ -1,7 +1,6 @@
 using CleanArchitecture.Blazor.Infrastructure.Persistence.Interceptors;
 using CommonBE.Infrastructure.Persistence;
 using CommonBE.Infrastructure.Enums;
-using CSRO.Server.Services;
 using CSRO.Server.Services.Base;
 using MediatR.Pipeline;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -115,7 +114,7 @@ using (var scope = app.Services.CreateScope())
         if (app.Environment.IsDevelopment())
         {
             var ticketRepo = sp.GetRequiredService<ITicketRepository>();
-            await ticketRepo.Seed(2);
+            var s = await ticketRepo.Seed(2, 2, "SEED Startup");
             //seed data
         }
     }

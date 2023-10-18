@@ -24,6 +24,7 @@ public interface IRepository<TModel> where TModel : class
     void ResetAtByUser(TModel entity);
 
     Task<int> CountAsync();
+    Task<bool> RemoveAsync(string Id, string UserId = null);
 }
 
 
@@ -113,6 +114,18 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
             DatabaseContext.Entry(entity).State = EntityState.Deleted;
             DatabaseContext.Set<TModel>().Remove(entity);
         }
+    }
+
+    public virtual async Task<bool> RemoveAsync(string Id, string UserId = null)
+    {
+        if (string.IsNullOrWhiteSpace(Id))
+            throw new ArgumentException($"Id can not be null or empty.");
+        var entity = await GetId(Id).ConfigureAwait(false);
+        if (entity is null)
+            throw new ArgumentException($"Id can not be found.");
+
+        Remove(entity, UserId);
+        return await SaveChangesAsync().ConfigureAwait(false);
     }
 
     //public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
