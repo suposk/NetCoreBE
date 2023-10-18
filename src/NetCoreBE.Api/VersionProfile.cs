@@ -1,6 +1,4 @@
-﻿using NetCoreBE.Api.Application.Features.Ticket;
-
-namespace NetCoreBE.Api;
+﻿namespace NetCoreBE.Api;
 
 public class VersionProfile : Profile
 {
