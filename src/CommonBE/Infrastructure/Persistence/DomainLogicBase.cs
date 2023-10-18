@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CommonBE.Base;
 
 namespace CommonBE.Infrastructure.Persistence;
 
@@ -89,6 +90,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
     {
         if (entity == null)
             throw new BadRequestException($"{nameof(entity)} {nameof(AddAsyncLogicEntity)}");
+        entity.AddDomainEvent(new CreatedEvent<TEntity>(entity));
         await AddAsync(entity, entity.CreatedBy);
         return entity;
     }
@@ -118,12 +120,9 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
             throw new BadRequestException($"{nameof(dto)} {nameof(UpdateAsyncLogic)}");
 
         var repoObj = Mapper.Map<TEntity>(dto);
-        if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
-        {
-            await UpdateAsyncLogicEntity(repoObj);
-            var result = Mapper.Map<TDto>(repoObj);
-            return result;
-        }
+        repoObj = await UpdateAsyncLogicEntity(repoObj);
+        if (repoObj != null)        
+            return Mapper.Map<TDto>(repoObj);                    
         return null;
     }
 
@@ -139,6 +138,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         repoObj = Mapper.Map<TEntity>(entity);
         if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
         {
+            entity.AddDomainEvent(new UpdatedEvent<TEntity>(entity));
             await UpdateAsync(repoObj);
             return repoObj;
         }
@@ -169,15 +169,9 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
             throw new BadRequestException($"{nameof(dto)} {nameof(AddOrUpdateAsyncLogic)}");
 
         var repoObj = Mapper.Map<TEntity>(dto);
-        if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
-        {
-            if (repoObj.IsSavedInDb)
-                await UpdateAsync(repoObj);
-            else
-                await AddAsync(repoObj, dto.CreatedBy);
-            var result = Mapper.Map<TDto>(repoObj);
-            return result;
-        }
+        repoObj = await AddOrUpdateAsyncLogicEntity(repoObj);
+        if (repoObj != null)
+            return Mapper.Map<TDto>(repoObj);
         return null;
     }
 
@@ -186,15 +180,20 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         if (entity.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(entity)} {nameof(AddOrUpdateAsyncLogicEntity)}");
 
-        if (await CanModify(entity, CanModifyFunc).ConfigureAwait(false))
-        {
-            if (entity.IsSavedInDb)
+        if (entity.IsSavedInDb)
+            if (await CanModify(entity, CanModifyFunc).ConfigureAwait(false))
+            {
+                entity.AddDomainEvent(new UpdatedEvent<TEntity>(entity));
                 await UpdateAsync(entity);
+            }
             else
-                await AddAsync(entity, entity.CreatedBy);
-            return entity;
+                return null;
+        else
+        {
+            entity.AddDomainEvent(new CreatedEvent<TEntity>(entity));
+            await AddAsync(entity, entity.CreatedBy);
         }
-        return null;
+        return entity;               
     }
 
     public virtual async Task<bool> RemoveAsyncLogic(string id)
@@ -209,6 +208,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
         {
             Remove(repoObj);
+            repoObj.AddDomainEvent(new DeletedEvent<TEntity>(repoObj));
             if (await SaveChangesAsync())
                 return true;
         }
