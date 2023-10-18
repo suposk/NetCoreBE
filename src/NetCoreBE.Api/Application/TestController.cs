@@ -2,7 +2,7 @@
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace NetCoreBE.Api.Controllers;
+namespace NetCoreBE.Api.Application;
 [Route("api/[controller]")]
 [ApiController]
 public class TestController : ControllerBase
