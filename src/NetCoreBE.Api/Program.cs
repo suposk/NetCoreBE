@@ -51,7 +51,7 @@ services.AddScoped<ITicketLogic, TicketLogic>(sp =>
     var apiIdentity = sp.GetRequiredService<IApiIdentity>();
     var mapper = sp.GetRequiredService<IMapper>();
     var repository = sp.GetRequiredService<IRepository<Ticket>>();
-    return new TicketLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository);
+    return new TicketLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository, sp.GetRequiredService<IMediator>());
 });
 //services.AddScoped<IDbContextFactory<ApiDbContext>>();
 //services.AddTransient(provider =>
