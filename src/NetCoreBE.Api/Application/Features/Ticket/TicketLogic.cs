@@ -18,7 +18,7 @@ public class TicketLogic : DomainLogicBase<Entities.Ticket, TicketDto>, ITicketL
         IDateTimeService dateTimeService, 
         IMapper mapper, 
         IRepository<Entities.Ticket> repository,
-        IMediator mediator = null
+        IMediator mediator
         )
         : base(context, apiIdentity, dateTimeService, mapper)
     {
