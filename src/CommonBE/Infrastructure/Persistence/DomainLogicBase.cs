@@ -63,17 +63,6 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         return repo == null ? default(TDto) : Mapper.Map<TDto>(repo);
     }
 
-    //public virtual async Task<TDto> AddAsyncLogic(TDto dto)
-    //{
-    //	if (dto.IsNotNullValidIdExt())
-    //		throw new BadRequestException($"{nameof(dto)} {nameof(AddAsync)}");
-    //	var repoObj = Mapper.Map<TEntity>(dto);
-
-    //	await AddAsync(repoObj, dto.CreatedBy);
-    //	var result = Mapper.Map<TDto>(repoObj);
-    //	return result;
-    //}
-
     public virtual async Task<TDto> AddAsyncLogic(TDto dto)
     {
         if (dto.IsNotNullValidIdExt())
@@ -93,25 +82,6 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         await AddAsync(entity, entity.CreatedBy);
         return entity;
     }
-
-    //   public virtual async Task<TDto> UpdateAsyncLogic(TDto dto)
-    //{
-    //	if (dto.IsNotNullValidIdExt())			
-    //		throw new BadRequestException($"{nameof(dto)} {nameof(UpdateAsyncLogic)}");
-
-    //       var repoObj = await GetId(dto.Id.ToString()).ConfigureAwait(false);
-    //	if (repoObj == null)
-    //		throw new NotFoundException($"{nameof(UpdateAsyncLogic)}", dto.Id);
-
-    //	repoObj = Mapper.Map<TEntity>(dto);
-    //	if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
-    //	{
-    //		await UpdateAsync(repoObj);
-    //		var result = Mapper.Map<TDto>(repoObj);
-    //		return result;
-    //	}
-    //	return null;
-    //}
 
     public virtual async Task<TDto> UpdateAsyncLogic(TDto dto)
     {
@@ -143,24 +113,6 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         }
         return null;
     }
-
-    //   public virtual async Task<TDto> AddOrUpdateAsyncLogic(TDto dto)
-    //{
-    //       if (dto.IsNotNullValidIdExt())
-    //           throw new BadRequestException($"{nameof(dto)} {nameof(AddOrUpdateAsyncLogic)}");
-
-    //	var repoObj = Mapper.Map<TEntity>(dto);
-    //	if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
-    //	{
-    //		if (repoObj.IsSavedInDb)
-    //			await UpdateAsync(repoObj);
-    //		else
-    //			await AddAsync(repoObj, dto.CreatedBy);
-    //		var result = Mapper.Map<TDto>(repoObj);
-    //		return result;
-    //	}
-    //	return null;
-    //}
 
     public virtual async Task<TDto> AddOrUpdateAsyncLogic(TDto dto)
     {
