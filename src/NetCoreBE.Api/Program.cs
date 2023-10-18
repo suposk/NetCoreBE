@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Identity.Web;
 using NetCoreBE.Api.Infrastructure.Persistence;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using NetCoreBE.Api.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +46,13 @@ services.AddScoped<IDateTimeService, DateTimeService>();
 
 services.AddScoped(typeof(IRepository<>), typeof(ApiBaseRepository<>));
 services.AddScoped<ITicketRepository, TicketRepository>();
+services.AddScoped<ITicketLogic, TicketLogic>(sp =>
+{
+    var apiIdentity = sp.GetRequiredService<IApiIdentity>();
+    var mapper = sp.GetRequiredService<IMapper>();
+    var repository = sp.GetRequiredService<IRepository<Ticket>>();
+    return new TicketLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository);
+});
 //services.AddScoped<IDbContextFactory<ApiDbContext>>();
 //services.AddTransient(provider =>
 //    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());

@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NetCoreBE.Api.Application.Features.Ticket;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace NetCoreBE.Api.Controllers;
-[Route("api/[controller]")]
-//[Route("api/v1/[controller]")]
+namespace NetCoreBE.Api.Application.Features.Ticket;
+
+[Route("api/Ticket")]
+//[Route("api/v1/Ticket")]
+//[Route("api/[controller]")]
 [ApiController]
 public class TicketV1Controller : ControllerBase
 {
     private readonly ITicketRepository _repository;
     private readonly IMapper _mapper;
-    string _id = "10000000-0000-0000-0000-000000000000";    
+    string _id = "10000000-0000-0000-0000-000000000000";
 
     public TicketV1Controller(ITicketRepository repository, IMapper mapper)
     {
@@ -20,26 +21,26 @@ public class TicketV1Controller : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Ticket>>> Get()
+    public async Task<ActionResult<List<TicketDto>>> Get()
     {
         var res = await _repository.GetList().ConfigureAwait(false);
-        return res.HasAnyInCollection() ? Ok(res) : Ok(_mapper.Map<List<Ticket>>(res));
+        return res.HasAnyInCollection() ? Ok(res) : Ok(_mapper.Map<List<TicketDto>>(res));
     }
-        
+
     [HttpGet("{id}")]
     public async Task<ActionResult<TicketDto>> Get(string id)
     {
         var res = await _repository.GetId(id).ConfigureAwait(false);
         return Ok(res);
     }
-        
+
     [HttpPost]
     public async Task<ActionResult<TicketDto>> Post([FromBody] TicketDto dto)
     {
         if (dto == null || dto.Id == Guid.Empty)
             return BadRequest();
 
-        var repoObj = _mapper.Map<Ticket>(dto);
+        var repoObj = _mapper.Map<Entities.Ticket>(dto);
         var res = await _repository.AddAsync(repoObj, UserId: repoObj?.CreatedBy).ConfigureAwait(false);
         if (res == null)
             return StatusCode(StatusCodes.Status500InternalServerError, $"{nameof(Post)} Failed.");
@@ -58,7 +59,7 @@ public class TicketV1Controller : ControllerBase
 
 #if DEBUG
     [HttpPost("Seed/{count}")]
-    public async Task<ActionResult<List<Ticket>>> Seed(int count)
+    public async Task<ActionResult<List<Entities.Ticket>>> Seed(int count)
     {
         var res = await _repository.Seed(count, null, "SEED API").ConfigureAwait(false);
         return res;
@@ -69,17 +70,17 @@ public class TicketV1Controller : ControllerBase
     public async Task<ActionResult<TicketDto>> Put(TicketDto dto)
     {
         if (dto == null || dto.Id == Guid.Empty)
-            return BadRequest();                
+            return BadRequest();
 
         var repoObj = await _repository.GetId(dto.Id.ToString()).ConfigureAwait(false);
         if (repoObj == null)
             return BadRequest($"{nameof(Put)} {dto.Id} not Found");
 
-        repoObj = _mapper.Map<Ticket>(dto);
+        repoObj = _mapper.Map<Entities.Ticket>(dto);
         var res = await _repository.UpdateAsync(repoObj);
         if (await _repository.SaveChangesAsync())
             return Ok(res);
-            //return _mapper.Map<VmTicketDto>(repoObj);
+        //return _mapper.Map<VmTicketDto>(repoObj);
         else
             return Conflict("Conflict detected, refresh and try again.");
     }

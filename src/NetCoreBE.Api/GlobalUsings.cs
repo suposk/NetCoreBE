@@ -11,4 +11,5 @@ global using CommonBE.CustomExceptions;
 
 global using NetCoreBE.Api.Infrastructure.Persistence;
 global using NetCoreBE.Api.Domain.Entities;
+global using Entities = NetCoreBE.Api.Domain.Entities;
 global using NetCoreBE.Api.Application.Features.Ticket;
