@@ -1,6 +1,4 @@
-﻿using NetCoreBE.Api.Domain.Events;
-
-namespace NetCoreBE.Api.Application.Features.Ticket.EventHandlers;
+﻿namespace NetCoreBE.Api.Application.Features.Ticket.EventHandlers;
 
 public class GetTicketsEventHandler : INotificationHandler<GetTicketsEvent>
 {
