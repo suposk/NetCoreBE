@@ -1,4 +1,3 @@
-using CleanArchitecture.Blazor.Infrastructure.Persistence.Interceptors;
 using CommonBE.Infrastructure.Persistence;
 using CommonBE.Infrastructure.Enums;
 using CSRO.Server.Services.Base;
@@ -9,6 +8,7 @@ using NetCoreBE.Api.Infrastructure.Persistence;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreBE.Api.Domain.Entities;
+using CommonBE.Infrastructure.Interceptors;
 
 var builder = WebApplication.CreateBuilder(args);
 

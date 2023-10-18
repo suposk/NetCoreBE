@@ -1,7 +1,6 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace CleanArchitecture.Blazor.Infrastructure.Persistence.Interceptors;
+namespace CommonBE.Infrastructure.Interceptors;
 public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
 {
     private readonly IMediator _mediator;
@@ -30,7 +29,7 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
 
         var entities = context.ChangeTracker
             .Entries<EntityBase>()
-            .Where(e => e.Entity.DomainEvents.Any() && e.State== EntityState.Deleted)
+            .Where(e => e.Entity.DomainEvents.Any() && e.State == EntityState.Deleted)
             .Select(e => e.Entity);
 
         var domainEvents = entities
