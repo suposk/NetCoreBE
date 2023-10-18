@@ -132,6 +132,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
             throw new BadRequestException($"{nameof(entity)} {nameof(AddOrUpdateAsyncLogicEntity)}");
 
         if (entity.IsSavedInDb)
+        {
             if (await CanModify(entity, CanModifyFunc).ConfigureAwait(false))
             {
                 entity.AddDomainEvent(new UpdatedEvent<TEntity>(entity));
@@ -139,6 +140,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
             }
             else
                 return null;
+        }
         else
         {
             entity.AddDomainEvent(new CreatedEvent<TEntity>(entity));
