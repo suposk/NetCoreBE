@@ -19,7 +19,6 @@ public class TestController : ControllerBase
         _ticketRepository2 = ticketRepository2;
     }
 
-    // GET: api/<TestController>
     [HttpGet]
     public async Task<IEnumerable<string>> Get()
     {
@@ -44,19 +43,6 @@ public class TestController : ControllerBase
 
         }
         return new string[] { "value1", "value2" };
-    }
-
-    // GET api/<TestController>/5
-    [HttpGet("{id}")]
-    public Task<Ticket> Get(string id)
-    {
-        return _ticketRepository.GetId(id);
-    }
-
-    // POST api/<TestController>
-    [HttpPost]
-    public void Post([FromBody] string value)
-    {
     }
 
 }

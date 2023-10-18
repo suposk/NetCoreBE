@@ -1,6 +1,6 @@
 ﻿namespace NetCoreBE.Api.Application.Features.Ticket;
 
-public class TicketDto : ContractsDtoBase
+public class TicketDto : DtoBase
 {
     public required string? Description { get; set; }
     public required string? RequestedFor { get; set; }
