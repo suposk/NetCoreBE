@@ -38,7 +38,7 @@ public abstract class EntityBase : IEntity<string?>
     //[ConcurrencyCheck]
     //public int Version { get; set; }
 
-    public virtual bool IsSavedInDb => CreatedAt.HasValue && CreatedAt > DateTime.MinValue;    
+    public virtual bool IsSavedInDb => CreatedAt.HasValue && CreatedAt > DateTime.MinValue || RowVersion?.Length != 0;    
 
     //public virtual bool IsSavedInDb => Id != Guid.Empty;
 }
