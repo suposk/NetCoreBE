@@ -3,15 +3,16 @@
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace NetCoreBE.Api.Controllers;
-[Route("api/[controller]")]
+//[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
-public class TicketController : ControllerBase
+public class TicketV1Controller : ControllerBase
 {
     private readonly ITicketRepository _repository;
     private readonly IMapper _mapper;
     string _id = "10000000-0000-0000-0000-000000000000";    
 
-    public TicketController(ITicketRepository repository, IMapper mapper)
+    public TicketV1Controller(ITicketRepository repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;
