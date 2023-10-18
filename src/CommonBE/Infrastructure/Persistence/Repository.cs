@@ -13,7 +13,6 @@ public interface IRepository<TModel> where TModel : class
     void AddRange(IEnumerable<TModel> entitys, string UserId = null);
     void Remove(TModel entity, string UserId = null);
     void Update(TModel entity, string UserId = null);
-
     Task<TModel> AddAsync(TModel entity, string UserId = null);
     Task<TModel> UpdateAsync(TModel entity, string UserId = null);
     Task<bool> SaveChangesAsync();
@@ -149,18 +148,9 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     //public virtual async Task<TModel> GetId(string id) => await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
     public virtual Task<TModel> GetId(string id) => DatabaseContext.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
 
-    public virtual Task<List<TModel>> GetByUserId(string userId)
-    {
-        //var softDelete = entity as EntitySoftDeleteBase;
-        //if (softDelete != null)
-        //    //return DatabaseContext.Set<TModel>().Where(a => softDelete.IsDeleted != true && softDelete.CreatedBy.Contains(userId)).ToListAsync();
-        //    return DatabaseContext.Set<TModel>().Where(a => a.CreatedBy.Contains(userId)).ToListAsync();
-
-        //var b = entity as EntityBase;
-        //if (b != null)
-        return DatabaseContext.Set<TModel>().AsNoTracking().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
-        //return null;
-    }
+    public virtual Task<List<TModel>> GetByUserId(string userId) 
+        => DatabaseContext.Set<TModel>().AsNoTracking().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
+    
 
     //public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression)
     //{
@@ -185,7 +175,6 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         {
             var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
             return saved;
-            // move on
         }
         catch (DbUpdateException e)
         {
@@ -217,8 +206,6 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
             (entity as EntitySoftDeleteBase).Email = null;
     }
 
-    public Task<int> CountAsync()
-    {
-        return DatabaseContext.Set<TModel>().AsNoTracking().CountAsync();
-    }
+    public Task<int> CountAsync() => DatabaseContext.Set<TModel>().AsNoTracking().CountAsync();
+    
 }
