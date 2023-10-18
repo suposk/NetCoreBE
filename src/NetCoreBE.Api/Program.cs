@@ -4,14 +4,9 @@ using CommonBE.Infrastructure.Enums;
 using CSRO.Server.Services.Base;
 using MediatR.Pipeline;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using NetCoreBE.Api.Infrastructure.Persistence;
 using System.Reflection;
-using System.Security.Claims;
-using System.Xml.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +21,8 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 var myType = typeof(Program);
 var _namespace = myType.Namespace;
+
+services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 services.AddAuthorization(options =>
 {
