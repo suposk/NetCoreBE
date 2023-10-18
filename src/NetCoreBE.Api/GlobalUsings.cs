@@ -7,6 +7,7 @@ global using AutoMapper;
 global using CommonBE;
 global using CommonBE.Base;
 global using CommonBE.Helpers;
+global using CommonBE.CustomExceptions;
 
 global using NetCoreBE.Api.Infrastructure.Persistence;
 global using NetCoreBE.Api.Domain.Entities;
