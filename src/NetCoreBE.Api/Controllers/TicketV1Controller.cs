@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NetCoreBE.Api.Application.Features.Ticket;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace NetCoreBE.Api.Controllers;
-//[Route("api/[controller]")]
-[Route("api/v1/[controller]")]
+[Route("api/[controller]")]
+//[Route("api/v1/[controller]")]
 [ApiController]
 public class TicketV1Controller : ControllerBase
 {
@@ -21,14 +22,14 @@ public class TicketV1Controller : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Ticket>>> Get()
     {
-        var res = await _repository.GetList();        ;
-        return Ok(res);
+        var res = await _repository.GetList().ConfigureAwait(false);
+        return res.HasAnyInCollection() ? Ok(res) : Ok(_mapper.Map<List<Ticket>>(res));
     }
         
     [HttpGet("{id}")]
     public async Task<ActionResult<TicketDto>> Get(string id)
     {
-        var res = await _repository.GetId(id);
+        var res = await _repository.GetId(id).ConfigureAwait(false);
         return Ok(res);
     }
         
@@ -39,7 +40,7 @@ public class TicketV1Controller : ControllerBase
             return BadRequest();
 
         var repoObj = _mapper.Map<Ticket>(dto);
-        var res = await _repository.AddAsync(repoObj, UserId: repoObj?.CreatedBy);
+        var res = await _repository.AddAsync(repoObj, UserId: repoObj?.CreatedBy).ConfigureAwait(false);
         if (res == null)
             return StatusCode(StatusCodes.Status500InternalServerError, $"{nameof(Post)} Failed.");
         var mapped = _mapper.Map<TicketDto>(res);
@@ -59,7 +60,7 @@ public class TicketV1Controller : ControllerBase
     [HttpPost("Seed/{count}")]
     public async Task<ActionResult<List<Ticket>>> Seed(int count)
     {
-        var res = await _repository.Seed(count, null, "SEED API");
+        var res = await _repository.Seed(count, null, "SEED API").ConfigureAwait(false);
         return res;
     }
 #endif

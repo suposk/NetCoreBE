@@ -37,7 +37,9 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
 
 	public virtual async Task<TDto> GetIdLogic(string id)
 	{
-		var repo = await GetId(id).ConfigureAwait(false);
+        if (id.IsNotNullValidIdExt())
+            throw new BadRequestException($"{nameof(id)} {nameof(GetIdLogic)}");
+        var repo = await GetId(id).ConfigureAwait(false);
 		return repo == null ? null : Mapper.Map<TDto>(repo);
 	}
 
@@ -47,7 +49,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
 			throw new BadRequestException($"{nameof(dto)} {nameof(AddAsync)}");
 		var repoObj = Mapper.Map<TEntity>(dto);
 
-		await AddAsync(repoObj);
+		await AddAsync(repoObj, dto.CreatedBy);
 		var result = Mapper.Map<TDto>(repoObj);
 		return result;
 	}
@@ -82,7 +84,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
 			if (repoObj.IsSavedInDb)
 				await UpdateAsync(repoObj);
 			else
-				await AddAsync(repoObj);
+				await AddAsync(repoObj, dto.CreatedBy);
 			var result = Mapper.Map<TDto>(repoObj);
 			return result;
 		}
@@ -92,9 +94,9 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
 	public virtual async Task<bool> RemoveAsyncLogic(string id)
 	{
 		if (id.IsNotNullValidIdExt())
-			throw new BadRequestException(nameof(RemoveAsyncLogic));
+            throw new BadRequestException($"{nameof(id)} {nameof(RemoveAsyncLogic)}");
 
-		var repoObj = await GetId(id).ConfigureAwait(false);
+        var repoObj = await GetId(id).ConfigureAwait(false);
 		if (repoObj == null)
 			throw new NotFoundException($"{nameof(RemoveAsyncLogic)}", id);
 
@@ -125,10 +127,29 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
 		return true;
 	}
 
-	/// <summary>
-	/// To add custom execution, validation must override this
-	/// </summary>
-	/// <param name="entity"></param>
-	/// <returns></returns>
-	protected virtual Task<bool> CanModifyFunc(TEntity entity) => Task.FromResult(true);
+    /// <summary>
+    /// Only Admin or user who created can modify record
+    /// To add custom execution, validation must override this.    
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    protected virtual Task<bool> CanModifyFunc(TEntity entity)
+	{
+		if (ApiIdentity.IsAdmin())
+            return Task.FromResult(true);
+		else 
+		{
+			var res = entity.CreatedBy == ApiIdentity.GetUserName();
+			if (!res)
+                throw new UnauthorizedException($"{nameof(CanModifyFunc)} User {ApiIdentity.GetUserName()} not allowed to modify.");
+            return Task.FromResult(true);
+        }
+	}
+
+    ///// <summary>
+    ///// To add custom execution, validation must override this
+    ///// </summary>
+    ///// <param name="entity"></param>
+    ///// <returns></returns>
+    //protected virtual Task<bool> CanModifyFunc(TEntity entity) => Task.FromResult(true);
 }
