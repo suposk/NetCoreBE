@@ -16,10 +16,10 @@ public interface IRepository<TModel> where TModel : class
     Task<TModel> AddAsync(TModel entity, string UserId = null);
     Task<TModel> UpdateAsync(TModel entity, string UserId = null);
     Task<bool> SaveChangesAsync();
-    //Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
-    //Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression);
-    //Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression);
-    //Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
+    Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
+    Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression);
+    Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression);
+    Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
     void ResetAtByUser(TModel entity);
 
     Task<int> CountAsync();
@@ -127,22 +127,18 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         return await SaveChangesAsync().ConfigureAwait(false);
     }
 
-    //public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
-    //{
-    //    DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
-    //    IQueryable<TModel> query = null;
-    //    foreach (var includeExpression in includes)
-    //    {
-    //        query = dbSet.Include(includeExpression);
-    //    }
-    //    return query.FirstOrDefaultAsync(expression);
-    //}
+    public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
+    {
+        DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
+        IQueryable<TModel> query = null;
+        foreach (var includeExpression in includes)        
+            query = dbSet.Include(includeExpression);        
+        return query.AsNoTracking().FirstOrDefaultAsync(expression);
+    }
 
-    //public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression)
-    //{
-    //    return DatabaseContext.Set<TModel>().FirstOrDefaultAsync(expression);
-    //}
-
+    public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression) =>
+        DatabaseContext.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(expression);
+    
     public virtual Task<List<TModel>> GetList() => DatabaseContext.Set<TModel>().AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
 
     //public virtual async Task<TModel> GetId(string id) => await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
@@ -150,24 +146,21 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
 
     public virtual Task<List<TModel>> GetByUserId(string userId) 
         => DatabaseContext.Set<TModel>().AsNoTracking().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
+
+    public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression) 
+        => DatabaseContext.Set<TModel>().AsNoTracking().Where(expression).OrderByDescending(a => a.CreatedAt).ToListAsync();
     
+    public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
+    {
+        DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
+        IQueryable<TModel> query = null;
+        foreach (var includeExpression in includes)
+        {
+            query = dbSet.Include(includeExpression);
+        }
 
-    //public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression)
-    //{
-    //    return DatabaseContext.Set<TModel>().Where(expression).OrderByDescending(a => a.CreatedAt).ToListAsync();
-    //}
-
-    //public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
-    //{
-    //    DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
-    //    IQueryable<TModel> query = null;
-    //    foreach (var includeExpression in includes)
-    //    {
-    //        query = dbSet.Include(includeExpression);
-    //    }
-
-    //    return query.Where(expression).ToListAsync();
-    //}
+        return query.Where(expression).ToListAsync();
+    }
 
     public virtual async Task<bool> SaveChangesAsync()
     {

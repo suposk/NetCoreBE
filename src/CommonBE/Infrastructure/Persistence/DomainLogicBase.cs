@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CommonBE.Base;
 
 namespace CommonBE.Infrastructure.Persistence;
 
