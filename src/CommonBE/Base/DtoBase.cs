@@ -1,6 +1,6 @@
 ﻿namespace CommonBE.Base;
 
-public class DtoBase
+public class DtoBase : IDtoBase
 {
     public Guid Id { get; set; }
 

@@ -3,7 +3,7 @@ using CommonBE.Base;
 
 namespace CommonBE.Infrastructure.Persistence;
 
-public interface IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase where TDto : class
+public interface IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase
 {
     IMapper Mapper { get; }
 
@@ -41,7 +41,7 @@ public interface IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase wher
 /// TODO not done
 /// </summary>
 /// <typeparam name="Entity"></typeparam>
-public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase where TDto : DtoBase
+public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase where TDto : IDtoBase
 {
     public DomainLogicBase(DbContext context, IApiIdentity apiIdentity, IDateTimeService dateTimeService, IMapper mapper) : base(context, apiIdentity, dateTimeService)
     {
@@ -53,7 +53,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
     public virtual async Task<List<TDto>> GetListLogic()
     {
         var repo = await GetList().ConfigureAwait(false);
-        return repo == null ? null : Mapper.Map<List<TDto>>(repo);
+        return repo == null ? default(List<TDto>) : Mapper.Map<List<TDto>>(repo);
     }
 
     public virtual async Task<TDto> GetIdLogic(string id)
@@ -61,7 +61,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         if (id.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(id)} {nameof(GetIdLogic)}");
         var repo = await GetId(id).ConfigureAwait(false);
-        return repo == null ? null : Mapper.Map<TDto>(repo);
+        return repo == null ? default(TDto) : Mapper.Map<TDto>(repo);
     }
 
     //public virtual async Task<TDto> AddAsyncLogic(TDto dto)
@@ -123,7 +123,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         repoObj = await UpdateAsyncLogicEntity(repoObj);
         if (repoObj != null)        
             return Mapper.Map<TDto>(repoObj);                    
-        return null;
+        return default(TDto);
     }
 
     public virtual async Task<TEntity> UpdateAsyncLogicEntity(TEntity entity)
@@ -172,7 +172,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         repoObj = await AddOrUpdateAsyncLogicEntity(repoObj);
         if (repoObj != null)
             return Mapper.Map<TDto>(repoObj);
-        return null;
+        return default(TDto);
     }
 
     public virtual async Task<TEntity> AddOrUpdateAsyncLogicEntity(TEntity entity)
