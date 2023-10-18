@@ -12,7 +12,6 @@ public class TicketV1Controller : ControllerBase
 {
     private readonly ITicketRepository _repository;
     private readonly IMapper _mapper;
-    string _id = "10000000-0000-0000-0000-000000000000";
 
     public TicketV1Controller(ITicketRepository repository, IMapper mapper)
     {
@@ -48,14 +47,6 @@ public class TicketV1Controller : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = res.Id }, mapped);
         //return Ok(res);
     }
-    /*
-    {
-      "id": "00000000-1000-0000-0000-000000000000",     
-      "createdBy": "Api",
-      "description": "From Api Call",
-      "requestedFor": "Some User"     
-    } 
-    */
 
 #if DEBUG
     [HttpPost("Seed/{count}")]
@@ -93,3 +84,14 @@ public class TicketV1Controller : ControllerBase
     }
 
 }
+
+#region Post Request Body
+/*
+{
+  "id": "00000000-1000-0000-0000-000000000000",     
+  "createdBy": "Api",
+  "description": "From Api Call",
+  "requestedFor": "Some User"     
+} 
+*/
+#endregion
