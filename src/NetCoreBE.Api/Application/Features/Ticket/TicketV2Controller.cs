@@ -4,6 +4,11 @@
 
 namespace NetCoreBE.Api.Application.Features.Ticket;
 
+/// <summary>
+/// Using DomainLogicBase<TEntity, TDto> to wrap the Repository and IMapper into a single class.
+/// Best case scenario for simple CRUD API. Automatically Gets adds and maps.
+/// For more comeplex scenarios, use commands and queries.
+/// </summary>
 [Route("api/Ticket")]
 //[Route("api/v2/Ticket")]
 //[Route("api/[controller]")]

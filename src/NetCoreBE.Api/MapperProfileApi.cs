@@ -1,8 +1,8 @@
 ﻿namespace NetCoreBE.Api;
 
-public class VersionProfile : Profile
+public class MapperProfileApi : Profile
 {
-    public VersionProfile()
+    public MapperProfileApi()
     {
         CreateMap<TicketDto, Ticket>()
             .ReverseMap();
