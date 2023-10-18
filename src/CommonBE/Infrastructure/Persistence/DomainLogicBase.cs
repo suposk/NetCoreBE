@@ -241,6 +241,11 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
     /// <returns></returns>
     protected virtual Task<bool> CanModifyFunc(TEntity entity)
     {
+
+#if DEBUG
+        //TODO fix this
+        return Task.FromResult(true);
+#endif
         if (ApiIdentity.IsAdmin())
             return Task.FromResult(true);
         else

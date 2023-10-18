@@ -4,8 +4,8 @@
 
 namespace NetCoreBE.Api.Application.Features.Ticket;
 
-[Route("api/Ticket")]
-//[Route("api/v1/Ticket")]
+//[Route("api/Ticket")]
+[Route("api/v1/Ticket")]
 //[Route("api/[controller]")]
 [ApiController]
 public class TicketV1Controller : ControllerBase
