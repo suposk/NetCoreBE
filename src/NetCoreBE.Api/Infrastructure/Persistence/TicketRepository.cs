@@ -20,11 +20,8 @@ namespace NetCoreBE.Api.Infrastructure.Persistence
 
         public override Task<List<Ticket>> GetList()
         {
-            //return base.GetList();
-            //var exist = await _repository.GetFilter(a => a.VersionFull == version);
-            //var q = _context.AppVersions.Where(e => !_context.AppVersions.Any(e2 => e2.VersionValue > e.VersionValue));
-            //return _repository.GetListFilter(a => a.IsDeleted != true);
-            return _repository.GetList();
+            return _repository.GetListFilter(a => a.IsDeleted != true);
+            //return _repository.GetList();
         }
 
         public async Task<List<Ticket>> Seed(int count, int? max, string UserId = "Seed")

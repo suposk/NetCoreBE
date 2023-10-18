@@ -30,10 +30,11 @@ public class TicketLogic : DomainLogicBase<Entities.Ticket, TicketDto>, ITicketL
     /// Can ovveride the base method to add custom logic. Example track request for example audit purpose.
     /// </summary>
     /// <returns></returns>
-    public override Task<List<TicketDto>> GetListLogic()
+    public async override Task<List<TicketDto>> GetListLogic()
     {
         _mediator?.Publish(new GetTicketsEvent(new GetTickets(ApiIdentity.GetUserNameOrIp(), DateTimeService.UtcNow))); //Example track request for example audit purpose
-        return base.GetListLogic();
+        //var notDel = _repository.GetListActive(); //error
+        return await base.GetListLogic();
     }
 
 }
