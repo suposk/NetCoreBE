@@ -33,11 +33,14 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
         return res == null ? default : Mapper.Map<RequestDto>(res);
     }
 
-    public override Task<Entities.Request> AddAsync(Entities.Request entity, string UserId = null)
+    public override Task<Entities.Request> AddAsyncLogicEntity(Entities.Request entity)
     {
+        if (entity == null)
+            throw new BadRequestException($"{nameof(entity)} {nameof(AddAsyncLogicEntity)}");
         entity.AddInitialHistory();
-        entity.Status = "Active";
-        return base.AddAsync(entity, UserId);
+        entity.Status = "Active";        
+        entity.AddDomainEvent(new CreatedEvent<Entities.Request>(entity));
+        return AddAsync(entity);
     }
 
 }
