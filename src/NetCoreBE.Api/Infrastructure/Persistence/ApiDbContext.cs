@@ -10,6 +10,7 @@ public class ApiDbContext : DbContext
 {
     private readonly string _connectionString;
 
+    #region Constructor
     public ApiDbContext() : base()
     {
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
@@ -17,7 +18,6 @@ public class ApiDbContext : DbContext
     public ApiDbContext(string connectionString) : base()
     {
         _connectionString = connectionString;
-
         //exception here
         //ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
@@ -26,9 +26,12 @@ public class ApiDbContext : DbContext
        : base(options)
     {
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-    }
+    } 
+    #endregion
 
     public DbSet<Ticket> Tickets { get; set; }
+    public DbSet<Request> Requests { get; set; }
+    public DbSet<RequestHistory> RequestHistorys { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

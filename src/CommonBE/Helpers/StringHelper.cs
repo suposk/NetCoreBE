@@ -1,4 +1,6 @@
-﻿namespace System;
+﻿using Azure.Core;
+
+namespace System;
 
 public static class StringHelper
 {
@@ -285,4 +287,18 @@ public static class StringHelper
         return query.ToString();
 	}
 
+    /// <summary>
+    /// Create easy to read ID (10000000-0000-0000-0000-000000000000) for debug
+    /// </summary>
+    /// <param name="number"></param>
+    /// <returns></returns>
+    public static string GetSimpleGuidString(this int number)
+    {
+        if (number <= 0)
+            return Guid.Empty.ToString();
+        StringBuilder sb = new(Guid.Empty.ToString());
+        sb.Remove(0, number.ToString().Length);
+        sb.Insert(0, number.ToString());
+        return sb.ToString();
+    }
 }

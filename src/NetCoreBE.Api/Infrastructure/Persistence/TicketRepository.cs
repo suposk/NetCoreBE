@@ -43,11 +43,7 @@ namespace NetCoreBE.Api.Infrastructure.Persistence
                     IsOnBehalf = i % 2 == 0,
                 };
                 if (countExisintg == 0)
-                {
-                    ticket.Id = Guid.Empty.ToString();
-                    ticket.Id = ticket.Id.Remove(0, i.ToString().Length);
-                    ticket.Id = ticket.Id.Insert(0, i.ToString());
-                }
+                    ticket.Id = i.GetSimpleGuidString();
                 list.Add(ticket);
             }
             _repository.AddRange(list, UserId);

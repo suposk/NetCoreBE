@@ -16,3 +16,4 @@ global using NetCoreBE.Api.Domain.Entities;
 global using Entities = NetCoreBE.Api.Domain.Entities;
 global using NetCoreBE.Api.Domain.Events;
 global using NetCoreBE.Api.Application.Features.Ticket;
+global using NetCoreBE.Api.Application.Features.Request;
