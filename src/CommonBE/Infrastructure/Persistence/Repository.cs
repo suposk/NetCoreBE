@@ -61,7 +61,7 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         DatabaseContext.Set<TModel>().AddRange(entitys);
     }
 
-    private void SetAddProperties(TModel entity, string UserId)
+    public virtual void SetAddProperties(TModel entity, string UserId)
     {
         //if (entity.Id != 0)
         //    throw new ArgumentException($"Id {entity.Id} can not be set while add operation.");        

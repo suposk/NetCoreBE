@@ -59,7 +59,7 @@ services.AddScoped<IRequestLogic, RequestLogic>(sp =>
 {
     var apiIdentity = sp.GetRequiredService<IApiIdentity>();
     var mapper = sp.GetRequiredService<IMapper>();
-    var repository = sp.GetRequiredService<IRepository<Request>>();
+    var repository = sp.GetRequiredService<IRequestRepository>();
     return new RequestLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository, sp.GetRequiredService<IMediator>());
 });
 

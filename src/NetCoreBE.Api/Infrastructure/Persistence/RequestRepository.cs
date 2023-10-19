@@ -19,9 +19,21 @@ namespace NetCoreBE.Api.Infrastructure.Persistence
         }
 
         public override Task<List<Request>> GetList()
+        {            
+            //return _repository.GetList();
+            return _repository.GetListFilter(a => true, a => a.RequestHistoryList);
+        }
+
+        public override Task<Request> GetId(string id)
         {
-            //return _repository.GetListFilter(a => a.IsDeleted != true);
-            return _repository.GetList();
+            //return base.GetId(id);
+            return _repository.GetFilter(a => a.Id == id, a => a.RequestHistoryList);
+        }
+
+        public override void SetAddProperties(Request entity, string UserId)
+        {
+            entity?.AddInitialHistory();
+            base.SetAddProperties(entity, UserId);
         }
 
         public async Task<List<Request>> Seed(int count, int? max, string UserId = "Seed")

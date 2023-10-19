@@ -8,7 +8,7 @@ public interface IRequestLogic : IDomainLogicBase<Entities.Request, RequestDto>
 
 public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequestLogic
 {
-    private readonly IRepository<Entities.Request> _repository;
+    private readonly IRequestRepository _repository;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
@@ -16,8 +16,8 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
         DbContext context,
         IApiIdentity apiIdentity, 
         IDateTimeService dateTimeService, 
-        IMapper mapper, 
-        IRepository<Entities.Request> repository,
+        IMapper mapper,
+        IRequestRepository repository,
         IMediator mediator
         )
         : base(context, apiIdentity, dateTimeService, mapper)
@@ -32,19 +32,16 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
     /// <returns></returns>
     public async override Task<List<RequestDto>> GetListLogic()
     {
-        return await base.GetListLogic();
+        //return await base.GetListLogic();
+        var res = await _repository.GetList().ConfigureAwait(false);
+        return res == null ? default : Mapper.Map<List<RequestDto>>(res);
     }
 
-    /// <summary>
-    /// Adding child StatusHistory to Request
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <param name="UserId"></param>
-    /// <returns></returns>
-    public override Task<Entities.Request> AddAsync(Entities.Request entity, string UserId = null)
+    public async override Task<RequestDto> GetIdLogic(string id)
     {
-        entity?.AddInitialHistory();
-        return base.AddAsync(entity, UserId);
+        //return base.GetIdLogic(id);
+        var res = await _repository.GetId(id).ConfigureAwait(false);
+        return res == null ? default : Mapper.Map<RequestDto>(res);
     }
 
 }
