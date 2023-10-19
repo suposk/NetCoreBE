@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Api.Domain.Entities;
+﻿using MassTransit;
+
+namespace NetCoreBE.Api.Domain.Entities;
 
 public class Request : EntityBase
 {
@@ -12,4 +14,18 @@ public class Request : EntityBase
     public string? Status { get; set; }
 
     public ICollection<RequestHistory> RequestHistoryList { get; set; } = new List<RequestHistory>();
+
+    public void AddInitialHistory()
+    {
+        if (RequestHistoryList?.Count == 0)
+        {
+            RequestHistoryList.Add(new RequestHistory
+            {
+                Id = NewId.Next().ToString(),
+                RequestId = Id,
+                Operation = "Submited",
+                Details = "User Submited Request",
+            });
+        }        
+    }
 }

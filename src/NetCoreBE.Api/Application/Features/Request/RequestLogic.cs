@@ -35,4 +35,16 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
         return await base.GetListLogic();
     }
 
+    /// <summary>
+    /// Adding child StatusHistory to Request
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="UserId"></param>
+    /// <returns></returns>
+    public override Task<Entities.Request> AddAsync(Entities.Request entity, string UserId = null)
+    {
+        entity?.AddInitialHistory();
+        return base.AddAsync(entity, UserId);
+    }
+
 }

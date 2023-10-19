@@ -6,5 +6,11 @@ public class MapperProfileApi : Profile
     {
         CreateMap<TicketDto, Ticket>()
             .ReverseMap();
+
+        CreateMap<RequestDto, Request>()
+            .ReverseMap();
+
+        CreateMap<RequestHistoryDto, RequestHistory>()
+            .ReverseMap();
     }
 }

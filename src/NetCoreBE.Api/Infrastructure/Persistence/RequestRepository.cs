@@ -44,7 +44,7 @@ namespace NetCoreBE.Api.Infrastructure.Persistence
                 };
                 if (countExisintg == 0)                
                     Request.Id = i.GetSimpleGuidString();
-                
+                Request.AddInitialHistory();
                 list.Add(Request);
             }
             _repository.AddRange(list, UserId);
