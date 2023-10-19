@@ -18,11 +18,11 @@ namespace NetCoreBE.Api.Infrastructure.Persistence
             _context = context;
         }
 
-        public override Task<List<Request>> GetList()
-        {            
-            //return _repository.GetList();
-            return _repository.GetListFilter(a => true, a => a.RequestHistoryList);
-        }
+        //public override Task<List<Request>> GetList()
+        //{            
+        //    //return _repository.GetList();
+        //    return _repository.GetListFilter(a => true, a => a.RequestHistoryList);
+        //}
 
         public override Task<Request> GetId(string id)
         {

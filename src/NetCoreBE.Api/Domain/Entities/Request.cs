@@ -13,7 +13,7 @@ public class Request : EntityBase
     [MaxLength(50)]
     public string? Status { get; set; }
 
-    public ICollection<RequestHistory> RequestHistoryList { get; set; } = new List<RequestHistory>();
+    public List<RequestHistory> RequestHistoryList { get; set; } = new();
 
     public void AddInitialHistory()
     {

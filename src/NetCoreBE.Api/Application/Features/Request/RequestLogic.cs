@@ -26,22 +26,18 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Can ovveride the base method to add custom logic. Example track request for example audit purpose.
-    /// </summary>
-    /// <returns></returns>
-    public async override Task<List<RequestDto>> GetListLogic()
-    {
-        //return await base.GetListLogic();
-        var res = await _repository.GetList().ConfigureAwait(false);
-        return res == null ? default : Mapper.Map<List<RequestDto>>(res);
-    }
-
     public async override Task<RequestDto> GetIdLogic(string id)
     {
-        //return base.GetIdLogic(id);
+        //return await base.GetIdLogic(id);
         var res = await _repository.GetId(id).ConfigureAwait(false);
         return res == null ? default : Mapper.Map<RequestDto>(res);
+    }
+
+    public override Task<Entities.Request> AddAsync(Entities.Request entity, string UserId = null)
+    {
+        entity.AddInitialHistory();
+        entity.Status = "Active";
+        return base.AddAsync(entity, UserId);
     }
 
 }

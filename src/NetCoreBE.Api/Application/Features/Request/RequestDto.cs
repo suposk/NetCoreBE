@@ -8,5 +8,5 @@ public class RequestDto : DtoBase
 
     public string? Status { get; set; }
 
-    public ICollection<RequestHistoryDto> RequestHistoryList { get; set; } = new List<RequestHistoryDto>();
+    public List<RequestHistoryDto> RequestHistoryList { get; set; } = new();
 }
