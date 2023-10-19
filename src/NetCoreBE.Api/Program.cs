@@ -105,7 +105,27 @@ services.AddMediatR(config =>
     //config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
 });
 
+//builder.UseApiExceptionHandler(options =>
+//{
+//    options.AddResponseDetails = ApiExceptionMiddlewareExtensions.UpdateApiErrorResponse;
+//    options.DetermineLogLevel = ApiExceptionMiddlewareExtensions.DetermineLogLevel;
+//});
+////if (env.IsDevelopment())
+////{
+////    app.UseDeveloperExceptionPage();
+////}
+
+
 var app = builder.Build();
+app.UseApiExceptionHandler(options =>
+{
+    options.AddResponseDetails = ApiExceptionMiddlewareExtensions.UpdateApiErrorResponse;
+    options.DetermineLogLevel = ApiExceptionMiddlewareExtensions.DetermineLogLevel;
+});
+//if (env.IsDevelopment())
+//{
+//    app.UseDeveloperExceptionPage();
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

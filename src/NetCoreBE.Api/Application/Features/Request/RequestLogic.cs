@@ -30,7 +30,7 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
     {
         //return await base.GetIdLogic(id);
         var res = await _repository.GetId(id).ConfigureAwait(false);
-        return res == null ? default : Mapper.Map<RequestDto>(res);
+        return res == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(res);
     }
 
     public override Task<Entities.Request> AddAsyncLogicEntity(Entities.Request entity)

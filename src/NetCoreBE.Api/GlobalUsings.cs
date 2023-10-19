@@ -10,6 +10,7 @@ global using CommonBE.Base;
 global using CommonBE.Helpers;
 global using CommonBE.CustomExceptions;
 global using CommonBE.Domain.Events;
+global using CommonBE.Infrastructure.ApiMiddleware;
 
 global using NetCoreBE.Api.Infrastructure.Persistence;
 global using NetCoreBE.Api.Domain.Entities;
