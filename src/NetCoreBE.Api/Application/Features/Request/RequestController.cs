@@ -51,11 +51,11 @@ public class RequestController : ControllerBase
 
 #region Post Request Body
 /*
-{
-  "id": "00000000-1000-0000-0000-000000000000",     
-  "createdBy": "Api",
-  "description": "From Api Call",
-  "requestedFor": "Some User"     
-} 
+    {
+      "id": "00000000-1000-0000-0000-000000000000",   
+      "requestType": "New Laptop",
+      "note": "Description 1",        
+      "createdBy": "Api"
+    } 
 */
 #endregion
