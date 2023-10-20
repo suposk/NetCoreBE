@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Api.Application.Features.Request;
+﻿namespace Contracts.Dtos;
 
 public class RequestDto : DtoBase
 {

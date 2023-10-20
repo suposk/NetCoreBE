@@ -40,7 +40,7 @@ namespace NetCoreBE.Api.Infrastructure.Persistence
                 {
                     Note = $"Description {i}",
                     Status = $"Active",                    
-                    RequestType = (i % 2 == 0) ? "Read Access" : "New Laptop",
+                    RequestType = (i % 2 == 0) ? "Access" : "New Laptop",
                 };
                 if (countExisintg == 0)                
                     Request.Id = i.GetSimpleGuidString();

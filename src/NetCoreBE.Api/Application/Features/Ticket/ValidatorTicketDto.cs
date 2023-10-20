@@ -1,6 +1,4 @@
-﻿using Contracts.Dtos;
-
-namespace NetCoreBE.Api.Application.Features.Ticket;
+﻿namespace NetCoreBE.Api.Application.Features.Ticket;
 
 public class ValidatorTicketDto : AbstractValidator<TicketDto>
 {

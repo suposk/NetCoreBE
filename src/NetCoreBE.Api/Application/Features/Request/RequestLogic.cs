@@ -1,5 +1,6 @@
 ﻿using CommonBE.Base;
 using CommonBE.Infrastructure.Persistence;
+using Contracts.Dtos;
 
 namespace NetCoreBE.Api.Application.Features.Request;
 
