@@ -1,6 +1,4 @@
-﻿using CommonBE.Base;
-using CommonBE.Infrastructure.Persistence;
-using Contracts.Dtos;
+﻿using CommonBE.Infrastructure.Persistence;
 
 namespace NetCoreBE.Api.Application.Features.Request;
 
@@ -49,15 +47,7 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
         entity.Status = "Active";        
         entity.AddDomainEvent(new CreatedEvent<Entities.Request>(entity));
         return AddAsync(entity);
-    }
-
-    //public async override Task<Entities.Request> UpdateAsyncLogicEntity(Entities.Request entity)
-    //{
-    //    if (entity.IsNotNullValidIdExt())
-    //        throw new BadRequestException($"{nameof(entity)} {nameof(UpdateAsyncLogicEntity)}");
-    //    var res = await _repository.GetId(entity.Id).ConfigureAwait(false);
-    //    return res == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(res);
-    //}       
+    }     
 
     public async Task<RequestHistory> AddHistory(RequestHistory add)
     {
