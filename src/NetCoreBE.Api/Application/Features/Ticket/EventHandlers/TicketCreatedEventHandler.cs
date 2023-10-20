@@ -3,22 +3,22 @@
 
 using System.Diagnostics;
 
-namespace CleanArchitecture.Blazor.Application.Features.Products.EventHandlers;
+namespace NetCoreBE.Api.Application.Features.Ticket.EventHandlers;
 
-public class TicketCreatedEventHandler : INotificationHandler<CreatedEvent<Ticket>>
+public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Entities.Ticket>>
 {
-    private readonly ILogger<TicketCreatedEventHandler> _logger;
+    private readonly ILogger<RequestCreatedEventHandler> _logger;
     private readonly Stopwatch _timer;
 
-    public TicketCreatedEventHandler(
-        ILogger<TicketCreatedEventHandler> logger
+    public RequestCreatedEventHandler(
+        ILogger<RequestCreatedEventHandler> logger
     )
     {
         _logger = logger;
         _timer = new Stopwatch();
     }
 
-    public async Task Handle(CreatedEvent<Ticket> notification, CancellationToken cancellationToken)
+    public async Task Handle(CreatedEvent<Entities.Ticket> notification, CancellationToken cancellationToken)
     {
         _timer.Start();
         await Task.Delay(5000, cancellationToken);
