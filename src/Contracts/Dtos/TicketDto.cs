@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Api.Application.Features.Ticket;
+﻿namespace Contracts.Dtos;
 
 public class TicketDto : DtoBase
 {

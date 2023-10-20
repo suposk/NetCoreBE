@@ -4,7 +4,9 @@ global using Microsoft.EntityFrameworkCore;
 global using System.ComponentModel.DataAnnotations;
 global using System.Linq.Expressions;
 global using AutoMapper;
+global using FluentValidation;
 
+global using SharedKernel.Base;
 global using CommonBE;
 global using CommonBE.Base;
 global using CommonBE.Helpers;
@@ -12,6 +14,7 @@ global using CommonBE.CustomExceptions;
 global using CommonBE.Domain.Events;
 global using CommonBE.Infrastructure.ApiMiddleware;
 
+global using NetCoreBE.Api.Application;
 global using NetCoreBE.Api.Infrastructure.Persistence;
 global using NetCoreBE.Api.Domain.Entities;
 global using Entities = NetCoreBE.Api.Domain.Entities;

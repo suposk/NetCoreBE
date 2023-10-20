@@ -1,4 +1,4 @@
-﻿namespace CommonBE.Base;
+﻿namespace SharedKernel.Base;
 
 public interface IDtoBase
 {

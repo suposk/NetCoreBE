@@ -9,6 +9,9 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreBE.Api.Domain.Entities;
 using CommonBE.Infrastructure.Interceptors;
+using NetCoreBE.Api.Infrastructure;
+using FluentValidation.AspNetCore;
+using CommonBE.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +28,16 @@ var myType = typeof(Program);
 var _namespace = myType.Namespace;
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+//Validation filter
+services.AddMvc(options =>
+{
+    options.Filters.Add(new ValidationFilter());
+})
+.AddFluentValidation(options =>
+{    
+    options.RegisterValidatorsFromAssemblyContaining<NetCoreBE.Api.Application.BaseAbstractValidator>();
+});
 
 services.AddAuthorization(options =>
 {
