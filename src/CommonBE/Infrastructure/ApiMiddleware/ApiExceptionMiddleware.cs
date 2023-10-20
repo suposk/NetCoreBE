@@ -70,10 +70,15 @@ public class ApiExceptionMiddleware
                 httpStatusCode = HttpStatusCode.Forbidden;
                 error.ApiTitle = $"{forbiddenException.Message} {ERRORText}";
                 break;
+            case DbUpdateException dbUpdateException:
+                httpStatusCode = HttpStatusCode.Conflict;
+                error.ApiTitle = $"Duplicate record or old object version. {dbUpdateException.Message} {ERRORText}";
+                break;
             case ConflictException conflictException:
                 httpStatusCode = HttpStatusCode.Conflict;
                 error.ApiTitle = $"{conflictException.Message} {ERRORText}";
                 break;
+            //
             case Exception ex:
                 httpStatusCode = HttpStatusCode.InternalServerError;
                 error.ApiTitle = $"{ex.Message} {ERRORText}";
