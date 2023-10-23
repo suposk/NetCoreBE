@@ -9,9 +9,8 @@ namespace NetCoreBE.Api.Application.TicketFeature;
 /// Best case scenario for simple CRUD API. Automatically Gets adds and maps.
 /// For more comeplex scenarios, use commands and queries.
 /// </summary>
-[Route("api/Ticket")]
-//[Route("api/v2/Ticket")]
-//[Route("api/[controller]")]
+//[Route("api/Ticket")]
+[Route("api/v1/Ticket")]
 [ApiController]
 public class TicketV1Controller : ControllerBase
 {

@@ -7,15 +7,15 @@ namespace NetCoreBE.Api.Application.TicketFeature;
 /// <summary>
 /// Most common way to do expose an API with Repository and IMapper
 /// </summary>
-//[Route("api/Ticket")]
-[Route("api/v1/Ticket")]
+[Route("api/Ticket")]
+//[Route("api/v3/Ticket")]
 [ApiController]
-public class TicketV2Controller : ControllerBase
+public class TicketV3Controller : ControllerBase
 {
-    private readonly ITicketRepository _repository;
+    private readonly ITicketRepositoryCtx _repository;
     private readonly IMapper _mapper;
 
-    public TicketV2Controller(ITicketRepository repository, IMapper mapper)
+    public TicketV3Controller(ITicketRepositoryCtx repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;
