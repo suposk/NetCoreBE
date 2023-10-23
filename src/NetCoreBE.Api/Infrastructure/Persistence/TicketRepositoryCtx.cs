@@ -5,6 +5,7 @@
         Task<List<Ticket>> Seed(int count, int? max, string UserId = "Seed");
     }
 
+    //public class TicketRepositoryCtx : ApiBaseRepositoryCtx<Ticket, ApiDbContext>, ITicketRepositoryCtx
     public class TicketRepositoryCtx : RepositoryCtx<Ticket, ApiDbContext>, ITicketRepositoryCtx
     {
         private readonly IRepositoryCtx<Ticket, ApiDbContext> _repository;        
