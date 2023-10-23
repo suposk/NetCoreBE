@@ -1,12 +1,12 @@
 ﻿namespace NetCoreBE.Api.Application.TicketFeature;
 
-public interface ITicketLogic : IDomainLogicBase<Ticket, TicketDto>
+public interface ITicketLogic : IDomainLogicBase<Ticket, TicketDto>, ITicketRepository
 {
 }
 
 public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
 {
-    private readonly IRepository<Ticket> _repository;
+    private readonly ITicketRepository _repository;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
@@ -15,10 +15,10 @@ public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
         IApiIdentity apiIdentity,
         IDateTimeService dateTimeService,
         IMapper mapper,
-        IRepository<Ticket> repository,
+        ITicketRepository repository,
         IMediator mediator
         )
-        : base(context, apiIdentity, dateTimeService, mapper)
+        : base(context, apiIdentity, dateTimeService, mapper, repository)
     {
         _repository = repository;
         _mediator = mediator;
@@ -35,4 +35,5 @@ public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
         return await base.GetListLogic();
     }
 
+    public Task<List<Ticket>> Seed(int count, int? max, string UserId = "Seed") => _repository.Seed(count, max, UserId);
 }

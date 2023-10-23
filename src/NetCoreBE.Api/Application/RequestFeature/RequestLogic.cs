@@ -1,6 +1,6 @@
 ﻿namespace NetCoreBE.Api.Application.RequestFeature;
 
-public interface IRequestLogic : IDomainLogicBase<Request, RequestDto>
+public interface IRequestLogic : IDomainLogicBase<Request, RequestDto>, IRequestRepository
 {
     Task<RequestHistory> AddHistory(RequestHistory add);
 }
@@ -22,7 +22,7 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
         IMediator mediator,
         IRepository<RequestHistory> repositoryRequestHistory
         )
-        : base(context, apiIdentity, dateTimeService, mapper)
+        : base(context, apiIdentity, dateTimeService, mapper, repository)
     {
         _repository = repository;
         _repositoryRequestHistory = repositoryRequestHistory;
@@ -89,4 +89,5 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
         return false;
     }
 
+    public Task<List<Request>> Seed(int count, int? max, string UserId = "Seed") => _repository.Seed(count, max, UserId);
 }

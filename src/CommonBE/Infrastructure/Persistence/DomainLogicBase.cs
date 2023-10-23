@@ -40,18 +40,26 @@ public interface IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase
 /// TODO not done
 /// </summary>
 /// <typeparam name="Entity"></typeparam>
-public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase where TDto : IDtoBase
+public class DomainLogicBase<TEntity, TDto> : IRepository<TEntity>, IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase where TDto : IDtoBase
 {
-    public DomainLogicBase(DbContext context, IApiIdentity apiIdentity, IDateTimeService dateTimeService, IMapper mapper) : base(context, apiIdentity, dateTimeService)
+    public DomainLogicBase(DbContext context, IApiIdentity apiIdentity, IDateTimeService dateTimeService, IMapper mapper, IRepository<TEntity> repository)
     {
+        DatabaseContext = context;
+        ApiIdentity = apiIdentity;
+        DateTimeService = dateTimeService;
         Mapper = mapper;
+        Repository = repository;
     }
 
+    public IApiIdentity ApiIdentity { get; }
+    public IDateTimeService DateTimeService { get; }
     public IMapper Mapper { get; }
+    public IRepository<TEntity> Repository { get; }
+    public DbContext DatabaseContext { get; }
 
     public virtual async Task<List<TDto>> GetListLogic()
     {
-        var repo = await GetList().ConfigureAwait(false);
+        var repo = await Repository.GetList().ConfigureAwait(false);
         return repo == null ? default(List<TDto>) : Mapper.Map<List<TDto>>(repo);
     }
 
@@ -59,7 +67,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
     {
         if (id.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(id)} {nameof(GetIdLogic)}");
-        var repo = await GetId(id).ConfigureAwait(false);
+        var repo = await Repository.GetId(id).ConfigureAwait(false);
         //return repo == null ? default(TDto) : Mapper.Map<TDto>(repo);
         return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<TDto>(repo);
     }
@@ -67,7 +75,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
     public virtual async Task<TDto> AddAsyncLogic(TDto dto)
     {
         if (dto.IsNotNullValidIdExt())
-            throw new BadRequestException($"{nameof(dto)} {nameof(AddAsync)}");
+            throw new BadRequestException($"{nameof(dto)} {nameof(AddAsyncLogic)}");
         var repoObj = Mapper.Map<TEntity>(dto);
 
         await AddAsyncLogicEntity(repoObj);
@@ -80,7 +88,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         if (entity == null)
             throw new BadRequestException($"{nameof(entity)} {nameof(AddAsyncLogicEntity)}");
         entity.AddDomainEvent(new CreatedEvent<TEntity>(entity));
-        await AddAsync(entity, entity.CreatedBy);
+        await Repository.AddAsync(entity, entity.CreatedBy);
         return entity;
     }
 
@@ -101,7 +109,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         if (entity.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(entity)} {nameof(UpdateAsyncLogicEntity)}");
 
-        var repoObj = await GetId(entity.Id.ToString()).ConfigureAwait(false);
+        var repoObj = await Repository.GetId(entity.Id.ToString()).ConfigureAwait(false);
         if (repoObj == null)
             throw new NotFoundException($"{nameof(entity)} {nameof(UpdateAsyncLogicEntity)}", entity.Id);
 
@@ -109,7 +117,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
         {
             entity.AddDomainEvent(new UpdatedEvent<TEntity>(entity));
-            await UpdateAsync(repoObj);
+            await Repository.UpdateAsync(repoObj);
             return repoObj;
         }
         return null;
@@ -137,7 +145,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
             if (await CanModify(entity, CanModifyFunc).ConfigureAwait(false))
             {
                 entity.AddDomainEvent(new UpdatedEvent<TEntity>(entity));
-                await UpdateAsync(entity);
+                await Repository.UpdateAsync(entity);
             }
             else
                 return null;
@@ -145,7 +153,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         else
         {
             entity.AddDomainEvent(new CreatedEvent<TEntity>(entity));
-            await AddAsync(entity, entity.CreatedBy);
+            await Repository.AddAsync(entity, entity.CreatedBy);
         }
         return entity;               
     }
@@ -155,15 +163,15 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         if (id.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(id)} {nameof(RemoveAsyncLogic)}");
 
-        var repoObj = await GetId(id).ConfigureAwait(false);
+        var repoObj = await Repository.GetId(id).ConfigureAwait(false);
         if (repoObj == null)
             throw new NotFoundException($"{nameof(RemoveAsyncLogic)}", id);
 
         if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
         {
-            Remove(repoObj);
+            Repository.Remove(repoObj);
             repoObj.AddDomainEvent(new DeletedEvent<TEntity>(repoObj));
-            if (await SaveChangesAsync())
+            if (await Repository.SaveChangesAsync())
                 return true;
         }
         return false;
@@ -210,4 +218,29 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
             return Task.FromResult(true);
         }
     }
+
+    #region Decorator Methods Impementation
+
+    public Task<TEntity> GetId(string id) => Repository.GetId(id);
+    public Task<List<TEntity>> GetList() => Repository.GetList();
+    public void Add(TEntity entity, string UserId = null) => Repository.Add(entity, UserId);
+    public void AddRange(IEnumerable<TEntity> entitys, string UserId = null) => Repository.AddRange(entitys, UserId);
+    public void Remove(TEntity entity, string UserId = null) => Repository.Remove(entity, UserId);
+    public void Update(TEntity entity, string UserId = null) => Repository.Update(entity, UserId);
+    public Task<TEntity> AddAsync(TEntity entity, string UserId = null) => Repository.AddAsync(entity, UserId);
+    public Task<TEntity> UpdateAsync(TEntity entity, string UserId = null) => Repository.UpdateAsync(entity, UserId);
+    public Task<bool> SaveChangesAsync() => Repository.SaveChangesAsync();
+    public Task<TEntity> GetFilter(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes)
+        => Repository.GetFilter(expression, includes);
+    public Task<TEntity> GetFilter(Expression<Func<TEntity, bool>> expression) => Repository.GetFilter(expression);
+    public Task<List<TEntity>> GetListFilter(Expression<Func<TEntity, bool>> expression) => Repository.GetListFilter(expression);
+    public Task<List<TEntity>> GetListFilter(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes)
+        => Repository.GetListFilter(expression, includes);
+    public void ResetAtByUser(TEntity entity) => Repository.ResetAtByUser(entity);
+    public Task<int> CountAsync() => Repository.CountAsync();
+    public Task<bool> RemoveAsync(string Id, string UserId = null) => Repository.RemoveAsync(Id, UserId);
+    public Task<List<EntitySoftDeleteBase>> GetListActive(params Expression<Func<EntitySoftDeleteBase, object>>[] includes)
+        => Repository.GetListActive(includes);
+
+    #endregion
 }
