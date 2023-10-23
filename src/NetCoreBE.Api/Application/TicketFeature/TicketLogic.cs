@@ -1,24 +1,21 @@
-﻿using CommonBE.Infrastructure.Persistence;
-using Contracts.Dtos;
+﻿namespace NetCoreBE.Api.Application.TicketFeature;
 
-namespace NetCoreBE.Api.Application.Features.Ticket;
-
-public interface ITicketLogic : IDomainLogicBase<Entities.Ticket, TicketDto>
+public interface ITicketLogic : IDomainLogicBase<Ticket, TicketDto>
 {
 }
 
-public class TicketLogic : DomainLogicBase<Entities.Ticket, TicketDto>, ITicketLogic
+public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
 {
-    private readonly IRepository<Entities.Ticket> _repository;
+    private readonly IRepository<Ticket> _repository;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
     public TicketLogic(
         DbContext context,
-        IApiIdentity apiIdentity, 
-        IDateTimeService dateTimeService, 
-        IMapper mapper, 
-        IRepository<Entities.Ticket> repository,
+        IApiIdentity apiIdentity,
+        IDateTimeService dateTimeService,
+        IMapper mapper,
+        IRepository<Ticket> repository,
         IMediator mediator
         )
         : base(context, apiIdentity, dateTimeService, mapper)

@@ -3,9 +3,9 @@
 
 using System.Diagnostics;
 
-namespace NetCoreBE.Api.Application.Features.Ticket.EventHandlers;
+namespace NetCoreBE.Api.Application.TicketFeature.EventHandlers;
 
-public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Entities.Ticket>>
+public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Ticket>>
 {
     private readonly ILogger<RequestCreatedEventHandler> _logger;
     private readonly Stopwatch _timer;
@@ -18,7 +18,7 @@ public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Enti
         _timer = new Stopwatch();
     }
 
-    public async Task Handle(CreatedEvent<Entities.Ticket> notification, CancellationToken cancellationToken)
+    public async Task Handle(CreatedEvent<Ticket> notification, CancellationToken cancellationToken)
     {
         _timer.Start();
         await Task.Delay(5000, cancellationToken);

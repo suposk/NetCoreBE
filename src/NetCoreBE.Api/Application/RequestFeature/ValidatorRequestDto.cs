@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Api.Application.Features.Ticket;
+﻿namespace NetCoreBE.Api.Application.RequestFeature;
 
 public class ValidatorRequestDto : AbstractValidator<RequestDto>
 {

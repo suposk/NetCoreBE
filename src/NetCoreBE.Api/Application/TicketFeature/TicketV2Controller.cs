@@ -1,9 +1,8 @@
-﻿using Contracts.Dtos;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace NetCoreBE.Api.Application.Features.Ticket;
+namespace NetCoreBE.Api.Application.TicketFeature;
 
 /// <summary>
 /// Most common way to do expose an API with Repository and IMapper
@@ -34,7 +33,7 @@ public class TicketV2Controller : ControllerBase
     public async Task<ActionResult<TicketDto>> Get(string id)
     {
         var res = await _repository.GetId(id).ConfigureAwait(false);
-        return res == null ? NotFound() : Ok(_mapper.Map<TicketDto>(res));        
+        return res == null ? NotFound() : Ok(_mapper.Map<TicketDto>(res));
     }
 
     [HttpPost]
@@ -43,7 +42,7 @@ public class TicketV2Controller : ControllerBase
         if (dto == null || dto.Id == Guid.Empty)
             return BadRequest();
 
-        var repoObj = _mapper.Map<Entities.Ticket>(dto);
+        var repoObj = _mapper.Map<Ticket>(dto);
         var res = await _repository.AddAsync(repoObj, UserId: repoObj?.CreatedBy).ConfigureAwait(false);
         if (res == null)
             return StatusCode(StatusCodes.Status500InternalServerError, $"{nameof(Post)} Failed.");
@@ -54,7 +53,7 @@ public class TicketV2Controller : ControllerBase
 
 #if DEBUG
     [HttpPost("Seed/{count}")]
-    public async Task<ActionResult<List<Entities.Ticket>>> Seed(int count)
+    public async Task<ActionResult<List<Ticket>>> Seed(int count)
     {
         var res = await _repository.Seed(count, null, "SEED API").ConfigureAwait(false);
         return res;
@@ -71,7 +70,7 @@ public class TicketV2Controller : ControllerBase
         if (repoObj == null)
             return BadRequest($"{nameof(Put)} {dto.Id} not Found");
 
-        repoObj = _mapper.Map<Entities.Ticket>(dto);
+        repoObj = _mapper.Map<Ticket>(dto);
         var res = await _repository.UpdateAsync(repoObj);
         if (await _repository.SaveChangesAsync())
             return Ok(res);

@@ -19,9 +19,10 @@ global using CommonBE.Infrastructure.ApiMiddleware;
 
 
 global using NetCoreBE.Api.Application;
+global using CommonBE.Infrastructure.Persistence;
 global using NetCoreBE.Api.Infrastructure.Persistence;
 global using NetCoreBE.Api.Domain.Entities;
 global using Entities = NetCoreBE.Api.Domain.Entities;
 global using NetCoreBE.Api.Domain.Events;
-global using NetCoreBE.Api.Application.Features.Ticket;
-global using NetCoreBE.Api.Application.Features.Request;
+global using NetCoreBE.Api.Application.RequestFeature;
+global using NetCoreBE.Api.Application.TicketFeature;

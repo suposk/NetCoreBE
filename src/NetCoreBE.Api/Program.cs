@@ -7,7 +7,6 @@ using Microsoft.Identity.Web;
 using NetCoreBE.Api.Infrastructure.Persistence;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using NetCoreBE.Api.Domain.Entities;
 using CommonBE.Infrastructure.Interceptors;
 using NetCoreBE.Api.Infrastructure;
 using FluentValidation.AspNetCore;

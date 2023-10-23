@@ -1,13 +1,11 @@
-﻿using CommonBE.Infrastructure.Persistence;
+﻿namespace NetCoreBE.Api.Application.RequestFeature;
 
-namespace NetCoreBE.Api.Application.Features.Request;
-
-public interface IRequestLogic : IDomainLogicBase<Entities.Request, RequestDto>
+public interface IRequestLogic : IDomainLogicBase<Request, RequestDto>
 {
     Task<RequestHistory> AddHistory(RequestHistory add);
 }
 
-public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequestLogic
+public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
 {
     private readonly IRequestRepository _repository;
     private readonly IRepository<RequestHistory> _repositoryRequestHistory;
@@ -17,10 +15,10 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
 
     public RequestLogic(
         DbContext context,
-        IApiIdentity apiIdentity, 
-        IDateTimeService dateTimeService, 
+        IApiIdentity apiIdentity,
+        IDateTimeService dateTimeService,
         IMapper mapper,
-        IRequestRepository repository,        
+        IRequestRepository repository,
         IMediator mediator,
         IRepository<RequestHistory> repositoryRequestHistory
         )
@@ -39,15 +37,15 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
         return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(repo);
     }
 
-    public override Task<Entities.Request> AddAsyncLogicEntity(Entities.Request entity)
+    public override Task<Request> AddAsyncLogicEntity(Request entity)
     {
         if (entity == null)
             throw new BadRequestException($"{nameof(entity)} {nameof(AddAsyncLogicEntity)}");
         entity.AddInitialHistory();
-        entity.Status = "Active";        
-        entity.AddDomainEvent(new CreatedEvent<Entities.Request>(entity));
+        entity.Status = "Active";
+        entity.AddDomainEvent(new CreatedEvent<Request>(entity));
         return AddAsync(entity);
-    }     
+    }
 
     public async Task<RequestHistory> AddHistory(RequestHistory add)
     {
@@ -58,7 +56,7 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
         var repo = await _repository.GetId(add.RequestId).ConfigureAwait(false);
         if (repo == null)
             throw new NotFoundException($"{nameof(AddHistory)} add", add);
-        
+
         if (repo.Status == "Closed")
             return default; //already closed, open a new request
 
@@ -78,12 +76,12 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
         if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
         {
             Remove(repoObj);
-            repoObj.AddDomainEvent(new DeletedEvent<Entities.Request>(repoObj));
-            foreach(var his in repoObj.RequestHistoryList)
+            repoObj.AddDomainEvent(new DeletedEvent<Request>(repoObj));
+            foreach (var his in repoObj.RequestHistoryList)
             {
                 //_context?.RequestHistorys.Remove(his);
                 _repositoryRequestHistory.Remove(his);
-                his.AddDomainEvent(new DeletedEvent<Entities.RequestHistory>(his));
+                his.AddDomainEvent(new DeletedEvent<RequestHistory>(his));
             }
             if (await _repository.SaveChangesAsync())
                 return true;

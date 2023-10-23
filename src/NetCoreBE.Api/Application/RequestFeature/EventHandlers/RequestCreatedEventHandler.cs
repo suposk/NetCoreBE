@@ -3,9 +3,9 @@
 
 using System.Diagnostics;
 
-namespace NetCoreBE.Api.Application.Features.Request.EventHandlers;
+namespace NetCoreBE.Api.Application.RequestFeature.EventHandlers;
 
-public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Entities.Request>>
+public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Request>>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<RequestCreatedEventHandler> _logger;
@@ -21,7 +21,7 @@ public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Enti
         _timer = new Stopwatch();
     }
 
-    public async Task Handle(CreatedEvent<Entities.Request> notification, CancellationToken cancellationToken)
+    public async Task Handle(CreatedEvent<Request> notification, CancellationToken cancellationToken)
     {
         try
         {
