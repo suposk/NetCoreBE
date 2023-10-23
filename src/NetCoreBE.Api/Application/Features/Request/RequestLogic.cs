@@ -81,7 +81,8 @@ public class RequestLogic : DomainLogicBase<Entities.Request, RequestDto>, IRequ
             repoObj.AddDomainEvent(new DeletedEvent<Entities.Request>(repoObj));
             foreach(var his in repoObj.RequestHistoryList)
             {
-                _context?.RequestHistorys.Remove(his);
+                //_context?.RequestHistorys.Remove(his);
+                _repositoryRequestHistory.Remove(his);
                 his.AddDomainEvent(new DeletedEvent<Entities.RequestHistory>(his));
             }
             if (await _repository.SaveChangesAsync())

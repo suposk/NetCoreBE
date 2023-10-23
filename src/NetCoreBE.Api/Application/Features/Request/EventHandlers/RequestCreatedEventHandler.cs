@@ -34,6 +34,7 @@ public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Enti
                 RequestId = notification.Entity.Id,
                 Operation = "Confirmed",
                 Details = $"Email sent to {notification.Entity.CreatedBy} for request {notification.Entity.Id}",
+                CreatedBy = $"{nameof(RequestCreatedEventHandler)}",
             };
             //must use IServiceScopeFactory. context is already disposed.
             var _logic = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IRequestLogic>();
