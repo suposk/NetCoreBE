@@ -6,6 +6,7 @@ global using System.Text;
 global using System.Text.RegularExpressions;
 global using System.Linq.Expressions;
 
+global using SharedKernel.Base;
 global using CommonBE;
 global using CommonBE.Base;
 global using CommonBE.Helpers;

@@ -1,7 +1,9 @@
 ﻿//API
 Add-Migration Init -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlServer
+Add-Migration SoftDel -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlServer
+Add-Migration RequestHistory -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlServer
 
-Add-Migration Init1 -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlLite
+Add-Migration InitLite -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlLite
 
 Update-Database -Context ApiDbContext
 Remove-Migration -Context ApiDbContext

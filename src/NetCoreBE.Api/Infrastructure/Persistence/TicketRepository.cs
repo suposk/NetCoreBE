@@ -1,13 +1,11 @@
-﻿using CommonBE.Infrastructure.Persistence;
-
-namespace NetCoreBE.Api.Infrastructure.Persistence
+﻿namespace NetCoreBE.Api.Infrastructure.Persistence
 {
-    public interface ITicketRepository : IRepository<Entities.Ticket>
+    public interface ITicketRepository : IRepository<Ticket>
     {
-        Task<List<Entities.Ticket>> Seed(int count, int? max, string UserId = "Seed");
+        Task<List<Ticket>> Seed(int count, int? max, string UserId = "Seed");
     }
 
-    public class TicketRepository : Repository<Entities.Ticket>, ITicketRepository
+    public class TicketRepository : Repository<Ticket>, ITicketRepository
     {
         private readonly IRepository<Ticket> _repository;
         private ApiDbContext _context;
@@ -20,10 +18,7 @@ namespace NetCoreBE.Api.Infrastructure.Persistence
 
         public override Task<List<Ticket>> GetList()
         {
-            //return base.GetList();
-            //var exist = await _repository.GetFilter(a => a.VersionFull == version);
-            //var q = _context.AppVersions.Where(e => !_context.AppVersions.Any(e2 => e2.VersionValue > e.VersionValue));
-            //return _repository.GetListFilter(a => a.IsDeleted != true);
+            //return _repository.GetListFilter(a => a.IsDeleted != true); //for soft delete
             return _repository.GetList();
         }
 
@@ -46,11 +41,7 @@ namespace NetCoreBE.Api.Infrastructure.Persistence
                     IsOnBehalf = i % 2 == 0,
                 };
                 if (countExisintg == 0)
-                {
-                    ticket.Id = Guid.Empty.ToString();
-                    ticket.Id = ticket.Id.Remove(0, i.ToString().Length);
-                    ticket.Id = ticket.Id.Insert(0, i.ToString());
-                }
+                    ticket.Id = i.GetSimpleGuidString();
                 list.Add(ticket);
             }
             _repository.AddRange(list, UserId);

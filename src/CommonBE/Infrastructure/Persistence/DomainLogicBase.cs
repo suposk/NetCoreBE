@@ -60,7 +60,8 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         if (id.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(id)} {nameof(GetIdLogic)}");
         var repo = await GetId(id).ConfigureAwait(false);
-        return repo == null ? default(TDto) : Mapper.Map<TDto>(repo);
+        //return repo == null ? default(TDto) : Mapper.Map<TDto>(repo);
+        return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<TDto>(repo);
     }
 
     public virtual async Task<TDto> AddAsyncLogic(TDto dto)

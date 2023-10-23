@@ -24,6 +24,7 @@ public interface IRepository<TModel> where TModel : class
 
     Task<int> CountAsync();
     Task<bool> RemoveAsync(string Id, string UserId = null);
+    Task<List<EntitySoftDeleteBase>> GetListActive(params Expression<Func<EntitySoftDeleteBase, object>>[] includes);
 }
 
 
@@ -60,7 +61,7 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         DatabaseContext.Set<TModel>().AddRange(entitys);
     }
 
-    private void SetAddProperties(TModel entity, string UserId)
+    public virtual void SetAddProperties(TModel entity, string UserId)
     {
         //if (entity.Id != 0)
         //    throw new ArgumentException($"Id {entity.Id} can not be set while add operation.");        
@@ -154,12 +155,19 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     {
         DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
         IQueryable<TModel> query = null;
-        foreach (var includeExpression in includes)
-        {
-            query = dbSet.Include(includeExpression);
-        }
+        foreach (var includeExpression in includes)        
+            query = dbSet.Include(includeExpression);       
+        return query.AsNoTracking().Where(expression).ToListAsync();
+    }
 
-        return query.Where(expression).ToListAsync();
+    public virtual Task<List<EntitySoftDeleteBase>> GetListActive(params Expression<Func<EntitySoftDeleteBase, object>>[] includes)
+    {
+        DbSet<EntitySoftDeleteBase> dbSet = DatabaseContext.Set<EntitySoftDeleteBase>();
+        IQueryable<EntitySoftDeleteBase> query = dbSet;
+        foreach (var includeExpression in includes)        
+            query = dbSet.Include(includeExpression);
+        query = query.Where(a => a.IsDeleted != true);
+        return query.AsNoTracking().ToListAsync();
     }
 
     public virtual async Task<bool> SaveChangesAsync()
