@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
 {
     /// <inheritdoc />
-    public partial class RequestHistory : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,6 +28,25 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Requests", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tickets",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    RequestedFor = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    IsOnBehalf = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tickets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,6 +107,21 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
                 name: "IX_Requests_Id",
                 table: "Requests",
                 column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_CreatedAt",
+                table: "Tickets",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_CreatedBy",
+                table: "Tickets",
+                column: "CreatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_Id",
+                table: "Tickets",
+                column: "Id");
         }
 
         /// <inheritdoc />
@@ -95,6 +129,9 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
         {
             migrationBuilder.DropTable(
                 name: "RequestHistorys");
+
+            migrationBuilder.DropTable(
+                name: "Tickets");
 
             migrationBuilder.DropTable(
                 name: "Requests");

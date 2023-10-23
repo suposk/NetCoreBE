@@ -1,6 +1,4 @@
-﻿using CommonBE.Infrastructure.Persistence;
-
-namespace NetCoreBE.Api.Infrastructure.Persistence
+﻿namespace NetCoreBE.Api.Infrastructure.Persistence
 {
     public interface ITicketRepository : IRepository<Ticket>
     {
@@ -20,8 +18,8 @@ namespace NetCoreBE.Api.Infrastructure.Persistence
 
         public override Task<List<Ticket>> GetList()
         {
-            return _repository.GetListFilter(a => a.IsDeleted != true);
-            //return _repository.GetList();
+            //return _repository.GetListFilter(a => a.IsDeleted != true); //for soft delete
+            return _repository.GetList();
         }
 
         public async Task<List<Ticket>> Seed(int count, int? max, string UserId = "Seed")

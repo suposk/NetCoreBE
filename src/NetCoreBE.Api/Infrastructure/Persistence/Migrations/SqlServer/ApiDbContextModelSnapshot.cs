@@ -137,13 +137,6 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsOnBehalf")
                         .HasColumnType("bit");
 

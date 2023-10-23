@@ -1,7 +1,7 @@
 ﻿namespace NetCoreBE.Api.Domain.Entities;
 
-public class Ticket : EntitySoftDeleteBase
-//public class Ticket : EntityBase
+//public class Ticket : EntitySoftDeleteBase
+public class Ticket : EntityBase
 {
     [MaxLength(1000)]
     public string? Description { get; set; }

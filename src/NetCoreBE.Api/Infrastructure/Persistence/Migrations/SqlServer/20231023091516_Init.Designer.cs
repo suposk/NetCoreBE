@@ -12,8 +12,8 @@ using NetCoreBE.Api.Infrastructure.Persistence;
 namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20231019124838_RequestHistory")]
-    partial class RequestHistory
+    [Migration("20231023091516_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -139,13 +139,6 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsOnBehalf")
                         .HasColumnType("bit");
