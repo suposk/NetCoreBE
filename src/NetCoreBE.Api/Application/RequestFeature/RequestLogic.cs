@@ -65,7 +65,7 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
 
     public async override Task<bool> RemoveAsyncLogic(string id, bool saveChanges = true)
     {
-        if(await base.RemoveAsyncLogic(id, false))
+        if(await base.RemoveAsyncLogic(id, saveChanges: false))
         {
             var repoObj = await _repository.GetId(id).ConfigureAwait(false);
             foreach (var his in repoObj.RequestHistoryList)
