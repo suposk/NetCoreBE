@@ -44,7 +44,13 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
         entity.AddInitialHistory();
         entity.Status = "Active";
         entity.AddDomainEvent(new CreatedEvent<Request>(entity));
-        return AddAsync(entity);
+        if (saveChanges)
+            return AddAsync(entity, entity.CreatedBy);
+        else
+        {
+            Add(entity, entity.CreatedBy);
+            return Task.FromResult(entity);
+        }
     }
 
     public async Task<RequestHistory> AddHistory(RequestHistory add)
