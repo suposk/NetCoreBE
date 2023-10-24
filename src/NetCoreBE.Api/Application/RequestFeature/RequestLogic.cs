@@ -43,14 +43,7 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
             throw new BadRequestException($"{nameof(entity)} {nameof(AddAsyncLogicEntity)}");
         entity.AddInitialHistory();
         entity.Status = "Active";
-        entity.AddDomainEvent(new CreatedEvent<Request>(entity));
-        if (saveChanges)
-            return AddAsync(entity, entity.CreatedBy);
-        else
-        {
-            Add(entity, entity.CreatedBy);
-            return Task.FromResult(entity);
-        }
+        return base.AddAsyncLogicEntity(entity, saveChanges);
     }
 
     public async Task<RequestHistory> AddHistory(RequestHistory add)
