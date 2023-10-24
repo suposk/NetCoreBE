@@ -37,7 +37,7 @@ public class RequestModule : CarterModule
         app.MapDelete("/{id}", async (string id, IRequestLogic _logic) =>
         {
             var res = await _logic.RemoveAsyncLogic(id).ConfigureAwait(false);
-            return res ? Results.NoContent() : Results.Problem($"Delete {id} Failed.");
+            return res ? Results.NoContent() : Results.Problem($"Delete {id} Failed.", ToString(), StatusCodes.Status500InternalServerError);
         });
     }
 }
