@@ -37,7 +37,7 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
         return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(repo);
     }
 
-    public override Task<Request> AddAsyncLogicEntity(Request entity)
+    public override Task<Request> AddAsyncLogicEntity(Request entity, bool saveChanges = true)
     {
         if (entity == null)
             throw new BadRequestException($"{nameof(entity)} {nameof(AddAsyncLogicEntity)}");
@@ -64,27 +64,19 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
         return add;
     }
 
-    public async override Task<bool> RemoveAsyncLogic(string id)
+    public async override Task<bool> RemoveAsyncLogic(string id, bool saveChanges = true)
     {
-        if (id.IsNotNullValidIdExt())
-            throw new BadRequestException($"{nameof(id)} {nameof(RemoveAsyncLogic)}");
-
-        var repoObj = await _repository.GetId(id).ConfigureAwait(false);
-        if (repoObj == null)
-            throw new NotFoundException($"{nameof(RemoveAsyncLogic)}", id);
-
-        if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
+        if(await base.RemoveAsyncLogic(id, false))
         {
-            Remove(repoObj);
-            repoObj.AddDomainEvent(new DeletedEvent<Request>(repoObj));
+            var repoObj = await _repository.GetId(id).ConfigureAwait(false);
             foreach (var his in repoObj.RequestHistoryList)
-            {
-                //_context?.RequestHistorys.Remove(his);
+            {                
                 _repositoryRequestHistory.Remove(his);
                 his.AddDomainEvent(new DeletedEvent<RequestHistory>(his));
             }
-            if (await _repository.SaveChangesAsync())
+            if (!saveChanges || await _repository.SaveChangesAsync())
                 return true;
+
         }
         return false;
     }
