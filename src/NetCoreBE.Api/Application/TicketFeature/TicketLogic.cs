@@ -6,16 +6,17 @@ public interface ITicketLogic : IDomainLogicBase<Ticket, TicketDto>
 
 public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
 {
-    private readonly IRepository<Ticket> _repository;
-    private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
+    //private readonly IRepository<Ticket> _repository;
+    private readonly ITicketRepository _repository;
+    private readonly IMediator _mediator;    
 
     public TicketLogic(
         DbContext context,
         IApiIdentity apiIdentity,
         IDateTimeService dateTimeService,
         IMapper mapper,
-        IRepository<Ticket> repository,
+        //IRepository<Ticket> repository, //ok use generic IRepository if no custom logic needed
+        ITicketRepository repository,
         IMediator mediator
         )
         : base(context, apiIdentity, dateTimeService, mapper)

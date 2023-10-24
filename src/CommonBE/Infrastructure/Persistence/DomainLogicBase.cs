@@ -6,33 +6,33 @@ public interface IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase
 {
     IMapper Mapper { get; }
 
-    Task<TDto> AddAsyncLogic(TDto dto);
+    Task<TDto> AddAsyncLogic(TDto dto, bool saveChanges = true);
 
     /// <summary>
     /// /// May not be needed
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
-    Task<TEntity> AddAsyncLogicEntity(TEntity entity);
-    Task<TDto> AddOrUpdateAsyncLogic(TDto dto);
+    Task<TEntity> AddAsyncLogicEntity(TEntity entity, bool saveChanges = true);
+    Task<TDto> AddOrUpdateAsyncLogic(TDto dto, bool saveChanges = true);
 
     /// <summary>
     /// May not be needed
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
-    Task<TEntity> AddOrUpdateAsyncLogicEntity(TEntity entity);
+    Task<TEntity> AddOrUpdateAsyncLogicEntity(TEntity entity, bool saveChanges = true);
     Task<TDto> GetIdLogic(string id);
     Task<List<TDto>> GetListLogic();
-    Task<bool> RemoveAsyncLogic(string id);
-    Task<TDto> UpdateAsyncLogic(TDto dto);
+    Task<bool> RemoveAsyncLogic(string id, bool saveChanges = true);
+    Task<TDto> UpdateAsyncLogic(TDto dto, bool saveChanges = true);
 
     /// <summary>
     /// /// May not be needed
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
-    Task<TEntity> UpdateAsyncLogicEntity(TEntity entity);
+    Task<TEntity> UpdateAsyncLogicEntity(TEntity entity, bool saveChanges = true);
 }
 
 
@@ -64,39 +64,42 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<TDto>(repo);
     }
 
-    public virtual async Task<TDto> AddAsyncLogic(TDto dto)
+    public virtual async Task<TDto> AddAsyncLogic(TDto dto, bool saveChanges = true)
     {
         if (dto.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(dto)} {nameof(AddAsync)}");
         var repoObj = Mapper.Map<TEntity>(dto);
 
-        await AddAsyncLogicEntity(repoObj);
+        await AddAsyncLogicEntity(repoObj, saveChanges);
         var result = Mapper.Map<TDto>(repoObj);
         return result;
     }
 
-    public virtual async Task<TEntity> AddAsyncLogicEntity(TEntity entity)
+    public virtual async Task<TEntity> AddAsyncLogicEntity(TEntity entity, bool saveChanges = true)
     {
         if (entity == null)
             throw new BadRequestException($"{nameof(entity)} {nameof(AddAsyncLogicEntity)}");
         entity.AddDomainEvent(new CreatedEvent<TEntity>(entity));
-        await AddAsync(entity, entity.CreatedBy);
+        if (saveChanges)
+            await AddAsync(entity, entity.CreatedBy);
+        else
+            Add(entity, entity.CreatedBy);
         return entity;
     }
 
-    public virtual async Task<TDto> UpdateAsyncLogic(TDto dto)
+    public virtual async Task<TDto> UpdateAsyncLogic(TDto dto, bool saveChanges = true)
     {
         if (dto.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(dto)} {nameof(UpdateAsyncLogic)}");
 
         var repoObj = Mapper.Map<TEntity>(dto);
-        repoObj = await UpdateAsyncLogicEntity(repoObj);
+        repoObj = await UpdateAsyncLogicEntity(repoObj, saveChanges);
         if (repoObj != null)        
             return Mapper.Map<TDto>(repoObj);                    
         return default(TDto);
     }
 
-    public virtual async Task<TEntity> UpdateAsyncLogicEntity(TEntity entity)
+    public virtual async Task<TEntity> UpdateAsyncLogicEntity(TEntity entity, bool saveChanges = true)
     {
         if (entity.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(entity)} {nameof(UpdateAsyncLogicEntity)}");
@@ -109,25 +112,28 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
         {
             entity.AddDomainEvent(new UpdatedEvent<TEntity>(entity));
-            await UpdateAsync(repoObj);
+            if (saveChanges)
+                await UpdateAsync(repoObj);
+            else
+                Update(repoObj);
             return repoObj;
         }
         return null;
     }
 
-    public virtual async Task<TDto> AddOrUpdateAsyncLogic(TDto dto)
+    public virtual async Task<TDto> AddOrUpdateAsyncLogic(TDto dto, bool saveChanges = true)
     {
         if (dto.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(dto)} {nameof(AddOrUpdateAsyncLogic)}");
 
         var repoObj = Mapper.Map<TEntity>(dto);
-        repoObj = await AddOrUpdateAsyncLogicEntity(repoObj);
+        repoObj = await AddOrUpdateAsyncLogicEntity(repoObj, saveChanges);
         if (repoObj != null)
             return Mapper.Map<TDto>(repoObj);
         return default(TDto);
     }
 
-    public virtual async Task<TEntity> AddOrUpdateAsyncLogicEntity(TEntity entity)
+    public virtual async Task<TEntity> AddOrUpdateAsyncLogicEntity(TEntity entity, bool saveChanges = true)
     {
         if (entity.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(entity)} {nameof(AddOrUpdateAsyncLogicEntity)}");
@@ -137,7 +143,10 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
             if (await CanModify(entity, CanModifyFunc).ConfigureAwait(false))
             {
                 entity.AddDomainEvent(new UpdatedEvent<TEntity>(entity));
-                await UpdateAsync(entity);
+                if (saveChanges)
+                    await UpdateAsync(entity);
+                else
+                    Update(entity);                
             }
             else
                 return null;
@@ -145,12 +154,15 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         else
         {
             entity.AddDomainEvent(new CreatedEvent<TEntity>(entity));
-            await AddAsync(entity, entity.CreatedBy);
+            if (saveChanges)
+                await AddAsync(entity, entity.CreatedBy);
+            else
+                Add(entity, entity.CreatedBy);
         }
         return entity;               
     }
 
-    public virtual async Task<bool> RemoveAsyncLogic(string id)
+    public virtual async Task<bool> RemoveAsyncLogic(string id, bool saveChanges = true)
     {
         if (id.IsNotNullValidIdExt())
             throw new BadRequestException($"{nameof(id)} {nameof(RemoveAsyncLogic)}");
@@ -163,7 +175,7 @@ public class DomainLogicBase<TEntity, TDto> : Repository<TEntity>, IDomainLogicB
         {
             Remove(repoObj);
             repoObj.AddDomainEvent(new DeletedEvent<TEntity>(repoObj));
-            if (await SaveChangesAsync())
+            if (!saveChanges || await SaveChangesAsync())
                 return true;
         }
         return false;

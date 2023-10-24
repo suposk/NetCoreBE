@@ -10,8 +10,7 @@ namespace NetCoreBE.Api.Application.TicketFeature;
 /// For more comeplex scenarios, use commands and queries.
 /// </summary>
 [Route("api/Ticket")]
-//[Route("api/v2/Ticket")]
-//[Route("api/[controller]")]
+//[Route("api/v1/Ticket")]
 [ApiController]
 public class TicketV1Controller : ControllerBase
 {

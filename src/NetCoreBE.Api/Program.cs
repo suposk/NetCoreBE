@@ -57,12 +57,16 @@ services.AddScoped<IApiIdentity, ApiIdentity>();
 services.AddScoped<IDateTimeService, DateTimeService>();
 
 services.AddScoped(typeof(IRepository<>), typeof(ApiBaseRepository<>));
+services.AddScoped(typeof(IRepositoryCtx<,>), typeof(ApiBaseRepositoryCtx<,>));
+
+services.AddScoped<ITicketRepositoryCtx, TicketRepositoryCtx>(); //with concrete DB context
 services.AddScoped<ITicketRepository, TicketRepository>();
 services.AddScoped<ITicketLogic, TicketLogic>(sp =>
 {
     var apiIdentity = sp.GetRequiredService<IApiIdentity>();
     var mapper = sp.GetRequiredService<IMapper>();
-    var repository = sp.GetRequiredService<IRepository<Ticket>>();
+    //var repository = sp.GetRequiredService<IRepository<Ticket>>();
+    var repository = sp.GetRequiredService<ITicketRepository>();    
     return new TicketLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository, sp.GetRequiredService<IMediator>());
 });
 
