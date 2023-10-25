@@ -1,17 +1,12 @@
-﻿using NetCoreBE.Api.Application.Features.Tickets;
-
-namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
+﻿namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
 {
-
     public class TicketRepository : Repository<Ticket>, ITicketRepository
     {
-        private readonly IRepository<Ticket> _repository;
-        private ApiDbContext _context;
+        private readonly IRepository<Ticket> _repository;        
 
-        public TicketRepository(IRepository<Ticket> repository, ApiDbContext context, IApiIdentity apiIdentity, IDateTimeService dateTimeService) : base(context, apiIdentity, dateTimeService)
+        public TicketRepository(IRepository<Ticket> repository, IApiIdentity apiIdentity, IDateTimeService dateTimeService) : base(repository.DatabaseContext, apiIdentity, dateTimeService)
         {
-            _repository = repository;
-            _context = context;
+            _repository = repository;            
         }
 
         public override Task<List<Ticket>> GetList()

@@ -1,16 +1,14 @@
-﻿using NetCoreBE.Api.Application.Features.Requests;
-
-namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories;
+﻿namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories;
 
 public class RequestRepository : Repository<Request>, IRequestRepository
 {
     private readonly IRepository<Request> _repository;
-    private ApiDbContext _context;
+    private ApiDbContext? _context;
 
-    public RequestRepository(IRepository<Request> repository, ApiDbContext context, IApiIdentity apiIdentity, IDateTimeService dateTimeService) : base(context, apiIdentity, dateTimeService)
+    public RequestRepository(IRepository<Request> repository, IApiIdentity apiIdentity, IDateTimeService dateTimeService) : base(repository.DatabaseContext, apiIdentity, dateTimeService)
     {
         _repository = repository;
-        _context = context;
+        _context = repository.DatabaseContext as ApiDbContext;        
     }
 
     public override Task<Request> GetId(string id)
