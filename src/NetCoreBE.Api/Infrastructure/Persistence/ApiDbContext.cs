@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace NetCoreBE.Api.Infrastructure.Persistence;
 
 #nullable disable
-public class ApiDbContext : DbContext
+public class ApiDbContext : DbContext, IApiDbContext
 {
     private readonly string _connectionString;
 
@@ -26,7 +26,7 @@ public class ApiDbContext : DbContext
        : base(options)
     {
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-    } 
+    }
     #endregion
 
     public DbSet<Ticket> Tickets { get; set; }
