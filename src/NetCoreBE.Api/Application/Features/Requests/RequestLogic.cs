@@ -48,12 +48,19 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
 
     //With Cache
     public async override Task<RequestDto> GetIdLogic(string id)
-    {        
-        return await _cacheProvider.GetOrAddAsync(RequestLogicCache.GetIdLogic, id, 1 * 60, async () => 
-        {
+    {
+        var cache = _cacheProvider.GetFromCache<RequestDto>(RequestLogicCache.GetIdLogic, id);
+        if (cache != null)
+            return cache;
+        else
+        { 
             var repo = await _repository.GetId(id).ConfigureAwait(false);
-            return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(repo);
-        });
+            if (repo == null)
+                throw new NotFoundException($"{nameof(GetIdLogic)} id", id);
+            var mapped = Mapper.Map<RequestDto>(repo);
+            _cacheProvider.SetCache(RequestLogicCache.GetIdLogic, id, mapped, 1 * 60 );
+            return mapped;
+        };
     }
 
     public override Task<Request> AddAsyncLogicEntity(Request entity, bool saveChanges = true)
