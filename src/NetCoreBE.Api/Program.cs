@@ -58,7 +58,7 @@ services.AddHttpContextAccessor();
 services.AddScoped<IApiIdentity, ApiIdentity>();
 services.AddScoped<IDateTimeService, DateTimeService>();
 
-services.AddScoped(typeof(IRepository<>), typeof(ApiBaseRepository<>));
+services.AddScoped(typeof(IRepository<>), typeof(ApiRepositoryBase<>));
 //services.AddScoped(typeof(IRepositoryCtx<,>), typeof(ApiBaseRepositoryCtx<,>));
 //services.AddScoped<ITicketRepositoryCtx, TicketRepositoryCtx>(); //with concrete DB context
 
