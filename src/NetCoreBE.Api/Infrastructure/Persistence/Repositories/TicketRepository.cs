@@ -1,6 +1,6 @@
 ﻿using NetCoreBE.Api.Application.Features.Tickets;
 
-namespace NetCoreBE.Api.Infrastructure.Persistence
+namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
 {
 
     public class TicketRepository : Repository<Ticket>, ITicketRepository

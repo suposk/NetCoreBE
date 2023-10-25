@@ -1,6 +1,6 @@
 ﻿using NetCoreBE.Api.Application.Features.Requests;
 
-namespace NetCoreBE.Api.Infrastructure.Persistence;
+namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories;
 
 public class RequestRepository : Repository<Request>, IRequestRepository
 {
@@ -34,10 +34,10 @@ public class RequestRepository : Repository<Request>, IRequestRepository
             var Request = new Request
             {
                 Note = $"Description {i}",
-                Status = $"Active",                    
-                RequestType = (i % 2 == 0) ? "Access" : "New Laptop",
+                Status = $"Active",
+                RequestType = i % 2 == 0 ? "Access" : "New Laptop",
             };
-            if (countExisintg == 0)                
+            if (countExisintg == 0)
                 Request.Id = i.GetSimpleGuidString();
             Request.AddInitialHistory();
             list.Add(Request);

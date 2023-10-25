@@ -32,3 +32,4 @@ global using NetCoreBE.Api.Domain.Events;
 
 //Infrastructure
 global using NetCoreBE.Api.Infrastructure.Persistence;
+global using NetCoreBE.Api.Infrastructure.Persistence.Repositories;
