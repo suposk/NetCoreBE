@@ -60,8 +60,6 @@ services.AddScoped<IDateTimeService, DateTimeService>();
 
 services.AddScoped(typeof(IRepository<>), typeof(ApiRepositoryBase<>));
 services.AddScoped(typeof(IDomainLogicBase<,>), typeof(ApiDomainLogicBase<,>));
-//services.AddScoped(typeof(IRepositoryCtx<,>), typeof(ApiBaseRepositoryCtx<,>));
-//services.AddScoped<ITicketRepositoryCtx, TicketRepositoryCtx>(); //with concrete DB context
 
 services.AddScoped<ITicketRepository, TicketRepository>();
 services.AddScoped<ITicketLogic, TicketLogic>();
