@@ -1,4 +1,4 @@
-﻿namespace CSRO.Server.Services.Base;
+﻿namespace NetCoreBE.Api.Infrastructure.Persistence;
 
 /// <summary>
 /// /// <summary>

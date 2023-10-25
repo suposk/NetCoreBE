@@ -1,5 +1,4 @@
 using CommonBE.Infrastructure.Enums;
-using CSRO.Server.Services.Base;
 using MediatR.Pipeline;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Identity.Web;
@@ -26,9 +25,7 @@ var myType = typeof(Program);
 var _namespace = myType.Namespace;
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-//Validation filter
-services.AddMvc(options =>
+services.AddMvc(options => //Validation filter
 {
     options.Filters.Add(new ValidationFilter());
 })
@@ -42,7 +39,6 @@ services.AddAuthorization(options =>
     // By default, all incoming requests will be authorized according to the default policy
     //Will automatical sign in user
     //options.FallbackPolicy = options.DefaultPolicy;
-
     //options.AddPolicy(PoliciesCsro.IsAdminPolicy, policy => policy.RequireClaim(ClaimTypes.Role, RolesCsro.Admin));
 });
 
@@ -51,9 +47,7 @@ services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBear
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddInMemoryTokenCaches();
 
-services.AddHttpContextAccessor();
-services.AddScoped<IApiIdentity, ApiIdentity>();
-services.AddScoped<IDateTimeService, DateTimeService>();
+services.RegisterCommonBEServices(Configuration);
 
 services.AddScoped(typeof(IRepository<>), typeof(ApiRepositoryBase<>));
 services.AddScoped(typeof(IDomainLogicBase<,>), typeof(ApiDomainLogicBase<,>));
@@ -64,7 +58,6 @@ services.AddScoped<ITicketLogic, TicketLogic>();
 services.AddScoped<IRequestRepository, RequestRepository>();
 services.AddScoped<IRequestLogic, RequestLogic>();
 
-services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
 DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
 try
 {
@@ -107,27 +100,12 @@ services.AddMediatR(config =>
     //config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
 });
 
-//builder.UseApiExceptionHandler(options =>
-//{
-//    options.AddResponseDetails = ApiExceptionMiddlewareExtensions.UpdateApiErrorResponse;
-//    options.DetermineLogLevel = ApiExceptionMiddlewareExtensions.DetermineLogLevel;
-//});
-////if (env.IsDevelopment())
-////{
-////    app.UseDeveloperExceptionPage();
-////}
-
-
 var app = builder.Build();
 app.UseApiExceptionHandler(options =>
 {
     options.AddResponseDetails = ApiExceptionMiddlewareExtensions.UpdateApiErrorResponse;
     options.DetermineLogLevel = ApiExceptionMiddlewareExtensions.DetermineLogLevel;
 });
-//if (env.IsDevelopment())
-//{
-//    app.UseDeveloperExceptionPage();
-//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -166,4 +144,3 @@ using (var scope = app.Services.CreateScope())
 }
 
 await app.RunAsync();
-//app.Run();
