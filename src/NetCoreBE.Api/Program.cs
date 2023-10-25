@@ -92,10 +92,10 @@ catch { }
 if (DbTypeEnum == DbTypeEnum.Unknown)
     throw new Exception($"Unable to read {nameof(DbTypeEnum)} from config. Please set value to SqlServer, InMemory for testing or.....");
 
-//factory methods
-services.AddScoped<IDbContextFactory<ApiDbContext>, DbContextFactory<ApiDbContext>>();
-services.AddTransient<IApiDbContext>(provider =>    
-    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
+////factory methods, not used yet
+//services.AddScoped<IDbContextFactory<ApiDbContext>, DbContextFactory<ApiDbContext>>();
+//services.AddTransient<IApiDbContext>(provider =>    
+//    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
 
 services.AddDbContext<ApiDbContext>((p, m) =>
 {
