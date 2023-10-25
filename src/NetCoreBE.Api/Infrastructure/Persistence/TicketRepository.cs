@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Api.Infrastructure.Persistence
+﻿using NetCoreBE.Api.Application.Features.Tickets;
+
+namespace NetCoreBE.Api.Infrastructure.Persistence
 {
 
     public class TicketRepository : Repository<Ticket>, ITicketRepository

@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Api.Application.TicketFeature;
+﻿namespace NetCoreBE.Api.Application.Features.Tickets;
 
 public interface ITicketLogic : IDomainLogicBase<Ticket, TicketDto>
 {
@@ -8,7 +8,7 @@ public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
 {
     //private readonly IRepository<Ticket> _repository;
     private readonly ITicketRepository _repository;
-    private readonly IMediator _mediator;    
+    private readonly IMediator _mediator;
 
     public TicketLogic(
         //DbContext context, //can't create instance. use repository.DatabaseContext

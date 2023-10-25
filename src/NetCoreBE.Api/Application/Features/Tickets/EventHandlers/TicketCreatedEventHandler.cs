@@ -3,7 +3,7 @@
 
 using System.Diagnostics;
 
-namespace NetCoreBE.Api.Application.TicketFeature.EventHandlers;
+namespace NetCoreBE.Api.Application.Features.Tickets.EventHandlers;
 
 public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Ticket>>
 {

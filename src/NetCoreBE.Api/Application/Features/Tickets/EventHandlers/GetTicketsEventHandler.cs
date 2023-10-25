@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Api.Application.TicketFeature.EventHandlers;
+﻿namespace NetCoreBE.Api.Application.Features.Tickets.EventHandlers;
 
 public class GetTicketsEventHandler : INotificationHandler<GetTicketsEvent>
 {

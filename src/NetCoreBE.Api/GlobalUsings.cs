@@ -22,12 +22,11 @@ global using CommonBE.Infrastructure.Persistence;
 //Application
 global using NetCoreBE.Api.Application;
 global using NetCoreBE.Api.Application.Interfaces;
-global using NetCoreBE.Api.Application.RequestFeature;
-global using NetCoreBE.Api.Application.TicketFeature;
+global using NetCoreBE.Api.Application.Features.Requests;
+global using NetCoreBE.Api.Application.Features.Tickets;
 
 //Domain
 global using NetCoreBE.Api.Domain.Entities;
-global using Entities = NetCoreBE.Api.Domain.Entities;
 global using NetCoreBE.Api.Domain.Events;
 
 //Infrastructure

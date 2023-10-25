@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Api.Application.RequestFeature;
+﻿namespace NetCoreBE.Api.Application.Features.Requests;
 
 public interface IRequestLogic : IDomainLogicBase<Request, RequestDto>
 {
@@ -10,7 +10,7 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
     private readonly IRequestRepository _repository;
     private readonly IRepository<RequestHistory> _repositoryRequestHistory;
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;    
+    private readonly IMapper _mapper;
 
     public RequestLogic(
         //DbContext context, //can't create instance. use repository.DatabaseContext
@@ -25,7 +25,7 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
     {
         _repository = repository;
         _repositoryRequestHistory = repositoryRequestHistory;
-        _mediator = mediator;        
+        _mediator = mediator;
     }
 
     public async override Task<RequestDto> GetIdLogic(string id)
@@ -47,7 +47,7 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
     public async Task<RequestHistory> AddHistory(RequestHistory add)
     {
         if (add == null)
-            throw new BadRequestException($"{nameof(add)} {nameof(AddHistory)}");        
+            throw new BadRequestException($"{nameof(add)} {nameof(AddHistory)}");
         var repo = await _repository.GetId(add.RequestId).ConfigureAwait(false);//verify if still exists in db
         if (repo == null)
             throw new NotFoundException($"{nameof(AddHistory)} add", add);
@@ -61,11 +61,11 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
 
     public async override Task<bool> RemoveAsyncLogic(string id, bool saveChanges = true)
     {
-        if(await base.RemoveAsyncLogic(id, saveChanges: false))
+        if (await base.RemoveAsyncLogic(id, saveChanges: false))
         {
             var repoObj = await _repository.GetId(id).ConfigureAwait(false);
             foreach (var his in repoObj.RequestHistoryList)
-            {                
+            {
                 _repositoryRequestHistory.Remove(his);
                 his.AddDomainEvent(new DeletedEvent<RequestHistory>(his));
             }

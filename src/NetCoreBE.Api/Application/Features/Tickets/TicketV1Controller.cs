@@ -2,7 +2,7 @@
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace NetCoreBE.Api.Application.TicketFeature;
+namespace NetCoreBE.Api.Application.Features.Tickets;
 
 /// <summary>
 /// Using DomainLogicBase<TEntity, TDto> to wrap the Repository and IMapper into a single class.

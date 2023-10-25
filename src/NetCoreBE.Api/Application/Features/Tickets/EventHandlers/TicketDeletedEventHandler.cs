@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace NetCoreBE.Api.Application.TicketFeature.EventHandlers;
+namespace NetCoreBE.Api.Application.Features.Tickets.EventHandlers;
 
 public class TicketDeletedEventHandler : INotificationHandler<DeletedEvent<Ticket>>
 {

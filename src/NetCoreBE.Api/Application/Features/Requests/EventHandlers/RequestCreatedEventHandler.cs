@@ -3,7 +3,7 @@
 
 using System.Diagnostics;
 
-namespace NetCoreBE.Api.Application.RequestFeature.EventHandlers;
+namespace NetCoreBE.Api.Application.Features.Requests.EventHandlers;
 
 public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Request>>
 {

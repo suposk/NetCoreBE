@@ -1,7 +1,7 @@
 ﻿using Carter;
 using Microsoft.AspNetCore.Mvc;
 
-namespace NetCoreBE.Api.Application.RequestFeature;
+namespace NetCoreBE.Api.Application.Features.Requests;
 
 /// <summary>
 /// Minimal API using Carter

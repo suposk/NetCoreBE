@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NetCoreBE.Api.Application.Features.Tickets;
 
 #if DEBUG
 namespace NetCoreBE.Api.Application;

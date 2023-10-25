@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Api.Infrastructure.Persistence;
+﻿using NetCoreBE.Api.Application.Features.Requests;
+
+namespace NetCoreBE.Api.Infrastructure.Persistence;
 
 public class RequestRepository : Repository<Request>, IRequestRepository
 {
