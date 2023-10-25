@@ -1,4 +1,4 @@
-﻿namespace CommonBE;
+﻿namespace CommonBE.Services;
 
 public interface IDateTimeService
 {

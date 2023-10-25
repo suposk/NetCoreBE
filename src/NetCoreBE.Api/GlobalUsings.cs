@@ -16,6 +16,7 @@ global using CommonBE.Base;
 global using CommonBE.Helpers;
 global using CommonBE.CustomExceptions;
 global using CommonBE.Domain.Events;
+global using CommonBE.Services;
 global using CommonBE.Infrastructure.ApiMiddleware;
 global using CommonBE.Infrastructure.Persistence;
 

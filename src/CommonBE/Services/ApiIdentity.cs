@@ -2,7 +2,7 @@
 using Microsoft.Identity.Web;
 using System.Security.Claims;
 
-namespace CommonBE;
+namespace CommonBE.Services;
 
 public enum RoleEnumType { Unknown = 0, User = 1, Reader = 2, Contributor = 5, Admin = 10 }
 public interface IApiIdentity
