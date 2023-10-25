@@ -11,7 +11,7 @@ public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
     private readonly IMediator _mediator;    
 
     public TicketLogic(
-        DbContext context,
+        //DbContext context, //can't create instance. use repository.DatabaseContext
         IApiIdentity apiIdentity,
         IDateTimeService dateTimeService,
         IMapper mapper,
@@ -19,7 +19,7 @@ public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
         ITicketRepository repository,
         IMediator mediator
         )
-        : base(context, apiIdentity, dateTimeService, mapper)
+        : base(repository.DatabaseContext, apiIdentity, dateTimeService, mapper)
     {
         _repository = repository;
         _mediator = mediator;

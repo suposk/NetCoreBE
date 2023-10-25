@@ -24,7 +24,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCarter();
 
 var services = builder.Services;
-var configuration = builder.Configuration;
+var Configuration = builder.Configuration;
 var myType = typeof(Program);
 var _namespace = myType.Namespace;
 
@@ -59,33 +59,21 @@ services.AddScoped<IApiIdentity, ApiIdentity>();
 services.AddScoped<IDateTimeService, DateTimeService>();
 
 services.AddScoped(typeof(IRepository<>), typeof(ApiRepositoryBase<>));
+services.AddScoped(typeof(IDomainLogicBase<,>), typeof(ApiDomainLogicBase<,>));
 //services.AddScoped(typeof(IRepositoryCtx<,>), typeof(ApiBaseRepositoryCtx<,>));
 //services.AddScoped<ITicketRepositoryCtx, TicketRepositoryCtx>(); //with concrete DB context
 
 services.AddScoped<ITicketRepository, TicketRepository>();
-services.AddScoped<ITicketLogic, TicketLogic>(sp =>
-{
-    var apiIdentity = sp.GetRequiredService<IApiIdentity>();
-    var mapper = sp.GetRequiredService<IMapper>();
-    //var repository = sp.GetRequiredService<IRepository<Ticket>>();
-    var repository = sp.GetRequiredService<ITicketRepository>();    
-    return new TicketLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository, sp.GetRequiredService<IMediator>());
-});
+services.AddScoped<ITicketLogic, TicketLogic>();
 
 services.AddScoped<IRequestRepository, RequestRepository>();
-services.AddScoped<IRequestLogic, RequestLogic>(sp =>
-{
-    var apiIdentity = sp.GetRequiredService<IApiIdentity>();
-    var mapper = sp.GetRequiredService<IMapper>();
-    var repository = sp.GetRequiredService<IRequestRepository>();
-    return new RequestLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository, sp.GetRequiredService<IMediator>(), sp.GetRequiredService<IRepository<RequestHistory>>());
-});
+services.AddScoped<IRequestLogic, RequestLogic>();
 
 services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
 DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
 try
 {
-    DbTypeEnum = configuration.GetValue<DbTypeEnum>(nameof(DbTypeEnum));
+    DbTypeEnum = Configuration.GetValue<DbTypeEnum>(nameof(DbTypeEnum));
 }
 catch { }
 
@@ -104,11 +92,11 @@ services.AddDbContext<ApiDbContext>((p, m) =>
     //m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
     
     if (DbTypeEnum == DbTypeEnum.SqlLite)
-        m.UseSqlite(configuration.GetConnectionString("ApiDbCsLite"), x => x.MigrationsAssembly(_namespace));
+        m.UseSqlite(Configuration.GetConnectionString("ApiDbCsLite"), x => x.MigrationsAssembly(_namespace));
     else if (DbTypeEnum == DbTypeEnum.InMemory)
-        m.UseInMemoryDatabase(databaseName: configuration.GetConnectionString("ApiDbCs"));
+        m.UseInMemoryDatabase(databaseName: Configuration.GetConnectionString("ApiDbCs"));
     else
-        m.UseSqlServer(configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
+        m.UseSqlServer(Configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
 });
 
 services.AddMediatR(config =>

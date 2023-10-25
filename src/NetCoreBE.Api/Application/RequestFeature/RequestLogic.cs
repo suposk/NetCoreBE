@@ -10,11 +10,10 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
     private readonly IRequestRepository _repository;
     private readonly IRepository<RequestHistory> _repositoryRequestHistory;
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
-    private readonly ApiDbContext? _context;
+    private readonly IMapper _mapper;    
 
     public RequestLogic(
-        DbContext context,
+        //DbContext context, //can't create instance. use repository.DatabaseContext
         IApiIdentity apiIdentity,
         IDateTimeService dateTimeService,
         IMapper mapper,
@@ -22,12 +21,11 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
         IMediator mediator,
         IRepository<RequestHistory> repositoryRequestHistory
         )
-        : base(context, apiIdentity, dateTimeService, mapper)
+        : base(repository.DatabaseContext, apiIdentity, dateTimeService, mapper)
     {
         _repository = repository;
         _repositoryRequestHistory = repositoryRequestHistory;
-        _mediator = mediator;
-        _context = context as ApiDbContext;
+        _mediator = mediator;        
     }
 
     public async override Task<RequestDto> GetIdLogic(string id)
