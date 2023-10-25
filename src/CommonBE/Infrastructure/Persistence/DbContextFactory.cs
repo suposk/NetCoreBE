@@ -1,23 +1,23 @@
-using Microsoft.Extensions.DependencyInjection;
+//using Microsoft.Extensions.DependencyInjection;
 
-namespace CommonBE.Infrastructure.Persistence;
-public class DbContextFactory<TContext> : IDbContextFactory<TContext> where TContext : DbContext
-{
-    private readonly IServiceProvider _provider;
+//namespace CommonBE.Infrastructure.Persistence;
+//public class DbContextFactory<TContext> : IDbContextFactory<TContext> where TContext : DbContext
+//{
+//    private readonly IServiceProvider _provider;
 
-    public DbContextFactory(IServiceProvider provider)
-    {
-        _provider = provider;
-    }
+//    public DbContextFactory(IServiceProvider provider)
+//    {
+//        _provider = provider;
+//    }
 
-    public TContext CreateDbContext()
-    {
-        if (_provider == null)
-        {
-            throw new InvalidOperationException(
-                $"You must configure an instance of IServiceProvider");
-        }
+//    public TContext CreateDbContext()
+//    {
+//        if (_provider == null)
+//        {
+//            throw new InvalidOperationException(
+//                $"You must configure an instance of IServiceProvider");
+//        }
 
-        return ActivatorUtilities.CreateInstance<TContext>(_provider);
-    }
-}
+//        return ActivatorUtilities.CreateInstance<TContext>(_provider);
+//    }
+//}

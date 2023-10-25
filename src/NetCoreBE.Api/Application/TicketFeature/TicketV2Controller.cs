@@ -8,7 +8,7 @@ namespace NetCoreBE.Api.Application.TicketFeature;
 /// Most common way to do expose an API with Repository and IMapper
 /// </summary>
 //[Route("api/Ticket")]
-[Route("api/v1/Ticket")]
+[Route("api/v2/Ticket")]
 [ApiController]
 public class TicketV2Controller : ControllerBase
 {

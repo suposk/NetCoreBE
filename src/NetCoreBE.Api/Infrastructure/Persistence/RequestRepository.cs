@@ -1,10 +1,5 @@
 ﻿namespace NetCoreBE.Api.Infrastructure.Persistence;
 
-public interface IRequestRepository : IRepository<Request>
-{
-    Task<List<Request>> Seed(int count, int? max, string UserId = "Seed");
-}
-
 public class RequestRepository : Repository<Request>, IRequestRepository
 {
     private readonly IRepository<Request> _repository;

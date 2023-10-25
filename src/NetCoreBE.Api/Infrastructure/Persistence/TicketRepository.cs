@@ -1,9 +1,5 @@
 ﻿namespace NetCoreBE.Api.Infrastructure.Persistence
 {
-    public interface ITicketRepository : IRepository<Ticket>
-    {
-        Task<List<Ticket>> Seed(int count, int? max, string UserId = "Seed");
-    }
 
     public class TicketRepository : Repository<Ticket>, ITicketRepository
     {

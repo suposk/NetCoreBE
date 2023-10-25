@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace NetCoreBE.Api.Application.RequestFeature;
 
+/// <summary>
+/// Minimal API using Carter
+/// </summary>
 public class RequestModule : CarterModule
 {
     public RequestModule()
