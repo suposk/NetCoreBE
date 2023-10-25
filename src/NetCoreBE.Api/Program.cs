@@ -1,14 +1,11 @@
-using CommonBE.Infrastructure.Persistence;
 using CommonBE.Infrastructure.Enums;
 using CSRO.Server.Services.Base;
 using MediatR.Pipeline;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Identity.Web;
-using NetCoreBE.Api.Infrastructure.Persistence;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using CommonBE.Infrastructure.Interceptors;
-using NetCoreBE.Api.Infrastructure;
 using FluentValidation.AspNetCore;
 using CommonBE.Infrastructure;
 using Carter;
