@@ -124,7 +124,7 @@ public class CacheProvider : ICacheProvider
     {
         //SetCache($"{key}-{id}", value, seconds);
         _Dic.AddOrUpdate(new KeyIdPair(key, value?.ToString(), id), value, (k, v) => value);
-        _cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
+        _cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(seconds));
     }
 
     public void ClearCache(string key)
