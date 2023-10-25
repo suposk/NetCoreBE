@@ -9,7 +9,9 @@ namespace NetCoreBE.Api.Application.RequestFeature;
 /// Best case scenario for simple CRUD API. Automatically Gets adds and maps.
 /// For more comeplex scenarios, use commands and queries.
 /// </summary>
-[Route("api/[controller]")]
+
+[Route("api/v2/Request")]
+//[Route("api/[controller]")]
 [ApiController]
 public class RequestController : ControllerBase
 {

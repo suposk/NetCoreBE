@@ -5,7 +5,6 @@ namespace CommonBE.Infrastructure.Persistence;
 public interface IRepository<TModel> where TModel : class
 {
     DbContext DatabaseContext { get; }
-
     Task<TModel> GetId(string id);
     virtual Task<List<TModel>> GetByUserId(string userId) { throw new NotImplementedException(); }
     Task<List<TModel>> GetList();
@@ -21,7 +20,6 @@ public interface IRepository<TModel> where TModel : class
     Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression);
     Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
     void ResetAtByUser(TModel entity);
-
     Task<int> CountAsync();
     Task<bool> RemoveAsync(string Id, string UserId = null);
     Task<List<EntitySoftDeleteBase>> GetListActive(params Expression<Func<EntitySoftDeleteBase, object>>[] includes);
@@ -68,7 +66,6 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)
             //entity.Id = Guid.NewGuid().ToString();            
             entity.Id = NewId.Next().ToString();
-
         entity.CreatedBy = UserId ?? ApiIdentity.GetUserNameOrIp();
         entity.CreatedAt ??= DateTimeService.UtcNow;
     }
@@ -123,7 +120,6 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         var entity = await GetId(Id).ConfigureAwait(false);
         if (entity is null)
             throw new ArgumentException($"Id can not be found.");
-
         Remove(entity, UserId);
         return await SaveChangesAsync().ConfigureAwait(false);
     }
@@ -142,7 +138,6 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     
     public virtual Task<List<TModel>> GetList() => DatabaseContext.Set<TModel>().AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
 
-    //public virtual async Task<TModel> GetId(string id) => await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
     public virtual Task<TModel> GetId(string id) => DatabaseContext.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
 
     public virtual Task<List<TModel>> GetByUserId(string userId) 

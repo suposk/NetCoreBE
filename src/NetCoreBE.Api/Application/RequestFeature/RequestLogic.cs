@@ -49,10 +49,8 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
     public async Task<RequestHistory> AddHistory(RequestHistory add)
     {
         if (add == null)
-            throw new BadRequestException($"{nameof(add)} {nameof(AddHistory)}");
-
-        //verify if still exists in db
-        var repo = await _repository.GetId(add.RequestId).ConfigureAwait(false);
+            throw new BadRequestException($"{nameof(add)} {nameof(AddHistory)}");        
+        var repo = await _repository.GetId(add.RequestId).ConfigureAwait(false);//verify if still exists in db
         if (repo == null)
             throw new NotFoundException($"{nameof(AddHistory)} add", add);
 
