@@ -1,6 +1,4 @@
-﻿using Contracts.Dtos;
-
-namespace NetCoreBE.Api.Application;
+﻿namespace NetCoreBE.Api.Application;
 
 public class MapperProfileApi : Profile
 {
