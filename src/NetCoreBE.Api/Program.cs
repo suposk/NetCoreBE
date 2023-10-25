@@ -81,10 +81,6 @@ services.AddScoped<IRequestLogic, RequestLogic>(sp =>
     return new RequestLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository, sp.GetRequiredService<IMediator>(), sp.GetRequiredService<IRepository<RequestHistory>>());
 });
 
-
-//services.AddScoped<IDbContextFactory<ApiDbContext>>();
-//services.AddTransient(provider =>
-//    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
 services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
 DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
 try
