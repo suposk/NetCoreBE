@@ -5,12 +5,19 @@ public interface IRequestLogic : IDomainLogicBase<Request, RequestDto>
     Task<RequestHistory> AddHistory(RequestHistory add);
 }
 
+public static class RequestLogicCache
+{
+    public static string GetIdLogic = "GetIdLogic";
+}
+
 public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
 {
     private readonly IRequestRepository _repository;
     private readonly IRepository<RequestHistory> _repositoryRequestHistory;
+    private readonly ICacheProvider _cacheProvider;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private string _userId = null;
 
     public RequestLogic(
         //DbContext context, //can't create instance. use repository.DatabaseContext
@@ -19,20 +26,34 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
         IMapper mapper,
         IRequestRepository repository,
         IMediator mediator,
-        IRepository<RequestHistory> repositoryRequestHistory
+        IRepository<RequestHistory> repositoryRequestHistory,
+        ICacheProvider cacheProvider
         )
         : base(repository.DatabaseContext, apiIdentity, dateTimeService, mapper)
     {
         _repository = repository;
         _repositoryRequestHistory = repositoryRequestHistory;
+        _cacheProvider = cacheProvider;
         _mediator = mediator;
+        _userId = ApiIdentity.GetUserNameOrIp();
     }
 
+    ////No Cache
+    //public async override Task<RequestDto> GetIdLogic(string id)
+    //{
+    //    //return await base.GetIdLogic(id);
+    //    var repo = await _repository.GetId(id).ConfigureAwait(false);
+    //    return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(repo);
+    //}
+
+    //With Cache
     public async override Task<RequestDto> GetIdLogic(string id)
-    {
-        //return await base.GetIdLogic(id);
-        var repo = await _repository.GetId(id).ConfigureAwait(false);
-        return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(repo);
+    {        
+        return await _cacheProvider.GetOrAddAsync(RequestLogicCache.GetIdLogic, id, 1 * 60, async () => 
+        {
+            var repo = await _repository.GetId(id).ConfigureAwait(false);
+            return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(repo);
+        });
     }
 
     public override Task<Request> AddAsyncLogicEntity(Request entity, bool saveChanges = true)

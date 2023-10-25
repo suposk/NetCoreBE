@@ -16,9 +16,11 @@ public static class DependencyInjection
     {
         services.AddHttpContextAccessor();
         services.AddScoped<IApiIdentity, ApiIdentity>();
-        services.AddScoped<IDateTimeService, DateTimeService>();
-
+        services.AddScoped<IDateTimeService, DateTimeService>();        
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+
+        //AddSingleton
+        services.AddSingleton<ICacheProvider, CacheProvider>(); //can be configer in config setting in appsettings.json
         return services;
     }
 }
