@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using System.Xml.Linq;
 
 namespace CommonBE.Services;
 
@@ -79,12 +78,12 @@ public class CacheProvider : ICacheProvider
     private readonly IMemoryCache _cache;
     private readonly ILogger<CacheProvider> _logger;
     private readonly ConcurrentDictionary<KeyIdPair, object> _Dic = new();
+
     public CacheProvider(IMemoryCache cache, ILogger<CacheProvider> logger)
     {
         _cache = cache;
         _logger = logger;
     }
-
 
     /// <summary>
     /// Either {key}-{id} or just {key} if id is null or empty
@@ -94,22 +93,11 @@ public class CacheProvider : ICacheProvider
     /// <returns></returns>
     string GetCombinedKey(string key, string id) => $"{(!string.IsNullOrWhiteSpace(id) ? $"{key}-{id}" : key)}";
 
-    public T GetFromCache<T>(string key) where T : class
-    {
-        var cachedResponse = _cache.Get(key);
-        return cachedResponse as T;
-    }
+    public T GetFromCache<T>(string key) where T : class => _cache.Get(key) as T;
 
-    public T GetFromCache<T>(string key, string id) where T : class
-    {
-        var cachedResponse = _cache.Get($"{key}-{id}");
-        return cachedResponse as T;
-    }
+    public T GetFromCache<T>(string key, string id) where T : class => _cache.Get(GetCombinedKey(key, id)) as T;
 
-    public void SetCache<T>(string key, T value) where T : class
-    {
-        SetCache(key, value, ICacheProvider.CacheSeconds);
-    }
+    public void SetCache<T>(string key, T value) where T : class => SetCache(key, value, ICacheProvider.CacheSeconds);
 
     public void SetCache<T>(string key, T value, int seconds = ICacheProvider.CacheSeconds) where T : class
     {
@@ -119,7 +107,6 @@ public class CacheProvider : ICacheProvider
 
     public void SetCache<T>(string key, string id, T value) where T : class
     {
-        //SetCache($"{key}-{id}", value);
         _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);
         //_cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
         _cache.Set(GetCombinedKey(key, id), value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
