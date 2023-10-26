@@ -85,6 +85,15 @@ public class CacheProvider : ICacheProvider
         _logger = logger;
     }
 
+
+    /// <summary>
+    /// Either {key}-{id} or just {key} if id is null or empty
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    string GetCombinedKey(string key, string id) => $"{(!string.IsNullOrWhiteSpace(id) ? $"{key}-{id}" : key)}";
+
     public T GetFromCache<T>(string key) where T : class
     {
         var cachedResponse = _cache.Get(key);
@@ -112,19 +121,20 @@ public class CacheProvider : ICacheProvider
     {
         //SetCache($"{key}-{id}", value);
         _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);
-        _cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
+        //_cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
+        _cache.Set(GetCombinedKey(key, id), value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
     }
 
     public void SetCache<T>(string key, string id, T value, int seconds = ICacheProvider.CacheSeconds) where T : class
     {
         //SetCache($"{key}-{id}", value, seconds);
-        _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);
-        _cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(seconds));
+        _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);        
+        _cache.Set(GetCombinedKey(key, id), value, DateTimeOffset.Now.AddSeconds(seconds));
     }
 
     public void ClearCache(string key)
     {        
-        _cache.Remove($"{key}");
+        _cache.Remove(key);
         var allPairs = _Dic.Where(x => x.Key.Key == key).Select(a => a.Key).ToList();
         foreach (var pair in allPairs)
         {
@@ -135,7 +145,7 @@ public class CacheProvider : ICacheProvider
 
     public void ClearCache(string key, string id)
     {
-        _cache.Remove($"{key}-{id}");
+        _cache.Remove(GetCombinedKey(key, id));
         var allPairs = _Dic.Where(x => x.Key.Key == key).Select(a => a.Key).ToList();
         foreach (var pair in allPairs)
         {
@@ -151,7 +161,7 @@ public class CacheProvider : ICacheProvider
         foreach (var pair in allPairs)
         {
             _Dic.TryRemove(pair, out _);
-            _cache.Remove($"{pair.Key}-{pair.Id}");
+            _cache.Remove(GetCombinedKey(pair.Key,pair.Id));
         }
     }
 
@@ -173,7 +183,7 @@ public class CacheProvider : ICacheProvider
 
     public async Task<T> GetOrAddAsync<T>(string key, string id, int seconds, Func<Task<T>> taskFactory)
     {
-        var comKey = $"{key}-{id}";
+        var comKey = GetCombinedKey(key, id);
         var res = await _cache.GetOrCreateAsync(comKey, async entry => await new AsyncLazy<T>(async () =>
         {
             _Dic.AddOrUpdate(new KeyIdPair(key, id?.ToString()), id, (k, v) => v);
