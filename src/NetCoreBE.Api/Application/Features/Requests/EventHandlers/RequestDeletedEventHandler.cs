@@ -22,8 +22,9 @@ public class RequestDeletedEventHandler : INotificationHandler<DeletedEvent<Requ
         try
         {
             _logger.LogInformation("Domain Event: {DomainEvent}, started", notification.GetType().FullName);
-            //_cacheProvider.ClearCache(RequestLogicCache.GetIdLogic, notification?.Entity?.Id);
-            _cacheProvider.ClearCacheForAllKeysAndIds(RequestLogicCache.GetIdLogic);
+            _cacheProvider.ClearCache(RequestLogicCache.GetIdLogic, notification?.Entity?.Id);
+            //_cacheProvider.ClearCacheForAllKeysAndIds(RequestLogicCache.GetIdLogic);
+            //_cacheProvider.ClearCacheForAllKeysAndIds(RequestLogicCache.GetListLogic);
             return;
         }
         catch (Exception ex)

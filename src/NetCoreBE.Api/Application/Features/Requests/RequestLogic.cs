@@ -7,6 +7,7 @@ public interface IRequestLogic : IDomainLogicBase<Request, RequestDto>
 
 public static class RequestLogicCache
 {
+    public static string GetListLogic = "GetListLogic";
     public static string GetIdLogic = "GetIdLogic";
 }
 
