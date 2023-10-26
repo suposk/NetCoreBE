@@ -84,6 +84,7 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
         if (repo.Status == "Closed")
             return default; //already closed, open a new request
 
+        add.AddDomainEvent(new CreatedEvent<RequestHistory>(add));
         await _repositoryRequestHistory.AddAsync(add, add.CreatedBy);
         return add;
     }
@@ -95,6 +96,7 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
             var repoObj = await _repository.GetId(id).ConfigureAwait(false);
             foreach (var his in repoObj.RequestHistoryList)
             {
+                //may be not needed here, just example
                 _repositoryRequestHistory.Remove(his);
                 his.AddDomainEvent(new DeletedEvent<RequestHistory>(his));
             }

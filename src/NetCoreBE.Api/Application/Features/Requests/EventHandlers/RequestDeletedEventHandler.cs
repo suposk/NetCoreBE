@@ -17,19 +17,19 @@ public class RequestDeletedEventHandler : INotificationHandler<DeletedEvent<Requ
         _logger = logger;        
     }
 
-    public async Task Handle(DeletedEvent<Request> notification, CancellationToken cancellationToken)
+    public Task Handle(DeletedEvent<Request> notification, CancellationToken cancellationToken)
     {
         try
         {
             _logger.LogInformation("Domain Event: {DomainEvent}, started", notification.GetType().FullName);
             _cacheProvider.ClearCache(RequestLogicCache.GetIdLogic, notification?.Entity?.Id);
             //_cacheProvider.ClearCacheForAllKeysAndIds(RequestLogicCache.GetIdLogic);
-            _cacheProvider.ClearCacheForAllKeysAndIds(RequestLogicCache.GetListLogic); //clear cache for all Ids
-            return;
+            _cacheProvider.ClearCacheForAllKeysAndIds(RequestLogicCache.GetListLogic); //clear cache for all Ids            
         }
         catch (Exception ex)
-        {
+        {            
             _logger.LogError(ex, null, ex);
         }
+        return Task.CompletedTask;
     }
 }
