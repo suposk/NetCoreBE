@@ -33,32 +33,27 @@ public interface ICacheProvider
 
 public class KeyIdPair
 {
-    public KeyIdPair(string key, string value, string id)
+    public KeyIdPair(string key, string id)
     {
         Key = key;
-        Id = id;
-        Value = value;
+        Id = id;       
     }
     public string? Key { get; set; }
     public string? Id { get; set; }
-    public string? Value { get; set; }
+    //public string? Value { get; set; } //not used
 
     #region GetHashCode and Equals
 
     public override int GetHashCode()
     {
-        if (Key.HasValueExt() && Id.HasValueExt() && Value.HasValueExt())
-            return Key.GetHashCode() ^ Id.GetHashCode() ^ Value.GetHashCode();
         if (Key.HasValueExt() && Id.HasValueExt())
             return Key.GetHashCode() ^ Id.GetHashCode();
-        if (Key.HasValueExt() && Value.HasValueExt())
-            return Key.GetHashCode() ^ Value.GetHashCode();
         if (Key.HasValueExt())
             return Key.GetHashCode();
         return base.GetHashCode();
     }
 
-    public override string ToString() => $"Key={Key} Id={Id} Value={Value}";
+    public override string ToString() => $"Key={Key} Id={Id}";
     
     public override bool Equals(object obj)
     {
@@ -70,7 +65,7 @@ public class KeyIdPair
             return false;
 
         KeyIdPair rhs = obj as KeyIdPair;
-        return Key == rhs.Key && Value == rhs.Value && Id == rhs.Id;
+        return Key == rhs.Key && Id == rhs.Id;
     }
 
     public static bool operator ==(KeyIdPair lhs, KeyIdPair rhs) { return Equals(lhs, rhs); }
@@ -109,21 +104,21 @@ public class CacheProvider : ICacheProvider
 
     public void SetCache<T>(string key, T value, int seconds = ICacheProvider.CacheSeconds) where T : class
     {
-        _Dic.AddOrUpdate(new KeyIdPair(key, value?.ToString(), null), value, (k, v) => value);
+        _Dic.AddOrUpdate(new KeyIdPair(key, null), value, (k, v) => value);
         _cache.Set(key, value, DateTimeOffset.Now.AddSeconds(seconds));
     }
 
     public void SetCache<T>(string key, string id, T value) where T : class
     {
         //SetCache($"{key}-{id}", value);
-        _Dic.AddOrUpdate(new KeyIdPair(key, value?.ToString(), id), value, (k, v) => value);
+        _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);
         _cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
     }
 
     public void SetCache<T>(string key, string id, T value, int seconds = ICacheProvider.CacheSeconds) where T : class
     {
         //SetCache($"{key}-{id}", value, seconds);
-        _Dic.AddOrUpdate(new KeyIdPair(key, value?.ToString(), id), value, (k, v) => value);
+        _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);
         _cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(seconds));
     }
 
@@ -164,7 +159,7 @@ public class CacheProvider : ICacheProvider
     {
         var res = await _cache.GetOrCreateAsync(key, async entry => await new AsyncLazy<T>(async () =>
         {
-            _Dic.AddOrUpdate(new KeyIdPair(key, null, null), string.Empty, (k, v) => v);
+            _Dic.AddOrUpdate(new KeyIdPair(key, null), string.Empty, (k, v) => v);
             entry.SlidingExpiration = TimeSpan.FromSeconds(seconds);
             return await taskFactory.Invoke();
         }).Value);
@@ -181,7 +176,7 @@ public class CacheProvider : ICacheProvider
         var comKey = $"{key}-{id}";
         var res = await _cache.GetOrCreateAsync(comKey, async entry => await new AsyncLazy<T>(async () =>
         {
-            _Dic.AddOrUpdate(new KeyIdPair(key, null, id?.ToString()), id, (k, v) => v);
+            _Dic.AddOrUpdate(new KeyIdPair(key, id?.ToString()), id, (k, v) => v);
             entry.SlidingExpiration = TimeSpan.FromSeconds(seconds);
             return await taskFactory.Invoke();
         }).Value);
