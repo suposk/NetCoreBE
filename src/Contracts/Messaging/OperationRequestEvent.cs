@@ -1,5 +1,8 @@
 ﻿namespace Contracts.Messaging;
 
+/// <summary>
+/// Service Bus message
+/// </summary>
 public class OperationRequestEvent
 {
 	public Guid Id { get; set; }

@@ -5,9 +5,7 @@ namespace CommonBE.Infrastructure.Persistence;
 public interface IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase
 {
     IMapper Mapper { get; }
-
     Task<TDto> AddAsyncLogic(TDto dto, bool saveChanges = true);
-
     /// <summary>
     /// /// May not be needed
     /// </summary>
@@ -15,7 +13,6 @@ public interface IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase
     /// <returns></returns>
     Task<TEntity> AddAsyncLogicEntity(TEntity entity, bool saveChanges = true);
     Task<TDto> AddOrUpdateAsyncLogic(TDto dto, bool saveChanges = true);
-
     /// <summary>
     /// May not be needed
     /// </summary>
@@ -26,7 +23,6 @@ public interface IDomainLogicBase<TEntity, TDto> where TEntity : EntityBase
     Task<List<TDto>> GetListLogic();
     Task<bool> RemoveAsyncLogic(string id, bool saveChanges = true);
     Task<TDto> UpdateAsyncLogic(TDto dto, bool saveChanges = true);
-
     /// <summary>
     /// /// May not be needed
     /// </summary>

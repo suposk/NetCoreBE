@@ -1,14 +1,10 @@
-using CommonBE.Infrastructure.Persistence;
 using CommonBE.Infrastructure.Enums;
-using CSRO.Server.Services.Base;
 using MediatR.Pipeline;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Identity.Web;
-using NetCoreBE.Api.Infrastructure.Persistence;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using CommonBE.Infrastructure.Interceptors;
-using NetCoreBE.Api.Infrastructure;
 using FluentValidation.AspNetCore;
 using CommonBE.Infrastructure;
 using Carter;
@@ -24,14 +20,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCarter();
 
 var services = builder.Services;
-var configuration = builder.Configuration;
+var Configuration = builder.Configuration;
 var myType = typeof(Program);
 var _namespace = myType.Namespace;
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-//Validation filter
-services.AddMvc(options =>
+services.AddMvc(options => //Validation filter
 {
     options.Filters.Add(new ValidationFilter());
 })
@@ -45,7 +39,6 @@ services.AddAuthorization(options =>
     // By default, all incoming requests will be authorized according to the default policy
     //Will automatical sign in user
     //options.FallbackPolicy = options.DefaultPolicy;
-
     //options.AddPolicy(PoliciesCsro.IsAdminPolicy, policy => policy.RequireClaim(ClaimTypes.Role, RolesCsro.Admin));
 });
 
@@ -54,47 +47,31 @@ services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBear
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddInMemoryTokenCaches();
 
-services.AddHttpContextAccessor();
-services.AddScoped<IApiIdentity, ApiIdentity>();
-services.AddScoped<IDateTimeService, DateTimeService>();
+services.RegisterCommonBEServices(Configuration);
 
-services.AddScoped(typeof(IRepository<>), typeof(ApiBaseRepository<>));
-//services.AddScoped(typeof(IRepositoryCtx<,>), typeof(ApiBaseRepositoryCtx<,>));
-//services.AddScoped<ITicketRepositoryCtx, TicketRepositoryCtx>(); //with concrete DB context
+services.AddScoped(typeof(IRepository<>), typeof(ApiRepositoryBase<>));
+services.AddScoped(typeof(IDomainLogicBase<,>), typeof(ApiDomainLogicBase<,>));
 
 services.AddScoped<ITicketRepository, TicketRepository>();
-services.AddScoped<ITicketLogic, TicketLogic>(sp =>
-{
-    var apiIdentity = sp.GetRequiredService<IApiIdentity>();
-    var mapper = sp.GetRequiredService<IMapper>();
-    //var repository = sp.GetRequiredService<IRepository<Ticket>>();
-    var repository = sp.GetRequiredService<ITicketRepository>();    
-    return new TicketLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository, sp.GetRequiredService<IMediator>());
-});
+services.AddScoped<ITicketLogic, TicketLogic>();
 
 services.AddScoped<IRequestRepository, RequestRepository>();
-services.AddScoped<IRequestLogic, RequestLogic>(sp =>
-{
-    var apiIdentity = sp.GetRequiredService<IApiIdentity>();
-    var mapper = sp.GetRequiredService<IMapper>();
-    var repository = sp.GetRequiredService<IRequestRepository>();
-    return new RequestLogic(repository.DatabaseContext, apiIdentity, sp.GetRequiredService<IDateTimeService>(), mapper, repository, sp.GetRequiredService<IMediator>(), sp.GetRequiredService<IRepository<RequestHistory>>());
-});
+services.AddScoped<IRequestLogic, RequestLogic>();
 
-
-//services.AddScoped<IDbContextFactory<ApiDbContext>>();
-//services.AddTransient(provider =>
-//    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
-services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
 DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
 try
 {
-    DbTypeEnum = configuration.GetValue<DbTypeEnum>(nameof(DbTypeEnum));
+    DbTypeEnum = Configuration.GetValue<DbTypeEnum>(nameof(DbTypeEnum));
 }
 catch { }
 
 if (DbTypeEnum == DbTypeEnum.Unknown)
     throw new Exception($"Unable to read {nameof(DbTypeEnum)} from config. Please set value to SqlServer, InMemory for testing or.....");
+
+////factory methods, not used yet
+//services.AddScoped<IDbContextFactory<ApiDbContext>, DbContextFactory<ApiDbContext>>();
+//services.AddTransient<IApiDbContext>(provider =>    
+//    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
 
 services.AddDbContext<ApiDbContext>((p, m) =>
 {
@@ -103,11 +80,11 @@ services.AddDbContext<ApiDbContext>((p, m) =>
     //m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
     
     if (DbTypeEnum == DbTypeEnum.SqlLite)
-        m.UseSqlite(configuration.GetConnectionString("ApiDbCsLite"), x => x.MigrationsAssembly(_namespace));
+        m.UseSqlite(Configuration.GetConnectionString("ApiDbCsLite"), x => x.MigrationsAssembly(_namespace));
     else if (DbTypeEnum == DbTypeEnum.InMemory)
-        m.UseInMemoryDatabase(databaseName: configuration.GetConnectionString("ApiDbCs"));
+        m.UseInMemoryDatabase(databaseName: Configuration.GetConnectionString("ApiDbCs"));
     else
-        m.UseSqlServer(configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
+        m.UseSqlServer(Configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
 });
 
 services.AddMediatR(config =>
@@ -123,27 +100,12 @@ services.AddMediatR(config =>
     //config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
 });
 
-//builder.UseApiExceptionHandler(options =>
-//{
-//    options.AddResponseDetails = ApiExceptionMiddlewareExtensions.UpdateApiErrorResponse;
-//    options.DetermineLogLevel = ApiExceptionMiddlewareExtensions.DetermineLogLevel;
-//});
-////if (env.IsDevelopment())
-////{
-////    app.UseDeveloperExceptionPage();
-////}
-
-
 var app = builder.Build();
 app.UseApiExceptionHandler(options =>
 {
     options.AddResponseDetails = ApiExceptionMiddlewareExtensions.UpdateApiErrorResponse;
     options.DetermineLogLevel = ApiExceptionMiddlewareExtensions.DetermineLogLevel;
 });
-//if (env.IsDevelopment())
-//{
-//    app.UseDeveloperExceptionPage();
-//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -182,4 +144,3 @@ using (var scope = app.Services.CreateScope())
 }
 
 await app.RunAsync();
-//app.Run();

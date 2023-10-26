@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NetCoreBE.Api.Application.Features.Tickets;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
+#if DEBUG
 namespace NetCoreBE.Api.Application;
+
+/// <summary>
+/// Only for testing, in DEBUG mode
+/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 public class TestController : ControllerBase
@@ -45,3 +49,4 @@ public class TestController : ControllerBase
     }
 
 }
+#endif

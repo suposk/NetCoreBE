@@ -2,31 +2,31 @@
 
 namespace CommonBE.Infrastructure.Persistence;
 
-public interface IRepository<TModel> where TModel : class
+public interface IRepository<TEntity> where TEntity : class
 {
     DbContext DatabaseContext { get; }
-    Task<TModel> GetId(string id);
-    virtual Task<List<TModel>> GetByUserId(string userId) { throw new NotImplementedException(); }
-    Task<List<TModel>> GetList();
-    void Add(TModel entity, string UserId = null);
-    void AddRange(IEnumerable<TModel> entitys, string UserId = null);
-    void Remove(TModel entity, string UserId = null);
-    void Update(TModel entity, string UserId = null);
-    Task<TModel> AddAsync(TModel entity, string UserId = null);
-    Task<TModel> UpdateAsync(TModel entity, string UserId = null);
+    Task<TEntity> GetId(string id);
+    virtual Task<List<TEntity>> GetByUserId(string userId) { throw new NotImplementedException(); }
+    Task<List<TEntity>> GetList();
+    void Add(TEntity entity, string UserId = null);
+    void AddRange(IEnumerable<TEntity> entitys, string UserId = null);
+    void Remove(TEntity entity, string UserId = null);
+    void Update(TEntity entity, string UserId = null);
+    Task<TEntity> AddAsync(TEntity entity, string UserId = null);
+    Task<TEntity> UpdateAsync(TEntity entity, string UserId = null);
     Task<bool> SaveChangesAsync();
-    Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
-    Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression);
-    Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression);
-    Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
-    void ResetAtByUser(TModel entity);
+    Task<TEntity> GetFilter(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
+    Task<TEntity> GetFilter(Expression<Func<TEntity, bool>> expression);
+    Task<List<TEntity>> GetListFilter(Expression<Func<TEntity, bool>> expression);
+    Task<List<TEntity>> GetListFilter(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
+    void ResetAtByUser(TEntity entity);
     Task<int> CountAsync();
     Task<bool> RemoveAsync(string Id, string UserId = null);
     Task<List<EntitySoftDeleteBase>> GetListActive(params Expression<Func<EntitySoftDeleteBase, object>>[] includes);
 }
 
 
-public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
+public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
 {
     public DbContext DatabaseContext { get; }
     public IApiIdentity ApiIdentity { get; }
@@ -39,7 +39,7 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         DateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
     }
 
-    public virtual void Add(TModel entity, string UserId = null)
+    public virtual void Add(TEntity entity, string UserId = null)
     {
         SetAddProperties(entity, UserId);
         if (entity is IEntityEmailBase)
@@ -49,17 +49,17 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
             if (string.IsNullOrWhiteSpace(casted?.Email)) //Email.IsNullOrEmptyExt())
                 casted.Email = email;
         }
-        DatabaseContext.Set<TModel>().Add(entity);
+        DatabaseContext.Set<TEntity>().Add(entity);
     }
 
-    public void AddRange(IEnumerable<TModel> entitys, string UserId = null)
+    public void AddRange(IEnumerable<TEntity> entitys, string UserId = null)
     {
         foreach (var entity in entitys)
             SetAddProperties(entity, UserId);
-        DatabaseContext.Set<TModel>().AddRange(entitys);
+        DatabaseContext.Set<TEntity>().AddRange(entitys);
     }
 
-    public virtual void SetAddProperties(TModel entity, string UserId)
+    public virtual void SetAddProperties(TEntity entity, string UserId)
     {
         //if (entity.Id != 0)
         //    throw new ArgumentException($"Id {entity.Id} can not be set while add operation.");        
@@ -70,36 +70,36 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         entity.CreatedAt ??= DateTimeService.UtcNow;
     }
 
-    public virtual void Update(TModel entity, string UserId = null)
+    public virtual void Update(TEntity entity, string UserId = null)
     {
         DatabaseContext.Entry(entity).State = EntityState.Modified;
         entity.ModifiedBy = UserId ?? ApiIdentity.GetUserNameOrIp();
         entity.ModifiedAt = DateTimeService.UtcNow;
     }
 
-    public virtual async Task<TModel> AddAsync(TModel entity, string UserId = null)
+    public virtual async Task<TEntity> AddAsync(TEntity entity, string UserId = null)
     {
         Add(entity, UserId);
         await SaveChangesAsync();
         return entity;
     }
 
-    public virtual async Task AddRangeAsync(IEnumerable<TModel> entitys, string UserId = null)
+    public virtual async Task AddRangeAsync(IEnumerable<TEntity> entitys, string UserId = null)
     {
         foreach (var entity in entitys)
             SetAddProperties(entity, UserId);
-        DatabaseContext.Set<TModel>().AddRange(entitys);
+        DatabaseContext.Set<TEntity>().AddRange(entitys);
         await SaveChangesAsync();
     }
 
-    public virtual async Task<TModel> UpdateAsync(TModel entity, string UserId = null)
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity, string UserId = null)
     {
         Update(entity, UserId);
         await SaveChangesAsync();
         return entity;
     }
 
-    public virtual void Remove(TModel entity, string UserId = null)
+    public virtual void Remove(TEntity entity, string UserId = null)
     {
         if (entity is EntitySoftDeleteBase)
         {
@@ -109,7 +109,7 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         else
         {
             DatabaseContext.Entry(entity).State = EntityState.Deleted;
-            DatabaseContext.Set<TModel>().Remove(entity);
+            DatabaseContext.Set<TEntity>().Remove(entity);
         }
     }
 
@@ -124,32 +124,32 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         return await SaveChangesAsync().ConfigureAwait(false);
     }
 
-    public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
+    public virtual Task<TEntity> GetFilter(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes)
     {
-        DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
-        IQueryable<TModel> query = null;
+        DbSet<TEntity> dbSet = DatabaseContext.Set<TEntity>();
+        IQueryable<TEntity> query = null;
         foreach (var includeExpression in includes)        
             query = dbSet.Include(includeExpression);        
         return query.AsNoTracking().FirstOrDefaultAsync(expression);
     }
 
-    public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression) =>
-        DatabaseContext.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(expression);
+    public virtual Task<TEntity> GetFilter(Expression<Func<TEntity, bool>> expression) =>
+        DatabaseContext.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(expression);
     
-    public virtual Task<List<TModel>> GetList() => DatabaseContext.Set<TModel>().AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
+    public virtual Task<List<TEntity>> GetList() => DatabaseContext.Set<TEntity>().AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
 
-    public virtual Task<TModel> GetId(string id) => DatabaseContext.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
+    public virtual Task<TEntity> GetId(string id) => DatabaseContext.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
 
-    public virtual Task<List<TModel>> GetByUserId(string userId) 
-        => DatabaseContext.Set<TModel>().AsNoTracking().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
+    public virtual Task<List<TEntity>> GetByUserId(string userId) 
+        => DatabaseContext.Set<TEntity>().AsNoTracking().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
 
-    public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression) 
-        => DatabaseContext.Set<TModel>().AsNoTracking().Where(expression).OrderByDescending(a => a.CreatedAt).ToListAsync();
+    public virtual Task<List<TEntity>> GetListFilter(Expression<Func<TEntity, bool>> expression) 
+        => DatabaseContext.Set<TEntity>().AsNoTracking().Where(expression).OrderByDescending(a => a.CreatedAt).ToListAsync();
     
-    public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
+    public virtual Task<List<TEntity>> GetListFilter(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes)
     {
-        DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
-        IQueryable<TModel> query = null;
+        DbSet<TEntity> dbSet = DatabaseContext.Set<TEntity>();
+        IQueryable<TEntity> query = null;
         foreach (var includeExpression in includes)        
             query = dbSet.Include(includeExpression);       
         return query.AsNoTracking().Where(expression).ToListAsync();
@@ -186,7 +186,7 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
         }
     }
 
-    public void ResetAtByUser(TModel entity)
+    public void ResetAtByUser(TEntity entity)
     {
         if (entity == null)
             return;
@@ -202,6 +202,6 @@ public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
             (entity as EntitySoftDeleteBase).Email = null;
     }
 
-    public Task<int> CountAsync() => DatabaseContext.Set<TModel>().AsNoTracking().CountAsync();
+    public Task<int> CountAsync() => DatabaseContext.Set<TEntity>().AsNoTracking().CountAsync();
     
 }
