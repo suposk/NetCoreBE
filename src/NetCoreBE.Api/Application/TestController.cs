@@ -28,7 +28,7 @@ public class TestController : ControllerBase
         try
         {
             TicketSearchParameters p1 = new();
-            p1.Description = "Desc ";
+            p1.Description = "seed 200";
             var res = await _ticketRepository.Search(p1);
             return res;
         }

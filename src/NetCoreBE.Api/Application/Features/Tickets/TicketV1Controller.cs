@@ -49,7 +49,7 @@ public class TicketV1Controller : ControllerBase
     }
 
 #if DEBUG
-    [HttpPost("Seed/{id}")]
+    [HttpPost("Seed/{countToCreate}")]
     public async Task<ActionResult<List<Ticket>>> Seed(int countToCreate, [FromServices] ITicketRepository repository)
     {
         var res = await repository.Seed(countToCreate, null, "SEED API").ConfigureAwait(false);
