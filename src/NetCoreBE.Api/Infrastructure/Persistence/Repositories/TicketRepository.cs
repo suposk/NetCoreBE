@@ -35,7 +35,8 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
             if (!string.IsNullOrWhiteSpace(ticketSearchParameters.Description))
             {
                 var description = ticketSearchParameters.Description.Trim();
-                collection = collection.Where(a => a.Description == description);
+                //collection = collection.Where(a => a.Description == description);
+                collection = collection.Where(a => a.Description.Contains(description));
             }
 
             if (!string.IsNullOrWhiteSpace(ticketSearchParameters.SearchQuery))
