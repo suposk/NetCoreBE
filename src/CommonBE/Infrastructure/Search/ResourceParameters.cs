@@ -19,5 +19,5 @@ public class ResourceParameters
         set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
     }
 
-    public virtual string OrderBy { get; set; }
+    public virtual string OrderBy { get; set; } = nameof(EntityBase.CreatedAt);
 }

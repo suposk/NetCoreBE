@@ -57,11 +57,6 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
                 collection = collection.ApplySort(ticketSearchParameters.OrderBy,
                     propertyMappingDictionary);
             }
-
-            //return PagedList<Ticket>.Create(collection,
-            //    ticketSearchPagingParameters.PageNumber,
-            //    ticketSearchPagingParameters.PageSize);
-
             var res = await PagedList<Ticket>.CreateAsync(collection,
                 ticketSearchParameters.PageNumber,
                 ticketSearchParameters.PageSize);
@@ -85,10 +80,12 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
                     Description = $"Description {i}{(count >= 50? $" seed {count}": null)}",
                     RequestedFor = $"RequestedFor {i}",
                     IsOnBehalf = i % 2 == 0,
+                    CreatedAt = DateTime.UtcNow, //test only
                 };
                 if (countExisintg == 0)
                     ticket.Id = i.GetSimpleGuidString();
                 list.Add(ticket);
+                await Task.Delay(10);
             }
             _repository.AddRange(list, UserId);
             await _repository.SaveChangesAsync();
