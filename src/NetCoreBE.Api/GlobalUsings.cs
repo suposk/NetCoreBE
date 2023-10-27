@@ -19,6 +19,7 @@ global using CommonBE.Domain.Events;
 global using CommonBE.Services;
 global using CommonBE.Infrastructure.ApiMiddleware;
 global using CommonBE.Infrastructure.Persistence;
+global using CommonBE.Infrastructure.Search;
 
 //Application
 global using NetCoreBE.Api.Application;
@@ -33,3 +34,4 @@ global using NetCoreBE.Api.Domain.Events;
 //Infrastructure
 global using NetCoreBE.Api.Infrastructure.Persistence;
 global using NetCoreBE.Api.Infrastructure.Persistence.Repositories;
+global using NetCoreBE.Api.Infrastructure.Search;

@@ -1,18 +1,70 @@
-﻿namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
+﻿using CommonBE.Infrastructure.Search;
+using Microsoft.EntityFrameworkCore;
+
+namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
 {
     public class TicketRepository : Repository<Ticket>, ITicketRepository
     {
-        private readonly IRepository<Ticket> _repository;        
+        private readonly IRepository<Ticket> _repository;
+        private readonly IPropertyMappingService _propertyMappingService;
+        private readonly ApiDbContext? _context;
 
-        public TicketRepository(IRepository<Ticket> repository, IApiIdentity apiIdentity, IDateTimeService dateTimeService) : base(repository.DatabaseContext, apiIdentity, dateTimeService)
+        public TicketRepository(IRepository<Ticket> repository, IApiIdentity apiIdentity, IDateTimeService dateTimeService, IPropertyMappingService propertyMappingService) 
+            : base(repository.DatabaseContext, apiIdentity, dateTimeService)
         {
-            _repository = repository;            
+            _repository = repository;
+            _propertyMappingService = propertyMappingService;
+            _context = repository.DatabaseContext as ApiDbContext;
         }
 
         public override Task<List<Ticket>> GetList()
         {
             //return _repository.GetListFilter(a => a.IsDeleted != true); //for soft delete
             return _repository.GetList();
+        }
+
+        public async Task<PagedList<Ticket>> Search(TicketSearchParameters ticketSearchParameters)
+        {
+            if (_context == null)            
+                throw new ArgumentNullException(nameof(_context));            
+            if (ticketSearchParameters == null)            
+                throw new ArgumentNullException(nameof(ticketSearchParameters));            
+
+            var collection = _context.Tickets.AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(ticketSearchParameters.Description))
+            {
+                var description = ticketSearchParameters.Description.Trim();
+                collection = collection.Where(a => a.Description == description);
+            }
+
+            if (!string.IsNullOrWhiteSpace(ticketSearchParameters.SearchQuery))
+            {
+
+                var searchQuery = ticketSearchParameters.SearchQuery.Trim();
+                collection = collection.Where(a => a.Description.Contains(searchQuery)
+                    || a.RequestedFor.Contains(searchQuery)
+                    //|| a.IsSavedInDb.Contains(searchQuery)
+                    );
+            }
+
+            if (!string.IsNullOrWhiteSpace(ticketSearchParameters.OrderBy))
+            {
+                // get property mapping dictionary
+                var propertyMappingDictionary =
+                    _propertyMappingService.GetPropertyMapping<TicketDto, Ticket>();
+                collection = collection.ApplySort(ticketSearchParameters.OrderBy,
+                    propertyMappingDictionary);
+            }
+
+            //return PagedList<Ticket>.Create(collection,
+            //    ticketSearchPagingParameters.PageNumber,
+            //    ticketSearchPagingParameters.PageSize);
+
+            var res = await PagedList<Ticket>.CreateAsync(collection,
+                ticketSearchParameters.PageNumber,
+                ticketSearchParameters.PageSize);
+            return res;
         }
 
         public async Task<List<Ticket>> Seed(int count, int? max, string UserId = "Seed")
@@ -29,7 +81,7 @@
             {
                 var ticket = new Ticket
                 {
-                    Description = $"Description {i}",
+                    Description = $"Description {i}{(count >= 50? $" seed {count}": null)}",
                     RequestedFor = $"RequestedFor {i}",
                     IsOnBehalf = i % 2 == 0,
                 };

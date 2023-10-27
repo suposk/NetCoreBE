@@ -23,30 +23,47 @@ public class TestController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<string>> Get()
+    public async Task<IEnumerable<object>> Get()
     {
         try
         {
-            var item = await _ticketRepository.GetId(_id);
-            var copy = CopyObjectHelper.CreateDeepCopyXml(item);
-            //Ticket copy = new Ticket {  CreatedAt = item.CreatedAt , Description = item.Description, Id = item.Id, 
-            //    IsOnBehalf = item.IsOnBehalf, ModifiedAt = item.ModifiedAt, RequestedFor = item.RequestedFor, Version = item.Version };
-
-            item.Description = $"{item.Description} -> Mod old ";
-            var up = await _ticketRepository.UpdateAsync(item);
-            var itemUpdated = await _ticketRepository.GetId(_id);
-            var ctx = _ticketRepository.DatabaseContext;
-            ctx.ChangeTracker.Clear();
-
-            copy.Description = $"{item.Description} -> copy ";
-            copy = await _ticketRepository2.UpdateAsync(copy);
+            TicketSearchParameters p1 = new();
+            p1.Description = "Desc ";
+            var res = await _ticketRepository.Search(p1);
+            return res;
         }
         catch (Exception ex)
         {
-
+            
         }
-        return new string[] { "value1", "value2" };
+        return new string[] { "value 1" };
     }
+
+    //[HttpGet]
+    //public async Task<IEnumerable<string>> Get()
+    //{
+    //    try
+    //    {
+    //        var item = await _ticketRepository.GetId(_id);
+    //        var copy = CopyObjectHelper.CreateDeepCopyXml(item);
+    //        //Ticket copy = new Ticket {  CreatedAt = item.CreatedAt , Description = item.Description, Id = item.Id, 
+    //        //    IsOnBehalf = item.IsOnBehalf, ModifiedAt = item.ModifiedAt, RequestedFor = item.RequestedFor, Version = item.Version };
+
+    //        item.Description = $"{item.Description} -> Mod old ";
+    //        var up = await _ticketRepository.UpdateAsync(item);
+    //        var itemUpdated = await _ticketRepository.GetId(_id);
+    //        var ctx = _ticketRepository.DatabaseContext;
+    //        ctx.ChangeTracker.Clear();
+
+    //        copy.Description = $"{item.Description} -> copy ";
+    //        copy = await _ticketRepository2.UpdateAsync(copy);
+    //    }
+    //    catch (Exception ex)
+    //    {
+
+    //    }
+    //    return new string[] { "value1", "value2" };
+    //}
 
 }
 #endif

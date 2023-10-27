@@ -48,6 +48,15 @@ public class TicketV1Controller : ControllerBase
         return res ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, $"{Delete} {id} Failed.");
     }
 
+#if DEBUG
+    [HttpPost("Seed/{id}")]
+    public async Task<ActionResult<List<Ticket>>> Seed(int countToCreate, [FromServices] ITicketRepository repository)
+    {
+        var res = await repository.Seed(countToCreate, null, "SEED API").ConfigureAwait(false);
+        return res;
+    }
+#endif
+
 }
 
 #region Post Request Body
