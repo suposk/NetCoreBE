@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CommonBE.Infrastructure.Enums;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -46,6 +48,78 @@ public class TicketV1Controller : ControllerBase
     {
         var res = await _logic.RemoveAsyncLogic(id).ConfigureAwait(false);
         return res ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, $"{Delete} {id} Failed.");
+    }
+
+    [HttpGet("Search")]    
+    [HttpHead]
+    public async Task<ActionResult<List<TicketDto>>> Search([FromQuery] TicketSearchParameters searchParameters,
+        [FromServices] ITicketRepository ticketRepository, [FromServices] IPropertyMappingService propertyMappingService,
+        [FromServices] IMapper mapper)
+    {
+        if (!propertyMappingService.ValidMappingExistsFor<TicketDto, Ticket>
+            (searchParameters.OrderBy))        
+            return BadRequest();
+        
+        var res = await ticketRepository.Search(searchParameters);   
+        var previousPageLink = res.HasPrevious ?
+            CreateResourceUri(searchParameters,
+            ResourceUriType.PreviousPage) : null;
+
+        var nextPageLink = res.HasNext ?
+            CreateResourceUri(searchParameters,
+            ResourceUriType.NextPage) : null;
+
+        var paginationMetadata = new
+        {
+            totalCount = res.TotalCount,
+            pageSize = res.PageSize,
+            currentPage = res.CurrentPage,
+            totalPages = res.TotalPages,
+            previousPageLink,
+            nextPageLink
+        };
+
+        Response.Headers.Add("X-Pagination",
+            JsonSerializer.Serialize(paginationMetadata));
+
+        return Ok(mapper.Map<IEnumerable<TicketDto>>(res));
+
+    }
+
+    private string CreateResourceUri(TicketSearchParameters parameters, ResourceUriType type)    
+    {
+        switch (type)
+        {
+            case ResourceUriType.PreviousPage:
+                return Url.Link("Search",
+                  new
+                  {
+                      orderBy = parameters.OrderBy,
+                      pageNumber = parameters.PageNumber - 1,
+                      pageSize = parameters.PageSize,                      
+                      searchQuery = parameters.SearchQuery
+                  });
+            case ResourceUriType.NextPage:
+                return Url.Link("Search",
+                  new
+                  {
+                      orderBy = parameters.OrderBy,
+                      pageNumber = parameters.PageNumber + 1,
+                      pageSize = parameters.PageSize,                      
+                      searchQuery = parameters.SearchQuery
+                  });
+
+            default:
+                return Url.Link("Search",
+                new
+                {
+                    orderBy = parameters.OrderBy,
+                    pageNumber = parameters.PageNumber,
+                    pageSize = parameters.PageSize,                    
+                    searchQuery = parameters.SearchQuery
+                });
+        }
+
     }
 
 #if DEBUG
