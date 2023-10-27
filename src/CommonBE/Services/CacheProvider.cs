@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using System.Xml.Linq;
 
 namespace CommonBE.Services;
 
@@ -33,32 +32,27 @@ public interface ICacheProvider
 
 public class KeyIdPair
 {
-    public KeyIdPair(string key, string value, string id)
+    public KeyIdPair(string key, string id)
     {
         Key = key;
-        Id = id;
-        Value = value;
+        Id = id;       
     }
     public string? Key { get; set; }
     public string? Id { get; set; }
-    public string? Value { get; set; }
+    //public string? Value { get; set; } //not used
 
     #region GetHashCode and Equals
 
     public override int GetHashCode()
     {
-        if (Key.HasValueExt() && Id.HasValueExt() && Value.HasValueExt())
-            return Key.GetHashCode() ^ Id.GetHashCode() ^ Value.GetHashCode();
         if (Key.HasValueExt() && Id.HasValueExt())
             return Key.GetHashCode() ^ Id.GetHashCode();
-        if (Key.HasValueExt() && Value.HasValueExt())
-            return Key.GetHashCode() ^ Value.GetHashCode();
         if (Key.HasValueExt())
             return Key.GetHashCode();
         return base.GetHashCode();
     }
 
-    public override string ToString() => $"Key={Key} Id={Id} Value={Value}";
+    public override string ToString() => $"Key={Key} Id={Id}";
     
     public override bool Equals(object obj)
     {
@@ -70,7 +64,7 @@ public class KeyIdPair
             return false;
 
         KeyIdPair rhs = obj as KeyIdPair;
-        return Key == rhs.Key && Value == rhs.Value && Id == rhs.Id;
+        return Key == rhs.Key && Id == rhs.Id;
     }
 
     public static bool operator ==(KeyIdPair lhs, KeyIdPair rhs) { return Equals(lhs, rhs); }
@@ -84,52 +78,50 @@ public class CacheProvider : ICacheProvider
     private readonly IMemoryCache _cache;
     private readonly ILogger<CacheProvider> _logger;
     private readonly ConcurrentDictionary<KeyIdPair, object> _Dic = new();
+
     public CacheProvider(IMemoryCache cache, ILogger<CacheProvider> logger)
     {
         _cache = cache;
         _logger = logger;
     }
 
-    public T GetFromCache<T>(string key) where T : class
-    {
-        var cachedResponse = _cache.Get(key);
-        return cachedResponse as T;
-    }
+    /// <summary>
+    /// Either {key}-{id} or just {key} if id is null or empty
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    string GetCombinedKey(string key, string id) => $"{(!string.IsNullOrWhiteSpace(id) ? $"{key}-{id}" : key)}";
 
-    public T GetFromCache<T>(string key, string id) where T : class
-    {
-        var cachedResponse = _cache.Get($"{key}-{id}");
-        return cachedResponse as T;
-    }
+    public T GetFromCache<T>(string key) where T : class => _cache.Get(key) as T;
 
-    public void SetCache<T>(string key, T value) where T : class
-    {
-        SetCache(key, value, ICacheProvider.CacheSeconds);
-    }
+    public T GetFromCache<T>(string key, string id) where T : class => _cache.Get(GetCombinedKey(key, id)) as T;
+
+    public void SetCache<T>(string key, T value) where T : class => SetCache(key, value, ICacheProvider.CacheSeconds);
 
     public void SetCache<T>(string key, T value, int seconds = ICacheProvider.CacheSeconds) where T : class
     {
-        _Dic.AddOrUpdate(new KeyIdPair(key, value?.ToString(), null), value, (k, v) => value);
+        _Dic.AddOrUpdate(new KeyIdPair(key, null), value, (k, v) => value);
         _cache.Set(key, value, DateTimeOffset.Now.AddSeconds(seconds));
     }
 
     public void SetCache<T>(string key, string id, T value) where T : class
     {
-        //SetCache($"{key}-{id}", value);
-        _Dic.AddOrUpdate(new KeyIdPair(key, value?.ToString(), id), value, (k, v) => value);
-        _cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
+        _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);
+        //_cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
+        _cache.Set(GetCombinedKey(key, id), value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
     }
 
     public void SetCache<T>(string key, string id, T value, int seconds = ICacheProvider.CacheSeconds) where T : class
     {
         //SetCache($"{key}-{id}", value, seconds);
-        _Dic.AddOrUpdate(new KeyIdPair(key, value?.ToString(), id), value, (k, v) => value);
-        _cache.Set($"{key}-{id}", value, DateTimeOffset.Now.AddSeconds(seconds));
+        _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);        
+        _cache.Set(GetCombinedKey(key, id), value, DateTimeOffset.Now.AddSeconds(seconds));
     }
 
     public void ClearCache(string key)
     {        
-        _cache.Remove($"{key}");
+        _cache.Remove(key);
         var allPairs = _Dic.Where(x => x.Key.Key == key).Select(a => a.Key).ToList();
         foreach (var pair in allPairs)
         {
@@ -140,7 +132,7 @@ public class CacheProvider : ICacheProvider
 
     public void ClearCache(string key, string id)
     {
-        _cache.Remove($"{key}-{id}");
+        _cache.Remove(GetCombinedKey(key, id));
         var allPairs = _Dic.Where(x => x.Key.Key == key).Select(a => a.Key).ToList();
         foreach (var pair in allPairs)
         {
@@ -156,7 +148,7 @@ public class CacheProvider : ICacheProvider
         foreach (var pair in allPairs)
         {
             _Dic.TryRemove(pair, out _);
-            _cache.Remove($"{pair.Key}-{pair.Id}");
+            _cache.Remove(GetCombinedKey(pair.Key,pair.Id));
         }
     }
 
@@ -164,7 +156,7 @@ public class CacheProvider : ICacheProvider
     {
         var res = await _cache.GetOrCreateAsync(key, async entry => await new AsyncLazy<T>(async () =>
         {
-            _Dic.AddOrUpdate(new KeyIdPair(key, null, null), string.Empty, (k, v) => v);
+            _Dic.AddOrUpdate(new KeyIdPair(key, null), string.Empty, (k, v) => v);
             entry.SlidingExpiration = TimeSpan.FromSeconds(seconds);
             return await taskFactory.Invoke();
         }).Value);
@@ -178,10 +170,10 @@ public class CacheProvider : ICacheProvider
 
     public async Task<T> GetOrAddAsync<T>(string key, string id, int seconds, Func<Task<T>> taskFactory)
     {
-        var comKey = $"{key}-{id}";
+        var comKey = GetCombinedKey(key, id);
         var res = await _cache.GetOrCreateAsync(comKey, async entry => await new AsyncLazy<T>(async () =>
         {
-            _Dic.AddOrUpdate(new KeyIdPair(key, null, id?.ToString()), id, (k, v) => v);
+            _Dic.AddOrUpdate(new KeyIdPair(key, id?.ToString()), id, (k, v) => v);
             entry.SlidingExpiration = TimeSpan.FromSeconds(seconds);
             return await taskFactory.Invoke();
         }).Value);

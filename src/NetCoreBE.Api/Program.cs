@@ -49,6 +49,9 @@ services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBear
 
 services.RegisterCommonBEServices(Configuration);
 
+// register PropertyMappingService for Search functionality
+services.AddTransient<IPropertyMappingService, PropertyMappingService>();
+
 services.AddScoped(typeof(IRepository<>), typeof(ApiRepositoryBase<>));
 services.AddScoped(typeof(IDomainLogicBase<,>), typeof(ApiDomainLogicBase<,>));
 

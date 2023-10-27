@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NetCoreBE.Api.Application.Features.Tickets;
+using System.Drawing.Printing;
 
 #if DEBUG
 namespace NetCoreBE.Api.Application;
@@ -22,31 +23,57 @@ public class TestController : ControllerBase
         _ticketRepository2 = ticketRepository2;
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<string>> Get()
+    //[HttpGet]
+    [HttpGet("Search/{text}")]
+    public async Task<IEnumerable<object>> Search(string text)
     {
         try
         {
-            var item = await _ticketRepository.GetId(_id);
-            var copy = CopyObjectHelper.CreateDeepCopyXml(item);
-            //Ticket copy = new Ticket {  CreatedAt = item.CreatedAt , Description = item.Description, Id = item.Id, 
-            //    IsOnBehalf = item.IsOnBehalf, ModifiedAt = item.ModifiedAt, RequestedFor = item.RequestedFor, Version = item.Version };
+            TicketSearchParameters p1 = new();
+            p1.Description = text;
+            var res = await _ticketRepository.Search(p1);
 
-            item.Description = $"{item.Description} -> Mod old ";
-            var up = await _ticketRepository.UpdateAsync(item);
-            var itemUpdated = await _ticketRepository.GetId(_id);
-            var ctx = _ticketRepository.DatabaseContext;
-            ctx.ChangeTracker.Clear();
+            var previousPageLink = res.HasPrevious;
+            var nextPageLink = res.HasNext;
+            var totalCount = res.TotalCount;
+            var pageSize = res.PageSize;
+            var currentPage = res.CurrentPage;
+            var totalPages = res.TotalPages;
 
-            copy.Description = $"{item.Description} -> copy ";
-            copy = await _ticketRepository2.UpdateAsync(copy);
+            return res;
         }
         catch (Exception ex)
         {
-
+            
         }
-        return new string[] { "value1", "value2" };
+        return new string[] { "value 1" };
     }
+
+    //[HttpGet]
+    //public async Task<IEnumerable<string>> Get()
+    //{
+    //    try
+    //    {
+    //        var item = await _ticketRepository.GetId(_id);
+    //        var copy = CopyObjectHelper.CreateDeepCopyXml(item);
+    //        //Ticket copy = new Ticket {  CreatedAt = item.CreatedAt , Description = item.Description, Id = item.Id, 
+    //        //    IsOnBehalf = item.IsOnBehalf, ModifiedAt = item.ModifiedAt, RequestedFor = item.RequestedFor, Version = item.Version };
+
+    //        item.Description = $"{item.Description} -> Mod old ";
+    //        var up = await _ticketRepository.UpdateAsync(item);
+    //        var itemUpdated = await _ticketRepository.GetId(_id);
+    //        var ctx = _ticketRepository.DatabaseContext;
+    //        ctx.ChangeTracker.Clear();
+
+    //        copy.Description = $"{item.Description} -> copy ";
+    //        copy = await _ticketRepository2.UpdateAsync(copy);
+    //    }
+    //    catch (Exception ex)
+    //    {
+
+    //    }
+    //    return new string[] { "value1", "value2" };
+    //}
 
 }
 #endif

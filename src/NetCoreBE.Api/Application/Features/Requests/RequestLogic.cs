@@ -47,21 +47,31 @@ public class RequestLogic : DomainLogicBase<Request, RequestDto>, IRequestLogic
     //    return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(repo);
     //}
 
-    //With Cache
+    ////With Cache v1
+    //public async override Task<RequestDto> GetIdLogic(string id)
+    //{
+    //    var cache = _cacheProvider.GetFromCache<RequestDto>(RequestLogicCache.GetIdLogic, id);
+    //    if (cache != null)
+    //        return cache;
+    //    else
+    //    { 
+    //        var repo = await _repository.GetId(id).ConfigureAwait(false);
+    //        if (repo == null)
+    //            throw new NotFoundException($"{nameof(GetIdLogic)} id", id);
+    //        var mapped = Mapper.Map<RequestDto>(repo);
+    //        _cacheProvider.SetCache(RequestLogicCache.GetIdLogic, id, mapped, 1 * 60 );
+    //        return mapped;
+    //    };
+    //}
+
+    //With Cache v2
     public async override Task<RequestDto> GetIdLogic(string id)
     {
-        var cache = _cacheProvider.GetFromCache<RequestDto>(RequestLogicCache.GetIdLogic, id);
-        if (cache != null)
-            return cache;
-        else
-        { 
+        return await _cacheProvider.GetOrAddAsync(RequestLogicCache.GetIdLogic, id, 1 * 60, async () =>
+        {
             var repo = await _repository.GetId(id).ConfigureAwait(false);
-            if (repo == null)
-                throw new NotFoundException($"{nameof(GetIdLogic)} id", id);
-            var mapped = Mapper.Map<RequestDto>(repo);
-            _cacheProvider.SetCache(RequestLogicCache.GetIdLogic, id, mapped, 1 * 60 );
-            return mapped;
-        };
+            return repo == null ? throw new NotFoundException($"{nameof(GetIdLogic)} id", id) : Mapper.Map<RequestDto>(repo);
+        });
     }
 
     public override Task<Request> AddAsyncLogicEntity(Request entity, bool saveChanges = true)
