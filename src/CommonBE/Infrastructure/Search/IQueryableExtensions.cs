@@ -28,7 +28,8 @@ public static class IQueryableExtensions
 
             // if the sort option ends with with " desc", we order
             // descending, ortherwise ascending
-            var orderDescending = trimmedOrderByClause.EndsWith(" desc");
+            var orderDescending = trimmedOrderByClause.EndsWith(" desc", StringComparison.OrdinalIgnoreCase)
+                || trimmedOrderByClause.EndsWith("_desc", StringComparison.OrdinalIgnoreCase) || trimmedOrderByClause.EndsWith("-desc", StringComparison.OrdinalIgnoreCase);
 
             // remove " asc" or " desc" from the orderBy clause, so we 
             // get the property name to look for in the mapping dictionary

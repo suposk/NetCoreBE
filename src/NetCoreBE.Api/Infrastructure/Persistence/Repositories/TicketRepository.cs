@@ -1,7 +1,4 @@
-﻿using CommonBE.Infrastructure.Search;
-using Microsoft.EntityFrameworkCore;
-
-namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
+﻿namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
 {
     public class TicketRepository : Repository<Ticket>, ITicketRepository
     {
@@ -23,43 +20,42 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
             return _repository.GetList();
         }
 
-        public async Task<PagedList<Ticket>> Search(TicketSearchParameters ticketSearchParameters)
+        public async Task<PagedList<Ticket>> Search(TicketSearchParameters searchParameters)
         {
             if (_context == null)            
                 throw new ArgumentNullException(nameof(_context));            
-            if (ticketSearchParameters == null)            
-                throw new ArgumentNullException(nameof(ticketSearchParameters));            
+            if (searchParameters == null)            
+                throw new ArgumentNullException(nameof(searchParameters));            
 
             var collection = _context.Tickets.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(ticketSearchParameters.Description))
+            if (!string.IsNullOrWhiteSpace(searchParameters.Description))
             {
-                var description = ticketSearchParameters.Description.Trim();
+                var description = searchParameters.Description.Trim();
                 //collection = collection.Where(a => a.Description == description);
                 collection = collection.Where(a => a.Description.Contains(description));
             }
 
-            if (!string.IsNullOrWhiteSpace(ticketSearchParameters.SearchQuery))
+            if (!string.IsNullOrWhiteSpace(searchParameters.SearchQuery))
             {
-
-                var searchQuery = ticketSearchParameters.SearchQuery.Trim();
+                var searchQuery = searchParameters.SearchQuery.Trim();
                 collection = collection.Where(a => a.Description.Contains(searchQuery)
                     || a.RequestedFor.Contains(searchQuery)
                     //|| a.IsSavedInDb.Contains(searchQuery)
                     );
             }
 
-            if (!string.IsNullOrWhiteSpace(ticketSearchParameters.OrderBy))
+            //if (searchParameters.IsActive.HasValue) //if Entity has IsDeleted prop             
+            //    collection = collection.Where(a => searchParameters.IsActive.Value ? a.IsDeleted != true : a.IsDeleted == true);            
+
+            if (!string.IsNullOrWhiteSpace(searchParameters.OrderBy))
             {
                 // get property mapping dictionary
-                var propertyMappingDictionary =
-                    _propertyMappingService.GetPropertyMapping<TicketDto, Ticket>();
-                collection = collection.ApplySort(ticketSearchParameters.OrderBy,
-                    propertyMappingDictionary);
+                var propertyMappingDictionary = _propertyMappingService.GetPropertyMapping<TicketDto, Ticket>();
+                collection = collection.ApplySort(searchParameters.OrderBy, propertyMappingDictionary);
             }
             var res = await PagedList<Ticket>.CreateAsync(collection,
-                ticketSearchParameters.PageNumber,
-                ticketSearchParameters.PageSize);
+                searchParameters.PageNumber,
+                searchParameters.PageSize);
             return res;
         }
 
