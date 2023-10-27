@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NetCoreBE.Api.Application.Features.Tickets;
+using System.Drawing.Printing;
 
 #if DEBUG
 namespace NetCoreBE.Api.Application;
@@ -22,14 +23,23 @@ public class TestController : ControllerBase
         _ticketRepository2 = ticketRepository2;
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<object>> Get()
+    //[HttpGet]
+    [HttpGet("Search/{text}")]
+    public async Task<IEnumerable<object>> Search(string text)
     {
         try
         {
             TicketSearchParameters p1 = new();
-            p1.Description = "seed 200";
+            p1.Description = text;
             var res = await _ticketRepository.Search(p1);
+
+            var previousPageLink = res.HasPrevious;
+            var nextPageLink = res.HasNext;
+            var totalCount = res.TotalCount;
+            var pageSize = res.PageSize;
+            var currentPage = res.CurrentPage;
+            var totalPages = res.TotalPages;
+
             return res;
         }
         catch (Exception ex)
