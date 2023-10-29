@@ -52,7 +52,7 @@ public class TicketV1Controller : ControllerBase
 
     [HttpGet("Search")]    
     [HttpHead]
-    public async Task<ActionResult<List<TicketDto>>> Search([FromQuery] TicketSearchParameters searchParameters,
+    public async Task<ActionResult<PagedListDto<TicketDto>>> Search([FromQuery] TicketSearchParameters searchParameters,
         [FromServices] ITicketRepository ticketRepository, [FromServices] IPropertyMappingService propertyMappingService,
         [FromServices] IMapper mapper)
     {
@@ -79,11 +79,11 @@ public class TicketV1Controller : ControllerBase
             nextPageLink
         };
 
-        Response.Headers.Add("X-Pagination",
-            JsonSerializer.Serialize(paginationMetadata));
-
-        return Ok(mapper.Map<IEnumerable<TicketDto>>(res));
-
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+        var dtos = mapper.Map<List<TicketDto>>(res);
+        var mapped = new PagedListDto<TicketDto>(dtos, res.TotalCount, res.CurrentPage, res.PageSize);
+        var result = new PagedResultDto<TicketDto>(mapped);
+        return Ok(result);
     }
 
     private string CreateResourceUri(TicketSearchParameters parameters, ResourceUriType type)    
