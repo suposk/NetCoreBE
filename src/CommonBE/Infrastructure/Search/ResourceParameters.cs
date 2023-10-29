@@ -9,7 +9,7 @@ public class ResourceParameters
 
     public bool? IsActive { get; set; }    
     public string? SearchQuery { get; set; }
-    public int PageNumber { get; set; } = 1;
+    public int CurrentPage { get; set; } = 1;
 
     private int _pageSize = 10;
     public int PageSize

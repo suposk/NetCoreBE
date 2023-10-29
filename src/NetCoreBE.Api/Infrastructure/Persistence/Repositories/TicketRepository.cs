@@ -54,7 +54,7 @@
                 collection = collection.ApplySort(searchParameters.OrderBy, propertyMappingDictionary);
             }
             var res = await PagedList<Ticket>.CreateAsync(collection,
-                searchParameters.PageNumber,
+                searchParameters.CurrentPage,
                 searchParameters.PageSize);
             return res;
         }

@@ -9,12 +9,12 @@ public class PagedList<T> : List<T>
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPages;
 
-    public PagedList(List<T> items, int count, int pageNumber, int pageSize)
+    public PagedList(List<T> items, int totalPages, int currentPage, int pageSize)
     {
-        TotalCount = count;
+        TotalCount = totalPages;
+        CurrentPage = currentPage;
         PageSize = pageSize;
-        CurrentPage = pageNumber;
-        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+        TotalPages = (int)Math.Ceiling(totalPages / (double)pageSize);
         AddRange(items);
     }
     public static PagedList<T> Create(IQueryable<T> source, int pageNumber, int pageSize)

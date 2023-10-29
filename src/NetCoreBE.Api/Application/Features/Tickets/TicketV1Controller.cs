@@ -90,7 +90,7 @@ public class TicketV1Controller : ControllerBase
                   new
                   {
                       orderBy = parameters.OrderBy,
-                      pageNumber = parameters.PageNumber - 1,
+                      pageNumber = parameters.CurrentPage - 1,
                       pageSize = parameters.PageSize,                      
                       searchQuery = parameters.SearchQuery
                   });
@@ -99,7 +99,7 @@ public class TicketV1Controller : ControllerBase
                   new
                   {
                       orderBy = parameters.OrderBy,
-                      pageNumber = parameters.PageNumber + 1,
+                      pageNumber = parameters.CurrentPage + 1,
                       pageSize = parameters.PageSize,                      
                       searchQuery = parameters.SearchQuery
                   });
@@ -109,7 +109,7 @@ public class TicketV1Controller : ControllerBase
                 new
                 {
                     orderBy = parameters.OrderBy,
-                    pageNumber = parameters.PageNumber,
+                    pageNumber = parameters.CurrentPage,
                     pageSize = parameters.PageSize,                    
                     searchQuery = parameters.SearchQuery
                 });
