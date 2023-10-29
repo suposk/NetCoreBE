@@ -8,7 +8,6 @@ public class PagedListDto<T> : List<T>
     public int TotalCount { get; private set; }
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPages;
-    //public List<T> Results => this.ToList();
 
     public PagedListDto(List<T> items, int totalPages, int currentPage, int pageSize)
     {
