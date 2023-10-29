@@ -61,13 +61,8 @@ public class TicketV1Controller : ControllerBase
             return BadRequest();
         
         var res = await ticketRepository.Search(searchParameters);   
-        var previousPageLink = res.HasPrevious ?
-            CreateResourceUri(searchParameters,
-            ResourceUriType.PreviousPage) : null;
-
-        var nextPageLink = res.HasNext ?
-            CreateResourceUri(searchParameters,
-            ResourceUriType.NextPage) : null;
+        var previousPageLink = res.HasPrevious ? CreateResourceUri(searchParameters, ResourceUriType.PreviousPage) : null;
+        var nextPageLink = res.HasNext ? CreateResourceUri(searchParameters, ResourceUriType.NextPage) : null;
 
         var paginationMetadata = new
         {
