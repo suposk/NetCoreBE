@@ -16,6 +16,6 @@ public class PagedResultDto<T>
         PageSize = values.PageSize;
         CurrentPage = values.CurrentPage;
         TotalPages = values.TotalPages;
-        Results = values.Results;
+        Results = values.ToList();
     }
 }
