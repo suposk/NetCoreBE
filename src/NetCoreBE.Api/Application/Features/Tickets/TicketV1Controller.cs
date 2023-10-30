@@ -30,14 +30,14 @@ public class TicketV1Controller : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<TicketDto>>> Get()
     {
-        Log.Information("Get GetListLogic");
+        Log.Information("GetListLogic");
         return Ok(await _logic.GetListLogic().ConfigureAwait(false));
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<TicketDto>> Get(string id)
     {
-        Log.Information("Get GetIdLogic {id}", id);
+        Log.Information("GetIdLogic {id}", id);
         return Ok(await _logic.GetIdLogic(id).ConfigureAwait(false));
     }
 
