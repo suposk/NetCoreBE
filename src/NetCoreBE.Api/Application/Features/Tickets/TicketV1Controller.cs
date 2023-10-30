@@ -52,31 +52,29 @@ public class TicketV1Controller : ControllerBase
 
     [HttpGet("SearchQuery")]    
     [HttpHead]
-    public async Task<ActionResult<PagedListDto<TicketDto>>> SearchQuery([FromQuery] TicketSearchParameters searchParameters,
-        [FromServices] ITicketRepository ticketRepository, [FromServices] IPropertyMappingService propertyMappingService,
-        [FromServices] IMapper mapper)
+    public async Task<ActionResult<PagedListDto<TicketDto>>> SearchQuery(
+        [FromQuery] TicketSearchParameters searchParameters,        
+        [FromServices] IMediator mediator)
     {
-        if (!propertyMappingService.ValidMappingExistsFor<TicketDto, Ticket>(searchParameters.OrderBy))        
-            return BadRequest();
-        
-        var repo = await ticketRepository.Search(searchParameters);   
-        var previousPageLink = repo.HasPrevious ? CreateResourceUri(searchParameters, ResourceUriType.PreviousPage) : null;
-        var nextPageLink = repo.HasNext ? CreateResourceUri(searchParameters, ResourceUriType.NextPage) : null;
+        var query = new SearchQuery { SearchParameters = searchParameters };
+        var res = await mediator.Send(query).ConfigureAwait(false);   
+        if (res is null)        
+            return NotFound();
+
+        var previousPageLink = res.HasPrevious ? CreateResourceUri(searchParameters, ResourceUriType.PreviousPage) : null;
+        var nextPageLink = res.HasNext ? CreateResourceUri(searchParameters, ResourceUriType.NextPage) : null;
 
         var paginationMetadata = new
         {
-            totalCount = repo.TotalCount,
-            pageSize = repo.PageSize,
-            currentPage = repo.CurrentPage,
-            totalPages = repo.TotalPages,
+            totalCount = res.TotalCount,
+            pageSize = res.PageSize,
+            currentPage = res.CurrentPage,
+            totalPages = res.TotalPages,
             previousPageLink,
             nextPageLink
         };
-
         Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
-        var dtos = mapper.Map<List<TicketDto>>(repo.Results);
-        var res = new PagedListDto<TicketDto>(dtos, repo.TotalCount, repo.CurrentPage, repo.PageSize);
-        return Ok(res);
+        return res;
     }
 
     private string CreateResourceUri(TicketSearchParameters parameters, ResourceUriType type)    
@@ -84,7 +82,7 @@ public class TicketV1Controller : ControllerBase
         switch (type)
         {
             case ResourceUriType.PreviousPage:
-                return Url.Link("Search",
+                return Url.Link("SearchQuery",
                   new
                   {
                       orderBy = parameters.OrderBy,
@@ -93,7 +91,7 @@ public class TicketV1Controller : ControllerBase
                       searchQuery = parameters.SearchQuery
                   });
             case ResourceUriType.NextPage:
-                return Url.Link("Search",
+                return Url.Link("SearchQuery",
                   new
                   {
                       orderBy = parameters.OrderBy,
@@ -103,7 +101,7 @@ public class TicketV1Controller : ControllerBase
                   });
 
             default:
-                return Url.Link("Search",
+                return Url.Link("SearchQuery",
                 new
                 {
                     orderBy = parameters.OrderBy,
