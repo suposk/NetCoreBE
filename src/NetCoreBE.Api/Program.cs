@@ -1,14 +1,11 @@
-using CommonBE.Infrastructure.Enums;
 using MediatR.Pipeline;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Identity.Web;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-using CommonBE.Infrastructure.Interceptors;
 using FluentValidation.AspNetCore;
-using CommonBE.Infrastructure;
 using Carter;
 using Serilog;
+using CommonCleanArch.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

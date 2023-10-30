@@ -13,16 +13,17 @@ global using Contracts.Common;
 global using Contracts.Types;
 global using Contracts.Dtos;
 
-//CommonBE
-global using CommonBE;
-global using CommonBE.Base;
-global using CommonBE.Helpers;
-global using CommonBE.CustomExceptions;
-global using CommonBE.Domain.Events;
-global using CommonBE.Services;
-global using CommonBE.Infrastructure.ApiMiddleware;
-global using CommonBE.Infrastructure.Persistence;
-global using CommonBE.Infrastructure.Search;
+//CommonCleanArch
+global using CommonCleanArch;
+global using CommonCleanArch.Base;
+global using CommonCleanArch.Helpers;
+global using CommonCleanArch.CustomExceptions;
+global using CommonCleanArch.Domain.Events;
+global using CommonCleanArch.Services;
+global using CommonCleanArch.Infrastructure.ApiMiddleware;
+global using CommonCleanArch.Infrastructure.Enums;
+global using CommonCleanArch.Infrastructure.Persistence;
+global using CommonCleanArch.Infrastructure.Search;
 
 //Application
 global using NetCoreBE.Api.Application;

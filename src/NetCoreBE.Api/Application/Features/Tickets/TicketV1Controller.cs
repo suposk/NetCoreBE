@@ -1,4 +1,4 @@
-﻿using CommonBE.Infrastructure.Enums;
+﻿using CommonCleanArch.Infrastructure.Enums;
 using Contracts.Common;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
