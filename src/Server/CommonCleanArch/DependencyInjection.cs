@@ -12,7 +12,7 @@ public static class DependencyInjection
     /// <param name="services"></param>
     /// <param name="configuration"></param>
     /// <returns></returns>
-    public static IServiceCollection RegisterCommonBEServices(this IServiceCollection services, ConfigurationManager? configuration = null)
+    public static IServiceCollection RegisterCommonCleanArchServices(this IServiceCollection services, ConfigurationManager? configuration = null)
     {
         services.AddHttpContextAccessor();
         services.AddScoped<IApiIdentity, ApiIdentity>();

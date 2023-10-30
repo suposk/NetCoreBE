@@ -49,7 +49,7 @@ services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBear
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddInMemoryTokenCaches();
 
-services.RegisterCommonBEServices(Configuration);
+services.RegisterCommonCleanArchServices(Configuration);
 
 // register PropertyMappingService for Search functionality
 services.AddTransient<IPropertyMappingService, PropertyMappingService>();
