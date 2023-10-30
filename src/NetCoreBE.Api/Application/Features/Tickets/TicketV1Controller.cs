@@ -1,5 +1,7 @@
 ﻿using CommonBE.Infrastructure.Enums;
+using Contracts.Common;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,21 +19,32 @@ namespace NetCoreBE.Api.Application.Features.Tickets;
 public class TicketV1Controller : ControllerBase
 {
     private readonly ITicketLogic _logic;
+    private readonly ILogger<TicketV1Controller> _logger;
 
-    public TicketV1Controller(ITicketLogic logic)
+    public TicketV1Controller(ITicketLogic logic, ILogger<TicketV1Controller> logger)
     {
         _logic = logic;
+        _logger = logger;
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<TicketDto>>> Get() => Ok(await _logic.GetListLogic().ConfigureAwait(false));
+    public async Task<ActionResult<List<TicketDto>>> Get()
+    {
+        Log.Information("Get GetListLogic");
+        return Ok(await _logic.GetListLogic().ConfigureAwait(false));
+    }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TicketDto>> Get(string id) => Ok(await _logic.GetIdLogic(id).ConfigureAwait(false));
+    public async Task<ActionResult<TicketDto>> Get(string id)
+    {
+        Log.Information("Get GetIdLogic {id}", id);
+        return Ok(await _logic.GetIdLogic(id).ConfigureAwait(false));
+    }
 
     [HttpPost]
     public async Task<ActionResult<TicketDto>> Post([FromBody] TicketDto dto)
     {
+        Log.Information("Post Starting {@dto}", dto);
         var res = await _logic.AddAsyncLogic(dto).ConfigureAwait(false);
         return res != null ? Ok(res) : StatusCode(StatusCodes.Status500InternalServerError, $"{Post} {dto} Failed.");
     }
@@ -39,6 +52,7 @@ public class TicketV1Controller : ControllerBase
     [HttpPut()]
     public async Task<ActionResult<TicketDto>> Put(TicketDto dto)
     {
+        Log.Information("Put Starting {@dto}", dto);
         var res = await _logic.UpdateAsyncLogic(dto).ConfigureAwait(false);
         return res != null ? Ok(res) : StatusCode(StatusCodes.Status500InternalServerError, $"{Put} {dto} Failed.");
     }
@@ -46,6 +60,7 @@ public class TicketV1Controller : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(string id)
     {
+        Log.Information("Delete Starting {id}", id);
         var res = await _logic.RemoveAsyncLogic(id).ConfigureAwait(false);
         return res ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, $"{Delete} {id} Failed.");
     }
@@ -53,6 +68,7 @@ public class TicketV1Controller : ControllerBase
     [HttpGet("Search")]    
     public async Task<ActionResult<PagedListDto<TicketDto>>> Search(TicketSearchParameters searchParameters, [FromServices] IMediator mediator)
     {
+        Log.Information("Search Starting {@searchParameters}", searchParameters);
         var query = new SearchQuery { SearchParameters = searchParameters };
         var res = await mediator.Send(query).ConfigureAwait(false);
         if (res is null)
@@ -77,7 +93,9 @@ public class TicketV1Controller : ControllerBase
     public async Task<ActionResult<PagedListDto<TicketDto>>> SearchQuery(
         [FromQuery] TicketSearchParameters searchParameters,        
         [FromServices] IMediator mediator)
-    {
+    {        
+        _logger.LogInformation("Starting {@searchParameters}", searchParameters);                
+        //Log.Information("SearchQuery Starting {@searchParameters}", searchParameters);
         var query = new SearchQuery { SearchParameters = searchParameters };
         var res = await mediator.Send(query).ConfigureAwait(false);   
         if (res is null)        

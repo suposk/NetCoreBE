@@ -126,7 +126,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.MapCarter();
-app.UseSerilogRequestLogging();
+//app.UseSerilogRequestLogging();
 
 using (var scope = app.Services.CreateScope())
 {
