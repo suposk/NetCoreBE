@@ -24,6 +24,15 @@ var Configuration = builder.Configuration;
 var myType = typeof(Program);
 var _namespace = myType.Namespace;
 
+using var loggerFactory = LoggerFactory.Create(builder =>
+{
+    builder.SetMinimumLevel(LogLevel.Information);
+    builder.AddConsole();
+    builder.AddEventSourceLogger();
+});
+var _logger = loggerFactory.CreateLogger(nameof(Program));
+_logger.LogInformation($"Created _logger");
+
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 services.AddMvc(options => //Validation filter
 {
