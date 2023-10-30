@@ -7,6 +7,9 @@ global using AutoMapper;
 global using FluentValidation;
 
 global using SharedKernel.Base;
+
+//Contracts
+global using Contracts.Common;
 global using Contracts.Types;
 global using Contracts.Dtos;
 

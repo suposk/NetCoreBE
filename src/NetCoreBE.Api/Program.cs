@@ -8,6 +8,7 @@ using CommonBE.Infrastructure.Interceptors;
 using FluentValidation.AspNetCore;
 using CommonBE.Infrastructure;
 using Carter;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCarter();
+
+//Serilog
+builder.Host.UseSerilog((context, config) =>
+    config.ReadFrom.Configuration(context.Configuration));
 
 var services = builder.Services;
 var Configuration = builder.Configuration;
@@ -121,6 +126,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.MapCarter();
+//app.UseSerilogRequestLogging();
 
 using (var scope = app.Services.CreateScope())
 {

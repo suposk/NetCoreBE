@@ -1,5 +1,7 @@
 ﻿using CommonBE.Infrastructure.Enums;
+using Contracts.Common;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,21 +19,32 @@ namespace NetCoreBE.Api.Application.Features.Tickets;
 public class TicketV1Controller : ControllerBase
 {
     private readonly ITicketLogic _logic;
+    private readonly ILogger<TicketV1Controller> _logger;
 
-    public TicketV1Controller(ITicketLogic logic)
+    public TicketV1Controller(ITicketLogic logic, ILogger<TicketV1Controller> logger)
     {
         _logic = logic;
+        _logger = logger;
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<TicketDto>>> Get() => Ok(await _logic.GetListLogic().ConfigureAwait(false));
+    public async Task<ActionResult<List<TicketDto>>> Get()
+    {
+        Log.Information("GetListLogic");
+        return Ok(await _logic.GetListLogic().ConfigureAwait(false));
+    }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TicketDto>> Get(string id) => Ok(await _logic.GetIdLogic(id).ConfigureAwait(false));
+    public async Task<ActionResult<TicketDto>> Get(string id)
+    {
+        Log.Information("GetIdLogic {id}", id);
+        return Ok(await _logic.GetIdLogic(id).ConfigureAwait(false));
+    }
 
     [HttpPost]
     public async Task<ActionResult<TicketDto>> Post([FromBody] TicketDto dto)
     {
+        Log.Information("Post Starting {@dto}", dto);
         var res = await _logic.AddAsyncLogic(dto).ConfigureAwait(false);
         return res != null ? Ok(res) : StatusCode(StatusCodes.Status500InternalServerError, $"{Post} {dto} Failed.");
     }
@@ -39,6 +52,7 @@ public class TicketV1Controller : ControllerBase
     [HttpPut()]
     public async Task<ActionResult<TicketDto>> Put(TicketDto dto)
     {
+        Log.Information("Put Starting {@dto}", dto);
         var res = await _logic.UpdateAsyncLogic(dto).ConfigureAwait(false);
         return res != null ? Ok(res) : StatusCode(StatusCodes.Status500InternalServerError, $"{Put} {dto} Failed.");
     }
@@ -46,28 +60,49 @@ public class TicketV1Controller : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(string id)
     {
+        Log.Information("Delete Starting {id}", id);
         var res = await _logic.RemoveAsyncLogic(id).ConfigureAwait(false);
         return res ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, $"{Delete} {id} Failed.");
     }
 
     [HttpGet("Search")]    
-    [HttpHead]
-    public async Task<ActionResult<List<TicketDto>>> Search([FromQuery] TicketSearchParameters searchParameters,
-        [FromServices] ITicketRepository ticketRepository, [FromServices] IPropertyMappingService propertyMappingService,
-        [FromServices] IMapper mapper)
+    public async Task<ActionResult<PagedListDto<TicketDto>>> Search(TicketSearchParameters searchParameters, [FromServices] IMediator mediator)
     {
-        if (!propertyMappingService.ValidMappingExistsFor<TicketDto, Ticket>
-            (searchParameters.OrderBy))        
-            return BadRequest();
-        
-        var res = await ticketRepository.Search(searchParameters);   
-        var previousPageLink = res.HasPrevious ?
-            CreateResourceUri(searchParameters,
-            ResourceUriType.PreviousPage) : null;
+        Log.Information("Search Starting {@searchParameters}", searchParameters);
+        var query = new SearchQuery { SearchParameters = searchParameters };
+        var res = await mediator.Send(query).ConfigureAwait(false);
+        if (res is null)
+            return NotFound();
+        return res;
+    }
+    #region request body
+    /*
+{
+  "isActive": null,
+  "searchTerm": null,
+  "currentPage": 2,
+  "pageSize": 15,
+  "orderBy": "CreatedAt",
+  "description": "62"
+}
+    */
+#endregion
 
-        var nextPageLink = res.HasNext ?
-            CreateResourceUri(searchParameters,
-            ResourceUriType.NextPage) : null;
+    [HttpGet("SearchQuery")]    
+    [HttpHead]
+    public async Task<ActionResult<PagedListDto<TicketDto>>> SearchQuery(
+        [FromQuery] TicketSearchParameters searchParameters,        
+        [FromServices] IMediator mediator)
+    {        
+        _logger.LogInformation("Starting {@searchParameters}", searchParameters);                
+        //Log.Information("SearchQuery Starting {@searchParameters}", searchParameters);
+        var query = new SearchQuery { SearchParameters = searchParameters };
+        var res = await mediator.Send(query).ConfigureAwait(false);   
+        if (res is null)        
+            return NotFound();
+
+        var previousPageLink = res.HasPrevious ? CreateResourceUri(searchParameters, ResourceUriType.PreviousPage) : null;
+        var nextPageLink = res.HasNext ? CreateResourceUri(searchParameters, ResourceUriType.NextPage) : null;
 
         var paginationMetadata = new
         {
@@ -78,12 +113,8 @@ public class TicketV1Controller : ControllerBase
             previousPageLink,
             nextPageLink
         };
-
-        Response.Headers.Add("X-Pagination",
-            JsonSerializer.Serialize(paginationMetadata));
-
-        return Ok(mapper.Map<IEnumerable<TicketDto>>(res));
-
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+        return res;
     }
 
     private string CreateResourceUri(TicketSearchParameters parameters, ResourceUriType type)    
@@ -91,32 +122,32 @@ public class TicketV1Controller : ControllerBase
         switch (type)
         {
             case ResourceUriType.PreviousPage:
-                return Url.Link("Search",
+                return Url.Link("SearchQuery",
                   new
                   {
                       orderBy = parameters.OrderBy,
-                      pageNumber = parameters.PageNumber - 1,
+                      pageNumber = parameters.CurrentPage - 1,
                       pageSize = parameters.PageSize,                      
-                      searchQuery = parameters.SearchQuery
+                      searchQuery = parameters.SearchTerm
                   });
             case ResourceUriType.NextPage:
-                return Url.Link("Search",
+                return Url.Link("SearchQuery",
                   new
                   {
                       orderBy = parameters.OrderBy,
-                      pageNumber = parameters.PageNumber + 1,
+                      pageNumber = parameters.CurrentPage + 1,
                       pageSize = parameters.PageSize,                      
-                      searchQuery = parameters.SearchQuery
+                      searchQuery = parameters.SearchTerm
                   });
 
             default:
-                return Url.Link("Search",
+                return Url.Link("SearchQuery",
                 new
                 {
                     orderBy = parameters.OrderBy,
-                    pageNumber = parameters.PageNumber,
+                    pageNumber = parameters.CurrentPage,
                     pageSize = parameters.PageSize,                    
-                    searchQuery = parameters.SearchQuery
+                    searchQuery = parameters.SearchTerm
                 });
         }
 
