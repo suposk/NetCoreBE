@@ -50,6 +50,18 @@ public class TicketV1Controller : ControllerBase
         return res ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, $"{Delete} {id} Failed.");
     }
 
+    [HttpGet("Search")]    
+    public async Task<ActionResult<PagedListDto<TicketDto>>> Search(
+        [FromQuery] TicketSearchParameters searchParameters,
+        [FromServices] IMediator mediator)
+    {
+        var query = new SearchQuery { SearchParameters = searchParameters };
+        var res = await mediator.Send(query).ConfigureAwait(false);
+        if (res is null)
+            return NotFound();
+        return res;
+    }
+
     [HttpGet("SearchQuery")]    
     [HttpHead]
     public async Task<ActionResult<PagedListDto<TicketDto>>> SearchQuery(
