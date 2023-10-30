@@ -72,8 +72,7 @@ public class TicketV1Controller : ControllerBase
     */
 #endregion
 
-
-[HttpGet("SearchQuery")]    
+    [HttpGet("SearchQuery")]    
     [HttpHead]
     public async Task<ActionResult<PagedListDto<TicketDto>>> SearchQuery(
         [FromQuery] TicketSearchParameters searchParameters,        
