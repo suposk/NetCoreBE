@@ -155,7 +155,7 @@
 							"raw": "    {\r\n      \"id\": \"00000000-1000-0000-0000-000000000000\",     \r\n      \"createdBy\": \"Api\",\r\n      \"description\": \"From Api Call\",\r\n      \"requestedFor\": \"Some User\"  \r\n    } "
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/ticket/Seed/5",
+							"raw": "https://localhost:5001/api/ticket/Seed/62",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -165,7 +165,7 @@
 								"api",
 								"ticket",
 								"Seed",
-								"5"
+								"62"
 							]
 						}
 					},
@@ -197,6 +197,84 @@
 								"api",
 								"ticket",
 								"00000000-2000-0000-0000-000000000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SearchQuery",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "https://localhost:5001/api/Ticket/SearchQuery?Description=62&currentPage=1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Ticket",
+								"SearchQuery"
+							],
+							"query": [
+								{
+									"key": "Description",
+									"value": "62"
+								},
+								{
+									"key": "currentPage",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Search",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"isActive\": null,\r\n  \"searchTerm\": \"seed 62\",\r\n  \"currentPage\": 2,\r\n  \"pageSize\": 15,\r\n  \"orderBy\": \"CreatedAt\",\r\n  \"description\": \"\"\r\n}"
+						},
+						"url": {
+							"raw": "https://localhost:5001/api/Ticket/Search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Ticket",
+								"Search"
 							]
 						}
 					},
@@ -401,6 +479,40 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Get Test",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/test/",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"test",
+						""
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
