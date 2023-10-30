@@ -1,13 +1,13 @@
-﻿namespace CommonBE.Infrastructure.Search;
+﻿namespace Contracts.Common;
 
-public class ResourceParameters
+public class SearchParameters
 {
     /// <summary>
     /// 50, may be ovveriden for larger sets
     /// </summary>
     public virtual int MaxPageSize => 50;
 
-    public bool? IsActive { get; set; }    
+    public bool? IsActive { get; set; }
     public string? SearchTerm { get; set; }
     public int CurrentPage { get; set; } = 1;
 
@@ -22,10 +22,10 @@ public class ResourceParameters
     /// Defualt is CreatedAt asc.
     /// Add desc for descending order example: CreatedAt desc
     /// </summary>   
-    public virtual string OrderBy { get; set; } = nameof(EntityBase.CreatedAt); //asc
+    public virtual string OrderBy { get; set; } = $"CreatedAt"; //asc
 
     /// <summary>
     /// Defualt is CreatedAt desc
     /// </summary>
-    //public virtual string OrderBy { get; set; } = $"{nameof(EntityBase.CreatedAt)} desc"; //desc 
+    //public virtual string OrderBy { get; set; } = $"CreatedAt desc"; //desc 
 }

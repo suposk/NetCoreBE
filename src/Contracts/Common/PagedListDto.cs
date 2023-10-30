@@ -1,4 +1,4 @@
-﻿namespace Contracts.Dtos;
+﻿namespace Contracts.Common;
 
 public class PagedListDto<T>
 {

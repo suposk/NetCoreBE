@@ -3,7 +3,7 @@
     /// <summary>
     /// Inherts from ResourceParameters
     /// </summary>
-    public sealed class TicketSearchParameters :  ResourceParameters
+    public sealed class TicketSearchParameters :  SearchParameters
     {        
         public string? Description { get; set; }
         //public override string OrderBy { get; set; } = nameof(Ticket.Id);
