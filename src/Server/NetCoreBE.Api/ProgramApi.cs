@@ -112,12 +112,8 @@ app.UseApiExceptionHandler(options =>
     options.DetermineLogLevel = ApiExceptionMiddlewareExtensions.DetermineLogLevel;
 });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
@@ -144,8 +140,8 @@ using (var scope = app.Services.CreateScope())
         }
     }
     catch (Exception ex)
-    {
-        Console.WriteLine(ex.Message);
+    {        
+        Log.Error(ex, "An error occurred while migrating or initializing the database.");
     }
 }
 
