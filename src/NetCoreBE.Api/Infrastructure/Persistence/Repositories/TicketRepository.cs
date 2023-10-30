@@ -35,9 +35,9 @@
                 collection = collection.Where(a => a.Description.Contains(description));
             }
 
-            if (!string.IsNullOrWhiteSpace(searchParameters.SearchQuery))
+            if (!string.IsNullOrWhiteSpace(searchParameters.SearchTerm))
             {
-                var searchQuery = searchParameters.SearchQuery.Trim();
+                var searchQuery = searchParameters.SearchTerm.Trim();
                 collection = collection.Where(a => a.Description.Contains(searchQuery)
                     || a.RequestedFor.Contains(searchQuery)
                     //|| a.IsSavedInDb.Contains(searchQuery)

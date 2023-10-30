@@ -8,7 +8,7 @@ public class ResourceParameters
     public virtual int MaxPageSize => 50;
 
     public bool? IsActive { get; set; }    
-    public string? SearchQuery { get; set; }
+    public string? SearchTerm { get; set; }
     public int CurrentPage { get; set; } = 1;
 
     private int _pageSize = 10;

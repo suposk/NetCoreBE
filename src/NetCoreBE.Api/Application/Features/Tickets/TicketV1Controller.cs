@@ -100,7 +100,7 @@ public class TicketV1Controller : ControllerBase
                       orderBy = parameters.OrderBy,
                       pageNumber = parameters.CurrentPage - 1,
                       pageSize = parameters.PageSize,                      
-                      searchQuery = parameters.SearchQuery
+                      searchQuery = parameters.SearchTerm
                   });
             case ResourceUriType.NextPage:
                 return Url.Link("SearchQuery",
@@ -109,7 +109,7 @@ public class TicketV1Controller : ControllerBase
                       orderBy = parameters.OrderBy,
                       pageNumber = parameters.CurrentPage + 1,
                       pageSize = parameters.PageSize,                      
-                      searchQuery = parameters.SearchQuery
+                      searchQuery = parameters.SearchTerm
                   });
 
             default:
@@ -119,7 +119,7 @@ public class TicketV1Controller : ControllerBase
                     orderBy = parameters.OrderBy,
                     pageNumber = parameters.CurrentPage,
                     pageSize = parameters.PageSize,                    
-                    searchQuery = parameters.SearchQuery
+                    searchQuery = parameters.SearchTerm
                 });
         }
 
