@@ -50,14 +50,13 @@ public class TicketV1Controller : ControllerBase
         return res ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, $"{Delete} {id} Failed.");
     }
 
-    [HttpGet("Search")]    
+    [HttpGet("SearchQuery")]    
     [HttpHead]
-    public async Task<ActionResult<PagedListDto<TicketDto>>> Search([FromQuery] TicketSearchParameters searchParameters,
+    public async Task<ActionResult<PagedListDto<TicketDto>>> SearchQuery([FromQuery] TicketSearchParameters searchParameters,
         [FromServices] ITicketRepository ticketRepository, [FromServices] IPropertyMappingService propertyMappingService,
         [FromServices] IMapper mapper)
     {
-        if (!propertyMappingService.ValidMappingExistsFor<TicketDto, Ticket>
-            (searchParameters.OrderBy))        
+        if (!propertyMappingService.ValidMappingExistsFor<TicketDto, Ticket>(searchParameters.OrderBy))        
             return BadRequest();
         
         var repo = await ticketRepository.Search(searchParameters);   
