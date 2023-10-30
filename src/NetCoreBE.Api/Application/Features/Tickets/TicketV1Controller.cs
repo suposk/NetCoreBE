@@ -52,7 +52,7 @@ public class TicketV1Controller : ControllerBase
 
     [HttpGet("Search")]    
     public async Task<ActionResult<PagedListDto<TicketDto>>> Search(
-        [FromQuery] TicketSearchParameters searchParameters,
+        [FromBody] TicketSearchParameters searchParameters,
         [FromServices] IMediator mediator)
     {
         var query = new SearchQuery { SearchParameters = searchParameters };
