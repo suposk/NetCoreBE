@@ -51,9 +51,7 @@ public class TicketV1Controller : ControllerBase
     }
 
     [HttpGet("Search")]    
-    public async Task<ActionResult<PagedListDto<TicketDto>>> Search(
-        [FromBody] TicketSearchParameters searchParameters,
-        [FromServices] IMediator mediator)
+    public async Task<ActionResult<PagedListDto<TicketDto>>> Search(TicketSearchParameters searchParameters, [FromServices] IMediator mediator)
     {
         var query = new SearchQuery { SearchParameters = searchParameters };
         var res = await mediator.Send(query).ConfigureAwait(false);
@@ -61,8 +59,21 @@ public class TicketV1Controller : ControllerBase
             return NotFound();
         return res;
     }
+    #region request body
+    /*
+{
+  "isActive": null,
+  "searchTerm": null,
+  "currentPage": 2,
+  "pageSize": 15,
+  "orderBy": "CreatedAt",
+  "description": "62"
+}
+    */
+#endregion
 
-    [HttpGet("SearchQuery")]    
+
+[HttpGet("SearchQuery")]    
     [HttpHead]
     public async Task<ActionResult<PagedListDto<TicketDto>>> SearchQuery(
         [FromQuery] TicketSearchParameters searchParameters,        
