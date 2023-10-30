@@ -25,7 +25,7 @@ public class TestController : ControllerBase
 
     //[HttpGet]
     [HttpGet("Search/{text}")]
-    public async Task<IEnumerable<object>> Search(string text)
+    public async Task<PagedList<Ticket>> Search(string text)
     {
         try
         {
@@ -39,14 +39,13 @@ public class TestController : ControllerBase
             var pageSize = res.PageSize;
             var currentPage = res.CurrentPage;
             var totalPages = res.TotalPages;
-
             return res;
         }
         catch (Exception ex)
         {
             
         }
-        return new string[] { "value 1" };
+        return null;
     }
 
     //[HttpGet]

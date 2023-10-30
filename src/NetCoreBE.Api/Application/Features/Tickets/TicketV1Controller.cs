@@ -60,25 +60,24 @@ public class TicketV1Controller : ControllerBase
             (searchParameters.OrderBy))        
             return BadRequest();
         
-        var res = await ticketRepository.Search(searchParameters);   
-        var previousPageLink = res.HasPrevious ? CreateResourceUri(searchParameters, ResourceUriType.PreviousPage) : null;
-        var nextPageLink = res.HasNext ? CreateResourceUri(searchParameters, ResourceUriType.NextPage) : null;
+        var repo = await ticketRepository.Search(searchParameters);   
+        var previousPageLink = repo.HasPrevious ? CreateResourceUri(searchParameters, ResourceUriType.PreviousPage) : null;
+        var nextPageLink = repo.HasNext ? CreateResourceUri(searchParameters, ResourceUriType.NextPage) : null;
 
         var paginationMetadata = new
         {
-            totalCount = res.TotalCount,
-            pageSize = res.PageSize,
-            currentPage = res.CurrentPage,
-            totalPages = res.TotalPages,
+            totalCount = repo.TotalCount,
+            pageSize = repo.PageSize,
+            currentPage = repo.CurrentPage,
+            totalPages = repo.TotalPages,
             previousPageLink,
             nextPageLink
         };
 
         Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
-        var dtos = mapper.Map<List<TicketDto>>(res);
-        var mapped = new PagedListDto<TicketDto>(dtos, res.TotalCount, res.CurrentPage, res.PageSize);
-        var result = new PagedResultDto<TicketDto>(mapped);
-        return Ok(result);
+        var dtos = mapper.Map<List<TicketDto>>(repo.Results);
+        var res = new PagedListDto<TicketDto>(dtos, repo.TotalCount, repo.CurrentPage, repo.PageSize);
+        return Ok(res);
     }
 
     private string CreateResourceUri(TicketSearchParameters parameters, ResourceUriType type)    

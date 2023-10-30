@@ -1,6 +1,6 @@
 ﻿namespace CommonBE.Infrastructure.Search;
 
-public class PagedList<T> : List<T>
+public class PagedList<T>
 {
     public int CurrentPage { get; private set; }
     public int TotalPages { get; private set; }
@@ -8,14 +8,15 @@ public class PagedList<T> : List<T>
     public int TotalCount { get; private set; }
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPages;
+    public List<T> Results { get; }
 
     public PagedList(List<T> items, int totalPages, int currentPage, int pageSize)
     {
         TotalCount = totalPages;
         CurrentPage = currentPage;
         PageSize = pageSize;
-        TotalPages = (int)Math.Ceiling(totalPages / (double)pageSize);
-        AddRange(items);
+        TotalPages = (int)Math.Ceiling(totalPages / (double)pageSize);        
+        Results = items;
     }
     public static PagedList<T> Create(IQueryable<T> source, int pageNumber, int pageSize)
     {

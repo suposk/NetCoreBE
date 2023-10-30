@@ -1,6 +1,6 @@
 ﻿namespace Contracts.Dtos;
 
-public class PagedListDto<T> : List<T>
+public class PagedListDto<T>
 {
     public int CurrentPage { get; private set; }
     public int TotalPages { get; private set; }
@@ -8,6 +8,7 @@ public class PagedListDto<T> : List<T>
     public int TotalCount { get; private set; }
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPages;
+    public List<T> Results { get; }
 
     public PagedListDto(List<T> items, int totalPages, int currentPage, int pageSize)
     {
@@ -15,6 +16,6 @@ public class PagedListDto<T> : List<T>
         CurrentPage = currentPage;
         PageSize = pageSize;
         TotalPages = (int)Math.Ceiling(totalPages / (double)pageSize);
-        AddRange(items);
+        Results = items;
     }
 }
