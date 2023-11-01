@@ -1,3 +1,5 @@
+﻿using Microsoft.VisualBasic;
+
 ﻿namespace NetCoreBE.Api.Domain.Entities;
 
 /// <summary>
