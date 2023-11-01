@@ -26,13 +26,14 @@ public sealed class OutboxMessageDomaintEvent : EntityBase
     public int RetryCount { get; set; }
     public DateTime? NextRetryUtc { get; set; }
 
-    public static OutboxMessageDomaintEvent Create(DateTime utcNow, string type, string? typeDetail, string? content)
+    public static OutboxMessageDomaintEvent Create(string? id, DateTime utcNow, string type, string? typeDetail, string content)
     {
         return new OutboxMessageDomaintEvent
-        {
-            Type = type,
+        {            
+            Id = id,
+            Type = type ?? throw new ArgumentNullException(nameof(type)),
             TypeDetail = typeDetail,
-            Content = content,
+            Content = content ?? throw new ArgumentNullException(nameof(type)),
             OccuredUtc = utcNow,
             RetryCount = 0
         };

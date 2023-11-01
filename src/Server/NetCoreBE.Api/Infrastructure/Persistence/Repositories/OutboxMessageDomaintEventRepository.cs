@@ -18,6 +18,8 @@
             return _repository.GetList();
         }
 
+        public Task<bool> Exist(string Id, string type) => _context.OutboxMessageDomaintEvents.AsNoTracking().AnyAsync(a => a.Id == Id && a.Type == type);
+         
         public Task<List<OutboxMessageDomaintEvent>> GetListToProcess(int countToProcess = 50)
         {
             // not using AsNoTracking() because will update them

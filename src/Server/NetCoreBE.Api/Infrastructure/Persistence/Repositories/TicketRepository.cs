@@ -22,8 +22,9 @@
 
         public override void Add(Ticket entity, string UserId = null)
         {
-            entity.SetNewTicket();
+            entity.SetNewTicket();            
             base.Add(entity, UserId);
+            entity.AddDomainEvent(new TicketCreatedEvent(entity));
         }
 
         public async Task<PagedList<Ticket>> Search(TicketSearchParameters searchParameters)

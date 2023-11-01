@@ -1,30 +1,31 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.EntityFrameworkCore.Internal;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace NetCoreBE.Api.Application.Features.Tickets.EventHandlers;
 
-public class TicketCreatedEventHandler : INotificationHandler<TicketCreatedEvent>
+public class TicketCreatedGenericEventHandler : INotificationHandler<CreatedEvent<Ticket>>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IDateTimeService _dateTimeService;
-    private readonly ILogger<TicketCreatedEventHandler> _logger;
+    private readonly ILogger<TicketCreatedGenericEventHandler> _logger;    
 
-    public TicketCreatedEventHandler(
+    public TicketCreatedGenericEventHandler(
         IServiceScopeFactory serviceScopeFactory,
         IDateTimeService dateTimeService,
-        ILogger<TicketCreatedEventHandler> logger
+        ILogger<TicketCreatedGenericEventHandler> logger
     )
     {
         _serviceScopeFactory = serviceScopeFactory;
         _dateTimeService = dateTimeService;
-        _logger = logger;
+        _logger = logger;        
     }
 
-    public async Task Handle(TicketCreatedEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(CreatedEvent<Ticket> notification, CancellationToken cancellationToken)
     {        
         try
         {            
@@ -33,7 +34,7 @@ public class TicketCreatedEventHandler : INotificationHandler<TicketCreatedEvent
                 ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true
             });
             var type = notification.GetType().GetTypeNameExt();
-            var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Item.Id, _dateTimeService.UtcNow, type, null, json);
+            var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Entity.Id, _dateTimeService.UtcNow, type, null, json);
             var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
             if (await _repository.Exist(outboxMessage.Id, outboxMessage.Type))
             {
@@ -45,7 +46,7 @@ public class TicketCreatedEventHandler : INotificationHandler<TicketCreatedEvent
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"{nameof(TicketCreatedEventHandler)} failed", ex);
+            _logger.LogError(ex, $"{nameof(TicketCreatedGenericEventHandler)} failed", ex);
         }
     }
 }
