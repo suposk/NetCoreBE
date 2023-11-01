@@ -6,6 +6,8 @@ using FluentValidation.AspNetCore;
 using Carter;
 using Serilog;
 using CommonCleanArch.Infrastructure;
+using Quartz;
+using NetCoreBE.Api.Infrastructure.BackroundJobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -105,6 +107,22 @@ services.AddMediatR(config =>
     //config.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
     //config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
 });
+
+services.AddQuartz(config => 
+{
+    
+    var jobKey = new JobKey(nameof(ProcessOutboxMessageDomaintEventsJob));
+    config
+    .AddJob<ProcessOutboxMessageDomaintEventsJob>(jobKey)
+    .AddTrigger(options =>
+    {
+        options.ForJob(jobKey);
+        options.StartNow();        
+        options.WithSimpleSchedule(x => x.WithIntervalInSeconds(10).RepeatForever());
+    });
+    config.UseMicrosoftDependencyInjectionJobFactory();//Important for DI
+});
+services.AddQuartzHostedService();
 
 var app = builder.Build();
 app.UseApiExceptionHandler(options =>
