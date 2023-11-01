@@ -24,7 +24,8 @@
         {
             entity.SetNewTicket();            
             base.Add(entity, UserId);
-            entity.AddDomainEvent(new TicketCreatedEvent(entity));
+            //entity.AddDomainEvent(new TicketCreatedEvent(entity));
+            entity.AddDomainEvent(new CreatedEvent<Ticket>(entity));
         }
 
         public async Task<PagedList<Ticket>> Search(TicketSearchParameters searchParameters)
@@ -89,7 +90,7 @@
                     ticket.Id = i.GetSimpleGuidString();
                 list.Add(ticket);
                 Add(ticket, UserId);
-                await Task.Delay(10);
+                //await Task.Delay(10);
             }
             //_repository.AddRange(list, UserId);
             await _repository.SaveChangesAsync();

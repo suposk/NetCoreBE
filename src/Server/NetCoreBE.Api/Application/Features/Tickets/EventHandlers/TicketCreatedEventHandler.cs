@@ -1,7 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -37,7 +36,7 @@ public class TicketCreatedEventHandler : INotificationHandler<TicketCreatedEvent
             var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
             if (await _repository.Exist(outboxMessage.Id, outboxMessage.Type))
             {
-                _logger.LogWarning("Domain Event: {DomainEvent} already exist", outboxMessage.Type);
+                _logger.LogWarning("Domain Event: {DomainEvent} already exist, {@notification}", outboxMessage.Type, notification);
                 return;
             }
             var res = await _repository.AddAsync(outboxMessage);
