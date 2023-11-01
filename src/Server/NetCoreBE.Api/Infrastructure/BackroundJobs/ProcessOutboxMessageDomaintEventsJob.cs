@@ -39,14 +39,53 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
         if (messages.IsNullOrEmptyCollection())
             return; //nothing to process        
 
-        var typeCreatedEventGe = new CreatedEvent<Ticket>(new Ticket()).GetType();
-        //var typeDomain = new TicketCreatedEvent(new Ticket()).GetType();
+        //Read types from cache
+        Dictionary<string?, Type> _assembliesTypesNotifications = new();
+        _assembliesTypesNotifications = await LoadTypesFromCahce(_assembliesTypesNotifications);
 
-        Dictionary<string?, Type> _assemblies = new();
-        _assemblies = await _cacheProvider.GetOrAddAsync(nameof(ProcessOutboxMessageDomaintEventsJob), int.MaxValue, async () =>
+        foreach (var message in messages)
+        {
+            try
+            {
+                if (_assembliesTypesNotifications.TryGetValue(message.Type, out var type) == false)
+                {
+                    _logger.LogWarning("Domain Event: {DomainEvent} type not found", message.Type);
+                    continue;
+                }
+                var domainEvent = JsonConvert.DeserializeObject(message.Content, type);
+                //var domainEvent = JsonConvert.DeserializeObject<TicketCreatedEvent>(message.Content); //works 
+                if (domainEvent == null)
+                {
+                    _logger.LogWarning("Domain Event: {DomainEvent} deserialization failed", message.Type);
+                    continue;
+                }
+                //await _publisher.Publish(domainEvent);                
+                message.SetSuccess(_dateTimeService.UtcNow);
+                //await _outboxMessageRepository.UpdateAsync(message);
+                _logger.LogDebug("Domain Event: {DomainEvent} processed", message.Type);
+            }
+            catch (Exception ex)
+            {                
+                message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1));
+                await _outboxMessageRepository.UpdateAsync(message);    
+                _logger.LogError(ex, $"{nameof(ProcessOutboxMessageDomaintEventsJob)} failed", ex);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Read INotificationHandler types and store in the cache
+    /// </summary>
+    /// <param name="_assembliesTypesNotifications"></param>
+    /// <returns></returns>
+    private async Task<Dictionary<string?, Type>> LoadTypesFromCahce(Dictionary<string?, Type> _assembliesTypesNotifications)
+    {
+        _assembliesTypesNotifications = await _cacheProvider.GetOrAddAsync(nameof(ProcessOutboxMessageDomaintEventsJob), int.MaxValue, async () =>
         {
             //funguje
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();            
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            Dictionary<string?, Type> res = new();
+
             var types = assemblies.SelectMany(a => a.GetTypes()).ToList();
             foreach (var type in types)
             {
@@ -63,48 +102,16 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                                 var typeFullName = genericArgument.FullName;
                                 if (typeFullName != null)
                                 {
-                                    if (_assemblies.ContainsKey(typeFullName) == false)
-                                        _assemblies.Add(typeFullName, genericArgument);
+                                    if (res.ContainsKey(typeFullName) == false)
+                                        res.Add(typeFullName, genericArgument);
                                 }
                             }
                         }
                     }
                 }
             }
-            return _assemblies;
+            return res;
         });
-
-        foreach (var message in messages) 
-        {
-            try
-            {
-                //var type = _assemblies.SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == message.Type);
-                //var type = typeDomain;
-                if (_assemblies.TryGetValue(message.Type, out var type) == false)
-                {
-                    _logger.LogWarning("Domain Event: {DomainEvent} type not found", message.Type);
-                    continue;
-                }
-                var domainEvent = JsonConvert.DeserializeObject(message.Content, type);                
-                //var domainEvent = JsonConvert.DeserializeObject<TicketCreatedEvent>(message.Content); //works 
-                if (domainEvent == null)
-                {
-                    _logger.LogWarning("Domain Event: {DomainEvent} deserialization failed", message.Type);
-                    continue;
-                }
-                //await _publisher.Publish(domainEvent);
-                //message.SetSuccess();
-                message.Completed(_dateTimeService.UtcNow);
-                //await _outboxMessageRepository.UpdateAsync(message);
-                _logger.LogDebug("Domain Event: {DomainEvent} processed", message.Type);
-            }
-            catch (Exception ex)
-            {
-                //message.SetFailed();
-                message.Failed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1));
-                //await _outboxMessageRepository.UpdateAsync(message);    
-                _logger.LogError(ex, $"{nameof(ProcessOutboxMessageDomaintEventsJob)} failed", ex);
-            }
-        }
+        return _assembliesTypesNotifications;
     }
 }

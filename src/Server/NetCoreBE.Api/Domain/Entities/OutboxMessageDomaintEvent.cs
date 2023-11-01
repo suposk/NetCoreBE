@@ -39,7 +39,7 @@ public sealed class OutboxMessageDomaintEvent : EntityBase
         };
     }
 
-    public void Completed(DateTime utcNow)
+    public void SetSuccess(DateTime utcNow)
     {
         //possible some domain event is completed
         IsSuccess = true;
@@ -52,7 +52,7 @@ public sealed class OutboxMessageDomaintEvent : EntityBase
     /// </summary>
     /// <param name="utcNow"></param>
     /// <param name="nextRetryUtc"></param>
-    public void Failed(DateTime utcNow, string? error, DateTime? nextRetryUtc)
+    public void SetFailed(DateTime utcNow, string? error, DateTime? nextRetryUtc)
     {
         //possible some domain event failed
         if (error.HasValueExt()) Error = error; //dont want to ovveride error message        
