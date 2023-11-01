@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Newtonsoft.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace NetCoreBE.Api.Application.Features.Tickets.EventHandlers;
 
@@ -11,16 +9,19 @@ public class TicketCreatedGenericEventHandler : INotificationHandler<CreatedEven
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IDateTimeService _dateTimeService;
+    private readonly ICacheProvider _cacheProvider;
     private readonly ILogger<TicketCreatedGenericEventHandler> _logger;    
 
     public TicketCreatedGenericEventHandler(
         IServiceScopeFactory serviceScopeFactory,
         IDateTimeService dateTimeService,
+        ICacheProvider cacheProvider,
         ILogger<TicketCreatedGenericEventHandler> logger
     )
     {
         _serviceScopeFactory = serviceScopeFactory;
         _dateTimeService = dateTimeService;
+        _cacheProvider = cacheProvider;
         _logger = logger;        
     }
 
@@ -29,13 +30,17 @@ public class TicketCreatedGenericEventHandler : INotificationHandler<CreatedEven
         //return;
         try
         {            
-            //var json = JsonSerializer.Serialize(notification, new JsonSerializerOptions
-            //{
-            //    ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true
-            //});
             var json = JsonConvert.SerializeObject(notification, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None });
-            var type = notification.GetType().GetTypeNameExt();
-            var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Entity.Id, _dateTimeService.UtcNow, type, null, json);
+            //var type = notification.GetType().GetTypeNameExt();
+            //var type = notification.GetType().FullName;
+
+            //store in cache for performance
+            var type = await _cacheProvider.GetOrAddAsync(nameof(TicketCreatedGenericEventHandler), int.MaxValue, async () =>
+            {
+                var type = notification.GetType();
+                return type;
+            });
+            var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, null, json);
             var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
             if (await _repository.Exist(outboxMessage.Id, outboxMessage.Type))
             {
