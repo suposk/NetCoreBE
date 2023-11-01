@@ -3,6 +3,7 @@
 /// <summary>
 /// OutboxMessage pattern for some DomaintEvent
 /// </summary>
+[Index(nameof(Type), nameof(IsSuccess), nameof(NextRetryUtc))]
 public sealed class OutboxMessageDomaintEvent : EntityBase
 {
     [NotMapped]

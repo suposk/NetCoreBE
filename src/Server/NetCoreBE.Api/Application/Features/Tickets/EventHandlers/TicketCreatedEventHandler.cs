@@ -21,7 +21,7 @@ public class RequestCreatedEventHandler : INotificationHandler<CreatedEvent<Tick
     public async Task Handle(CreatedEvent<Ticket> notification, CancellationToken cancellationToken)
     {
         _timer.Start();
-        await Task.Delay(5000, cancellationToken);
+        //will store in outbox table
         _timer.Stop();
         _logger.LogInformation("Domain Event: {DomainEvent},{ElapsedMilliseconds}ms", notification.GetType().FullName,
             _timer.ElapsedMilliseconds);
