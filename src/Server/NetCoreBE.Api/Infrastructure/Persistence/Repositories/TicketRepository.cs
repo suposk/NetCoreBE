@@ -25,7 +25,7 @@
             entity.SetNewTicket();            
             base.Add(entity, UserId);
             //entity.AddDomainEvent(new TicketCreatedEvent(entity)); //test only
-            entity.AddDomainEvent(new CreatedEvent<Ticket>(entity));
+            entity.AddDomainEvent(new CreatedEvent<Ticket>(entity)); //if called from repo, this would not get fired
         }
 
         public async Task<PagedList<Ticket>> Search(TicketSearchParameters searchParameters)
