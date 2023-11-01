@@ -5,42 +5,42 @@ using Newtonsoft.Json;
 
 namespace NetCoreBE.Api.Application.Features.Tickets.EventHandlers;
 
-public class TicketCreatedGenericEventHandler : INotificationHandler<CreatedEvent<Ticket>>
+public class TicketCreatedExampleEventHandler : INotificationHandler<TicketCreatedExampleEvent>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IDateTimeService _dateTimeService;
     private readonly ICacheProvider _cacheProvider;
-    private readonly ILogger<TicketCreatedGenericEventHandler> _logger;    
+    private readonly ILogger<TicketCreatedExampleEventHandler> _logger;
 
-    public TicketCreatedGenericEventHandler(
+    public TicketCreatedExampleEventHandler(
         IServiceScopeFactory serviceScopeFactory,
         IDateTimeService dateTimeService,
         ICacheProvider cacheProvider,
-        ILogger<TicketCreatedGenericEventHandler> logger
+        ILogger<TicketCreatedExampleEventHandler> logger
     )
     {
         _serviceScopeFactory = serviceScopeFactory;
         _dateTimeService = dateTimeService;
         _cacheProvider = cacheProvider;
-        _logger = logger;        
+        _logger = logger;
     }
 
-    public async Task Handle(CreatedEvent<Ticket> notification, CancellationToken cancellationToken)
-    {
-        //return;
+    public async Task Handle(TicketCreatedExampleEvent notification, CancellationToken cancellationToken)
+    {        
         try
-        {            
+        {
             var json = JsonConvert.SerializeObject(notification, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None });
             //var type = notification.GetType().GetTypeNameExt();
             //var type = notification.GetType().FullName;
 
             //store in cache for performance
-            var type = await _cacheProvider.GetOrAddAsync(nameof(TicketCreatedGenericEventHandler), int.MaxValue, async () =>
+            var type = await _cacheProvider.GetOrAddAsync(nameof(TicketCreatedExampleEventHandler), int.MaxValue, async () =>
             {
                 var type = notification.GetType();
                 return type;
             });
-            var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, null, json);
+
+            var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Item.Id, _dateTimeService.UtcNow, type?.FullName, null, json);
             var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
             if (await _repository.Exist(outboxMessage.Id, outboxMessage.Type))
             {
@@ -52,7 +52,7 @@ public class TicketCreatedGenericEventHandler : INotificationHandler<CreatedEven
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"{nameof(TicketCreatedGenericEventHandler)} failed", ex);
+            _logger.LogError(ex, $"{nameof(TicketCreatedExampleEventHandler)} failed", ex);
         }
     }
 }

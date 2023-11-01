@@ -3,9 +3,9 @@
 
 namespace NetCoreBE.Api.Domain.Events;
 
-public class TicketCreatedEvent : DomainEvent
+public class TicketCreatedExampleEvent : DomainEvent
 {
-    public TicketCreatedEvent(Ticket item)
+    public TicketCreatedExampleEvent(Ticket item)
     {
         Item = item;
     }
