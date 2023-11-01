@@ -1,7 +1,9 @@
-﻿using Quartz;
+﻿using MediatR;
+using Newtonsoft.Json;
+using Quartz;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+//using System.Text.Json;
+//using System.Text.Json.Serialization;
 
 namespace NetCoreBE.Api.Infrastructure.BackroundJobs;
 
@@ -62,12 +64,14 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                 //    ReferenceHandler = ReferenceHandler.Preserve
                 //});
 
-                //exception
-                var domainEvent = JsonSerializer.Deserialize<TicketCreatedEvent>(message.Content, new JsonSerializerOptions
-                {
-                    ReferenceHandler = ReferenceHandler.Preserve
-                });
+                ////exception
+                //var domainEvent = JsonSerializer.Deserialize<TicketCreatedEvent>(message.Content, new JsonSerializerOptions
+                //{
+                //    ReferenceHandler = ReferenceHandler.Preserve
+                //});
 
+                //var json = JsonConvert.SerializeObject(notification, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+                var domainEvent = JsonConvert.DeserializeObject<TicketCreatedEvent>(message.Content);
                 if (domainEvent == null)
                 {
                     _logger.LogWarning("Domain Event: {DomainEvent} deserialization failed", message.Type);
@@ -76,7 +80,7 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                 //await _publisher.Publish(domainEvent);
                 //message.SetSuccess();
                 message.Completed(_dateTimeService.UtcNow);
-                //await _outboxMessageRepository.UpdateAsync(message);
+                await _outboxMessageRepository.UpdateAsync(message);
                 _logger.LogDebug("Domain Event: {DomainEvent} processed", message.Type);
             }
             catch (Exception ex)

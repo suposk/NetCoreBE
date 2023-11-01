@@ -1,8 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Text.Json;
-using System.Text.Json.Serialization;
+//using System.Text.Json;
+//using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace NetCoreBE.Api.Application.Features.Tickets.EventHandlers;
 
@@ -26,11 +27,12 @@ public class TicketCreatedEventHandler : INotificationHandler<TicketCreatedEvent
     public async Task Handle(TicketCreatedEvent notification, CancellationToken cancellationToken)
     {        
         try
-        {            
-            var json = JsonSerializer.Serialize(notification, new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true
-            });
+        {
+            //var json = JsonSerializer.Serialize(notification, new JsonSerializerOptions
+            //{
+            //    ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true
+            //});
+            var json = JsonConvert.SerializeObject(notification, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented });
             var type = notification.GetType().GetTypeNameExt();
             var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Item.Id, _dateTimeService.UtcNow, type, null, json);
             var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
