@@ -4,6 +4,6 @@ public class Constants
 {
     public static class Cache
     {
-        public const int CacheExpirationInMinutes = int.MaxValue;
+        public const int CacheExpirationMax = int.MaxValue;
     }
 }

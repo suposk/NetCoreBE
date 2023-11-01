@@ -9,16 +9,19 @@ public class TicketCreatedEventHandler : INotificationHandler<TicketCreatedEvent
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IDateTimeService _dateTimeService;
+    private readonly ICacheProvider _cacheProvider;
     private readonly ILogger<TicketCreatedEventHandler> _logger;
 
     public TicketCreatedEventHandler(
         IServiceScopeFactory serviceScopeFactory,
         IDateTimeService dateTimeService,
+        ICacheProvider cacheProvider,
         ILogger<TicketCreatedEventHandler> logger
     )
     {
         _serviceScopeFactory = serviceScopeFactory;
         _dateTimeService = dateTimeService;
+        _cacheProvider = cacheProvider;
         _logger = logger;
     }
 
@@ -28,8 +31,16 @@ public class TicketCreatedEventHandler : INotificationHandler<TicketCreatedEvent
         {
             var json = JsonConvert.SerializeObject(notification, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None });
             //var type = notification.GetType().GetTypeNameExt();
-            var type = notification.GetType().FullName;
-            var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Item.Id, _dateTimeService.UtcNow, type, null, json);
+            //var type = notification.GetType().FullName;
+
+            //store in cache for performance
+            var type = await _cacheProvider.GetOrAddAsync(nameof(TicketCreatedEventHandler), int.MaxValue, async () =>
+            {
+                var type = notification.GetType();
+                return type;
+            });
+
+            var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Item.Id, _dateTimeService.UtcNow, type?.FullName, null, json);
             var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
             if (await _repository.Exist(outboxMessage.Id, outboxMessage.Type))
             {

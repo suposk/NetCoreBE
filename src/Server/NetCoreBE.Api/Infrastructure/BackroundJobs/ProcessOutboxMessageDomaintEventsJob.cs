@@ -39,9 +39,8 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
         if (messages.IsNullOrEmptyCollection())
             return; //nothing to process        
 
-        //Read types from cache
-        Dictionary<string?, Type> _assembliesTypesNotifications = new();
-        _assembliesTypesNotifications = await LoadTypesFromCahce(_assembliesTypesNotifications);
+        //Read types from cache        
+        Dictionary<string?, Type> _assembliesTypesNotifications = await LoadTypesFromCahce();
 
         foreach (var message in messages)
         {
@@ -61,7 +60,7 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                 }
                 //await _publisher.Publish(domainEvent);                
                 message.SetSuccess(_dateTimeService.UtcNow);
-                //await _outboxMessageRepository.UpdateAsync(message);
+                await _outboxMessageRepository.UpdateAsync(message);
                 _logger.LogDebug("Domain Event: {DomainEvent} processed", message.Type);
             }
             catch (Exception ex)
@@ -75,12 +74,11 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
 
     /// <summary>
     /// Read INotificationHandler types and store in the cache
-    /// </summary>
-    /// <param name="_assembliesTypesNotifications"></param>
-    /// <returns></returns>
-    private async Task<Dictionary<string?, Type>> LoadTypesFromCahce(Dictionary<string?, Type> _assembliesTypesNotifications)
+    /// </summary>    
+    /// <returns>Dictionary<string?, Type></returns>
+    private async Task<Dictionary<string?, Type>> LoadTypesFromCahce()
     {
-        _assembliesTypesNotifications = await _cacheProvider.GetOrAddAsync(nameof(ProcessOutboxMessageDomaintEventsJob), int.MaxValue, async () =>
+        Dictionary<string?, Type> assembliesTypesNotifications = await _cacheProvider.GetOrAddAsync(nameof(ProcessOutboxMessageDomaintEventsJob), int.MaxValue, async () =>
         {
             //funguje
             var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
@@ -112,6 +110,6 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
             }
             return res;
         });
-        return _assembliesTypesNotifications;
+        return assembliesTypesNotifications;
     }
 }
