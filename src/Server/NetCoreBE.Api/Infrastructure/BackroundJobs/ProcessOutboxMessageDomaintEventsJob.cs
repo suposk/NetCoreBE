@@ -33,21 +33,33 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
         if (messages.IsNullOrEmptyCollection())
             return; //nothing to process
 
+        var _assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        var types = _assemblies.SelectMany(a => a.GetTypes()).ToList();
+        var typeCreatedEventGe = new CreatedEvent<Ticket>(new Ticket()).GetType();
+
         foreach (var message in messages) 
         {
             try
             {
-                var type = Type.GetType(message.Type);
-                if (type == null)
-                {
-                    _logger.LogWarning("Domain Event: {DomainEvent} type not found", message.Type);
-                    continue;
-                }
-                var stream = new MemoryStream(Encoding.UTF8.GetBytes(message.Content));
-                var domainEvent = JsonSerializer.Deserialize(stream, type, new JsonSerializerOptions
+                #region Generic dificlut to deserialize
+                ////var type = _assemblies.SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == message.Type);
+                //var type = typeCreatedEventGe;
+                //if (type == null)
+                //{
+                //    _logger.LogWarning("Domain Event: {DomainEvent} type not found", message.Type);
+                //    continue;
+                //}
+                //var stream = new MemoryStream(Encoding.UTF8.GetBytes(message.Content));
+                //var domainEvent = JsonSerializer.Deserialize(stream, type, new JsonSerializerOptions
+                //{
+                //    ReferenceHandler = ReferenceHandler.Preserve
+                //});
+                #endregion
+                var domainEvent = JsonSerializer.Deserialize<CreatedEvent<Ticket>>( message.Content,new JsonSerializerOptions
                 {
                     ReferenceHandler = ReferenceHandler.Preserve
                 });
+
                 if (domainEvent == null)
                 {
                     _logger.LogWarning("Domain Event: {DomainEvent} deserialization failed", message.Type);
