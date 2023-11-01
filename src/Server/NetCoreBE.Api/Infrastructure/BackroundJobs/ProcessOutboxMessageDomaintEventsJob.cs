@@ -69,8 +69,9 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                 //var domainEvent = System.Text.Json.JsonSerializer.Deserialize<TicketCreatedEvent>(message.Content);
 
 
-                var type = _assemblies.SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == message.Type);
+                //var type = _assemblies.SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == message.Type);
                 //var type = typeDomain;
+                var type = typeCreatedEventGe;
                 if (type == null)
                 {
                     _logger.LogWarning("Domain Event: {DomainEvent} type not found", message.Type);
