@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using CommonCleanArch;
+using MediatR;
 using Newtonsoft.Json;
 using Quartz;
 using System.Text;
@@ -38,6 +39,7 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
         var _assemblies = AppDomain.CurrentDomain.GetAssemblies();
         var types = _assemblies.SelectMany(a => a.GetTypes()).ToList();
         var typeCreatedEventGe = new CreatedEvent<Ticket>(new Ticket()).GetType();
+        var typeDomain = new TicketCreatedEvent(new Ticket()).GetType();
 
         foreach (var message in messages) 
         {
@@ -63,11 +65,20 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                 //{
                 //    ReferenceHandler = ReferenceHandler.Preserve
                 //});
-
                 ////exception
                 //var domainEvent = System.Text.Json.JsonSerializer.Deserialize<TicketCreatedEvent>(message.Content);
 
-                var domainEvent = JsonConvert.DeserializeObject<TicketCreatedEvent>(message.Content);
+
+                //var type = _assemblies.SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == message.Type);
+                var type = typeDomain;
+                if (type == null)
+                {
+                    _logger.LogWarning("Domain Event: {DomainEvent} type not found", message.Type);
+                    continue;
+                }
+                var domainEvent = JsonConvert.DeserializeObject(message.Content, type);
+                
+                //var domainEvent = JsonConvert.DeserializeObject<TicketCreatedEvent>(message.Content); //works 
                 if (domainEvent == null)
                 {
                     _logger.LogWarning("Domain Event: {DomainEvent} deserialization failed", message.Type);
