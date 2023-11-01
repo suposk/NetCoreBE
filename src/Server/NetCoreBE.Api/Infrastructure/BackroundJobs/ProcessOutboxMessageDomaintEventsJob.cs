@@ -65,12 +65,8 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                 //});
 
                 ////exception
-                //var domainEvent = JsonSerializer.Deserialize<TicketCreatedEvent>(message.Content, new JsonSerializerOptions
-                //{
-                //    ReferenceHandler = ReferenceHandler.Preserve
-                //});
+                //var domainEvent = System.Text.Json.JsonSerializer.Deserialize<TicketCreatedEvent>(message.Content);
 
-                //var json = JsonConvert.SerializeObject(notification, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
                 var domainEvent = JsonConvert.DeserializeObject<TicketCreatedEvent>(message.Content);
                 if (domainEvent == null)
                 {
@@ -80,14 +76,14 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                 //await _publisher.Publish(domainEvent);
                 //message.SetSuccess();
                 message.Completed(_dateTimeService.UtcNow);
-                await _outboxMessageRepository.UpdateAsync(message);
+                //await _outboxMessageRepository.UpdateAsync(message);
                 _logger.LogDebug("Domain Event: {DomainEvent} processed", message.Type);
             }
             catch (Exception ex)
             {
                 //message.SetFailed();
                 message.Failed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1));
-                await _outboxMessageRepository.UpdateAsync(message);    
+                //await _outboxMessageRepository.UpdateAsync(message);    
                 _logger.LogError(ex, $"{nameof(ProcessOutboxMessageDomaintEventsJob)} failed", ex);
             }
         }
