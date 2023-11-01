@@ -24,7 +24,8 @@ public class TicketCreatedGenericEventHandler : INotificationHandler<CreatedEven
     }
 
     public async Task Handle(CreatedEvent<Ticket> notification, CancellationToken cancellationToken)
-    {        
+    {
+        return;
         try
         {            
             var json = JsonSerializer.Serialize(notification, new JsonSerializerOptions

@@ -55,7 +55,15 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                 //    ReferenceHandler = ReferenceHandler.Preserve
                 //});
                 #endregion
-                var domainEvent = JsonSerializer.Deserialize<CreatedEvent<Ticket>>( message.Content,new JsonSerializerOptions
+
+                //exception
+                //var domainEvent = JsonSerializer.Deserialize<CreatedEvent<Ticket>>( message.Content,new JsonSerializerOptions
+                //{
+                //    ReferenceHandler = ReferenceHandler.Preserve
+                //});
+
+                //exception
+                var domainEvent = JsonSerializer.Deserialize<TicketCreatedEvent>(message.Content, new JsonSerializerOptions
                 {
                     ReferenceHandler = ReferenceHandler.Preserve
                 });
