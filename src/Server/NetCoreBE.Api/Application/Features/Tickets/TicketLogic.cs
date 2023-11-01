@@ -36,4 +36,10 @@ public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
         return await base.GetListLogic();
     }
 
+    //public override Task<Ticket> AddAsyncLogicEntity(Ticket entity, bool saveChanges = true)
+    //{
+    //    entity.SetNewTicket();
+    //    return base.AddAsyncLogicEntity(entity, saveChanges);
+    //}
+
 }

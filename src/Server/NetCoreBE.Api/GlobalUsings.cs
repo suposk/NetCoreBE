@@ -31,6 +31,7 @@ global using NetCoreBE.Api.Application;
 global using NetCoreBE.Api.Application.Interfaces;
 global using NetCoreBE.Api.Application.Features.Requests;
 global using NetCoreBE.Api.Application.Features.Tickets;
+global using NetCoreBE.Api.Application.Features.OutboxMessageDomaintEvents;
 
 //Domain
 global using NetCoreBE.Api.Domain.Entities;

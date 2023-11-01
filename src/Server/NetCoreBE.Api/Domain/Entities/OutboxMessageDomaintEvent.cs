@@ -26,6 +26,18 @@ public sealed class OutboxMessageDomaintEvent : EntityBase
     public int RetryCount { get; set; }
     public DateTime? NextRetryUtc { get; set; }
 
+    public static OutboxMessageDomaintEvent Create(DateTime utcNow, string type, string? typeDetail, string? content)
+    {
+        return new OutboxMessageDomaintEvent
+        {
+            Type = type,
+            TypeDetail = typeDetail,
+            Content = content,
+            OccuredUtc = utcNow,
+            RetryCount = 0
+        };
+    }
+
     public void Completed(DateTime utcNow)
     {
         //possible some domain event is completed

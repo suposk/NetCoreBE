@@ -62,6 +62,7 @@ services.AddScoped<ITicketLogic, TicketLogic>();
 
 services.AddScoped<IRequestRepository, RequestRepository>();
 services.AddScoped<IRequestLogic, RequestLogic>();
+services.AddScoped<IOutboxMessageDomaintEventRepository, OutboxMessageDomaintEventRepository>();
 
 DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
 try
