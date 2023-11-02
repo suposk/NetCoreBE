@@ -70,7 +70,7 @@ public class TicketCreatedEventHandler : INotificationHandler<CreatedEvent<Ticke
             else
             {
                 //Store event to OutboxMessageDomaintEvent process later
-                //check if exist
+                //check for duplicate messages
                 if (await _outboxMessageRepository.Exist(entityId: notification.Entity.Id, type.FullName))
                 {
                     _logger.LogWarning("Domain Event: {DomainEvent} already exist, {@notification}", type, notification);
