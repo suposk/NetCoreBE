@@ -1,4 +1,4 @@
-﻿namespace CommonCleanArch.Services;
+﻿namespace SharedCommon.Services;
 
 public interface IDateTimeService
 {

@@ -1,4 +1,7 @@
-﻿namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
+﻿using SharedCommon.Helpers;
+using SharedCommon.Services;
+
+namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
 {
     public class TicketRepository : Repository<Ticket>, ITicketRepository
     {

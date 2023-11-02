@@ -10,6 +10,8 @@ global using System.ComponentModel.DataAnnotations.Schema;
 //Shared
 global using SharedKernel.Base;
 global using SharedCommon;
+global using SharedCommon.Services;
+global using SharedCommon.Helpers;
 
 //Contracts
 global using Contracts.Common;

@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Api.Application.Features.Tickets;
+﻿using SharedCommon.Services;
+
+namespace NetCoreBE.Api.Application.Features.Tickets;
 
 public class ConfrimCommand : IRequest<Result>
 {

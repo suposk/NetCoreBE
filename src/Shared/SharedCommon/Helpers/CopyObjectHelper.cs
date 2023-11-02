@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace CommonCleanArch.Helpers;
+namespace SharedCommon.Helpers;
 
 public static class CopyObjectHelper
 {

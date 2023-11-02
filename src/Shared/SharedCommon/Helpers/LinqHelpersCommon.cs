@@ -1,4 +1,4 @@
-﻿namespace CommonCleanArch.Helpers;
+﻿namespace SharedCommon.Helpers;
 
 public static class LinqHelpersCommon
 {

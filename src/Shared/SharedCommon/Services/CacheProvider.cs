@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using SharedCommon.Helpers;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 
-namespace CommonCleanArch.Services;
+namespace SharedCommon.Services;
 
 public interface ICacheProvider
 {
@@ -35,7 +36,7 @@ public class KeyIdPair
     public KeyIdPair(string key, string id)
     {
         Key = key;
-        Id = id;       
+        Id = id;
     }
     public string? Key { get; set; }
     public string? Id { get; set; }
@@ -53,7 +54,7 @@ public class KeyIdPair
     }
 
     public override string ToString() => $"Key={Key} Id={Id}";
-    
+
     public override bool Equals(object obj)
     {
         if (obj == null)
@@ -115,12 +116,12 @@ public class CacheProvider : ICacheProvider
     public void SetCache<T>(string key, string id, T value, int seconds = ICacheProvider.CacheSeconds) where T : class
     {
         //SetCache($"{key}-{id}", value, seconds);
-        _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);        
+        _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);
         _cache.Set(GetCombinedKey(key, id), value, DateTimeOffset.Now.AddSeconds(seconds));
     }
 
     public void ClearCache(string key)
-    {        
+    {
         _cache.Remove(key);
         var allPairs = _Dic.Where(x => x.Key.Key == key).Select(a => a.Key).ToList();
         foreach (var pair in allPairs)
@@ -148,7 +149,7 @@ public class CacheProvider : ICacheProvider
         foreach (var pair in allPairs)
         {
             _Dic.TryRemove(pair, out _);
-            _cache.Remove(GetCombinedKey(pair.Key,pair.Id));
+            _cache.Remove(GetCombinedKey(pair.Key, pair.Id));
         }
     }
 

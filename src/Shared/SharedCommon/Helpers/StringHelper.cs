@@ -1,4 +1,4 @@
-﻿using Azure.Core;
+﻿using System.Text.RegularExpressions;
 
 namespace System;
 

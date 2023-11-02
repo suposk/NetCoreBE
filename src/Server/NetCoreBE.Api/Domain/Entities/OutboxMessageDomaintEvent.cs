@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Api.Domain.Entities;
+﻿using SharedCommon.Helpers;
+
+namespace NetCoreBE.Api.Domain.Entities;
 
 /// <summary>
 /// OutboxMessage pattern for some DomaintEvent

@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
+﻿using SharedCommon.Services;
+
+namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
 {
     public class OutboxMessageDomaintEventRepository : Repository<OutboxMessageDomaintEvent>, IOutboxMessageDomaintEventRepository
     {

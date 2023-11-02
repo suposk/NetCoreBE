@@ -28,6 +28,9 @@ var Configuration = builder.Configuration;
 var myType = typeof(Program);
 var _namespace = myType.Namespace;
 
+services.RegisterCommonCleanArchServices(Configuration);
+services.RegisterSharedCommonServices(Configuration);
+
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 services.AddMvc(options => //Validation filter
 {
@@ -50,8 +53,6 @@ services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBear
     .AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd")
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddInMemoryTokenCaches();
-
-services.RegisterCommonCleanArchServices(Configuration);
 
 // register PropertyMappingService for Search functionality
 services.AddTransient<IPropertyMappingService, PropertyMappingService>();
