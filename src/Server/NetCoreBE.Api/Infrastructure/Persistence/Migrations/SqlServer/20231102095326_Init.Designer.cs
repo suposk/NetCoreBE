@@ -12,8 +12,8 @@ using NetCoreBE.Api.Infrastructure.Persistence;
 namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20231101101159_OutboxMessageDomaintEvent")]
-    partial class OutboxMessageDomaintEvent
+    [Migration("20231102095326_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,11 +41,15 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("EntityId")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
                     b.Property<string>("Error")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool?>("IsSuccess")
+                    b.Property<bool?>("IsProcessed")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedAt")
@@ -77,10 +81,6 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("TypeDetail")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
@@ -89,7 +89,7 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
 
                     b.HasIndex("Id");
 
-                    b.HasIndex("Type", "IsSuccess", "NextRetryUtc");
+                    b.HasIndex("Type", "IsProcessed", "NextRetryUtc", "EntityId");
 
                     b.ToTable("OutboxMessageDomaintEvents");
                 });
@@ -227,6 +227,14 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
+
+                    b.Property<string>("State")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 

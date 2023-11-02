@@ -117,7 +117,8 @@ services.AddQuartz(config =>
     .AddTrigger(options =>
     {
         options.ForJob(jobKey);
-        options.StartNow();        
+        //options.StartNow();        
+        options.StartAt(DateTimeOffset.UtcNow.AddSeconds(30));
         options.WithSimpleSchedule(x => x.WithIntervalInSeconds(30).RepeatForever());
     });
     config.UseMicrosoftDependencyInjectionJobFactory();//Important for DI

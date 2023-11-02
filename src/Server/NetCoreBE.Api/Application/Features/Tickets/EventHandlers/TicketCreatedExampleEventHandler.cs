@@ -30,24 +30,20 @@ public class TicketCreatedExampleEventHandler : INotificationHandler<TicketCreat
         try
         {
             var json = JsonConvert.SerializeObject(notification, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None });
-            //var type = notification.GetType().GetTypeNameExt();
-            //var type = notification.GetType().FullName;
-
             //store in cache for performance
             var type = await _cacheProvider.GetOrAddAsync(nameof(TicketCreatedExampleEventHandler), int.MaxValue, async () =>
             {
-                var type = notification.GetType();
-                return type;
+                return notification.GetType();
             });
 
-            var outboxMessage = OutboxMessageDomaintEvent.Create(notification.Item.Id, _dateTimeService.UtcNow, type?.FullName, null, json);
+            var outboxMessage = OutboxMessageDomaintEvent.Create(entityId: notification.Item.Id, _dateTimeService.UtcNow, type?.FullName, json);
             var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
-            if (await _repository.Exist(outboxMessage.Id, outboxMessage.Type))
+            if (await _repository.Exist(entityId: outboxMessage.EntityId, outboxMessage.Type))
             {
                 _logger.LogWarning("Domain Event: {DomainEvent} already exist, {@notification}", outboxMessage.Type, notification);
                 return;
             }
-            var res = await _repository.AddAsync(outboxMessage);
+            var res = await _repository.AddAsync(outboxMessage, nameof(TicketCreatedExampleEventHandler));
             _logger.LogDebug("Domain Event: {DomainEvent}", type);
         }
         catch (Exception ex)

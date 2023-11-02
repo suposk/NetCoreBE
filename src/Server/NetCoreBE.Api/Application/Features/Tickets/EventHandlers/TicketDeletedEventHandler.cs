@@ -29,16 +29,29 @@ public class TicketDeletedEventHandler : INotificationHandler<DeletedEvent<Ticke
     {
         //return;
         try
-        {            
+        {
             var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
-            var repo = await _repository.GetId(notification.Entity.Id);
-            if (repo == null)
+            var repo = await _repository.GetUnProcessedList(entityId: notification.Entity.Id);
+            if (repo.IsNullOrEmptyCollection())
             {
                 _logger.LogInformation("Domain Event: already removed, {@notification}", notification.Entity);
                 return;
             }
-            var res = await _repository.RemoveAsync(notification.Entity.Id);
+            repo.ForEach(a => _repository.Remove(a));
+            var res = await _repository.SaveChangesAsync();
             _logger.LogDebug("Domain Event completed");
+
+            //single entity
+            //var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
+            //var repo = await _repository.GetId(notification.Entity.Id);
+            //if (repo == null)
+            //{
+            //    _logger.LogInformation("Domain Event: already removed, {@notification}", notification.Entity);
+            //    return;
+            //}
+            //var res = await _repository.RemoveAsync(notification.Entity.Id);
+            //_logger.LogDebug("Domain Event completed");
+
 
             //var json = JsonConvert.SerializeObject(notification, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None });
             ////store in cache for performance

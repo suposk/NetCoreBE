@@ -1,9 +1,6 @@
-﻿using CommonCleanArch;
-using MediatR;
-using NetCoreBE.Api.Application.Features.Tickets.EventHandlers;
+﻿using MediatR;
 using Newtonsoft.Json;
 using Quartz;
-using System.Reflection;
 using System.Text;
 
 namespace NetCoreBE.Api.Infrastructure.BackroundJobs;
@@ -59,14 +56,15 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                     continue;
                 }
                 //await _publisher.Publish(domainEvent);                
-                message.SetSuccess(_dateTimeService.UtcNow);
-                await _outboxMessageRepository.UpdateAsync(message);
+                message.SetProcessed(_dateTimeService.UtcNow);
+                await _outboxMessageRepository.UpdateAsync(message, nameof(ProcessOutboxMessageDomaintEventsJob));
+                //await _publisher.Publish(domainEvent);                
                 _logger.LogDebug("Domain Event: {DomainEvent} processed", message.Type);
             }
             catch (Exception ex)
             {                
                 message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1));
-                await _outboxMessageRepository.UpdateAsync(message);    
+                await _outboxMessageRepository.UpdateAsync(message, nameof(ProcessOutboxMessageDomaintEventsJob));    
                 _logger.LogError(ex, $"{nameof(ProcessOutboxMessageDomaintEventsJob)} failed", ex);
             }
         }

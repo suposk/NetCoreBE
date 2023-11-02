@@ -38,11 +38,15 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("EntityId")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
                     b.Property<string>("Error")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool?>("IsSuccess")
+                    b.Property<bool?>("IsProcessed")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedAt")
@@ -74,10 +78,6 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("TypeDetail")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
@@ -86,7 +86,7 @@ namespace NetCoreBE.Api.Infrastructure.Persistence.Migrations.SqlServer
 
                     b.HasIndex("Id");
 
-                    b.HasIndex("Type", "IsSuccess", "NextRetryUtc");
+                    b.HasIndex("Type", "IsProcessed", "NextRetryUtc", "EntityId");
 
                     b.ToTable("OutboxMessageDomaintEvents");
                 });
