@@ -55,7 +55,7 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                 var de = domainEvent as DomainEvent;
                 if (de != null)
                 {
-                    //de.SetToProcess(message.Id);
+                    de.SetToProcess(message.Id);
                     domainEvent = de;
                 }
                 //var domainEvent = JsonConvert.DeserializeObject<TicketCreatedEvent>(message.Content); //works 

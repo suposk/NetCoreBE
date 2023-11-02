@@ -35,20 +35,19 @@ public class TicketCreatedEventHandler : INotificationHandler<CreatedEvent<Ticke
             var type = await _cacheProvider.GetOrAddAsync(nameof(TicketCreatedEventHandler), int.MaxValue, async () =>
             {
                 return notification.GetType();                
-            });
-            //OutboxMessageDomaintEvent outboxMessage = OutboxMessageDomaintEvent.Create(entityId: notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, json);
-            OutboxMessageDomaintEvent outboxMessage = null;
+            });            
+            OutboxMessageDomaintEvent? outboxMessage = null;
             var _outboxMessageRepository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
-            //if (await _outboxMessageRepository.Exist(entityId: outboxMessage.EntityId, outboxMessage.Type))            
+            
+            //Process Stored Event
             if (notification.IsProcessing && notification.Id.HasValueExt())
-                outboxMessage = await _outboxMessageRepository.GetId(notification.Id);            
-            else
             {
-                var r = await _outboxMessageRepository.Exist(entityId: notification.Entity.Id, type.FullName);
-                return;
-            }
-            if (outboxMessage != null)
-            {
+                outboxMessage = await _outboxMessageRepository.GetId(notification.Id);
+                if (outboxMessage == null)
+                {
+                    _logger.LogWarning("Process Domain Event: {DomainEvent} not found, {@notification}", type, notification);
+                    return;
+                }
                 _logger.LogWarning("Process Domain Event: {DomainEvent} already stored, {@notification}", outboxMessage.Type, notification);
                 var mediator = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
                 var command = new ConfrimCommand { TicketId = notification.Entity.Id };
@@ -65,9 +64,17 @@ public class TicketCreatedEventHandler : INotificationHandler<CreatedEvent<Ticke
                 }
                 await _outboxMessageRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler));
                 return;
+                
             }
             else
             {
+                //Store event to OutboxMessageDomaintEvent process later
+                //check if exist
+                if (await _outboxMessageRepository.Exist(entityId: notification.Entity.Id, type.FullName))
+                {
+                    _logger.LogWarning("Domain Event: {DomainEvent} already exist, {@notification}", type, notification);
+                    return;
+                }
                 outboxMessage = OutboxMessageDomaintEvent.Create(entityId: notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, json);
                 var res = await _outboxMessageRepository.AddAsync(outboxMessage, nameof(TicketCreatedEventHandler));
                 _logger.LogDebug("Domain Event: {DomainEvent}", type);
