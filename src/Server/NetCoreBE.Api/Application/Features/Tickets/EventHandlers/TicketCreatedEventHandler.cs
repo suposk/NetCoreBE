@@ -47,7 +47,7 @@ public class TicketCreatedEventHandler : INotificationHandler<CreatedEvent<Ticke
                 _logger.LogWarning("Domain Event: {DomainEvent} already exist, {@notification}", outboxMessage.Type, notification);
                 return;
             }
-            var res = await _repository.AddAsync(outboxMessage);
+            var res = await _repository.AddAsync(outboxMessage, "process");
             _logger.LogDebug("Domain Event: {DomainEvent}", type);
         }
         catch (Exception ex)
