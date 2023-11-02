@@ -18,7 +18,7 @@
             return _repository.GetList();
         }
 
-        public Task<bool> Exist(string entityId, string type) => _context.OutboxMessageDomaintEvents.AsNoTracking().AnyAsync(a => a.Id == entityId && a.Type == type);
+        public Task<bool> Exist(string entityId, string type) => _context.OutboxMessageDomaintEvents.AsNoTracking().AnyAsync(a => a.EntityId == entityId && a.Type == type && a.IsProcessed == null);
          
         public Task<List<OutboxMessageDomaintEvent>> GetUnProcessedList(string entityId) => _context.OutboxMessageDomaintEvents.AsNoTracking()
                                                                     .Where(a => a.EntityId == entityId && a.IsProcessed != true).ToListAsync();

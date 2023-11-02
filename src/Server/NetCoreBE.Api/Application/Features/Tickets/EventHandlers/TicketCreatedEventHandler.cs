@@ -39,11 +39,14 @@ public class TicketCreatedEventHandler : INotificationHandler<CreatedEvent<Ticke
             //OutboxMessageDomaintEvent outboxMessage = OutboxMessageDomaintEvent.Create(entityId: notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, json);
             OutboxMessageDomaintEvent outboxMessage = null;
             var _outboxMessageRepository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
-            //if (await _outboxMessageRepository.Exist(entityId: outboxMessage.EntityId, outboxMessage.Type))
-            //if (notification.IsPublished == true)
+            //if (await _outboxMessageRepository.Exist(entityId: outboxMessage.EntityId, outboxMessage.Type))            
             if (notification.IsProcessing && notification.Id.HasValueExt())
-                outboxMessage = await _outboxMessageRepository.GetId(notification.Id);
-            
+                outboxMessage = await _outboxMessageRepository.GetId(notification.Id);            
+            else
+            {
+                var r = await _outboxMessageRepository.Exist(entityId: notification.Entity.Id, type.FullName);
+                return;
+            }
             if (outboxMessage != null)
             {
                 _logger.LogWarning("Process Domain Event: {DomainEvent} already stored, {@notification}", outboxMessage.Type, notification);
