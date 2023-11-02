@@ -52,10 +52,10 @@ public class TicketCreatedEventHandler : INotificationHandler<CreatedEvent<Ticke
                 var mediator = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
                 var command = new ConfrimCommand { TicketId = notification.Entity.Id };
                 var result = await mediator.Send(command);
-                if (result == false)
+                if (result.Succeeded == false)
                 {
                     _logger.LogWarning("Process Command: {Command} failed to confirm", @command);
-                    outboxMessage.SetFailed(_dateTimeService.UtcNow, $"SOME ERROR");
+                    outboxMessage.SetFailed(_dateTimeService.UtcNow, result.Error);
                 }
                 else
                 {
