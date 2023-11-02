@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Api.Application.Features;
+﻿namespace NetCoreBE.Api.Application.Features.ExamplesTempleateToCopy;
 
 /// <summary>
 /// Only sample Query

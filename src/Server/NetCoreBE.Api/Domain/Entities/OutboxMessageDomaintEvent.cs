@@ -59,7 +59,7 @@ public sealed class OutboxMessageDomaintEvent : EntityBase
     /// </summary>
     /// <param name="utcNow"></param>
     /// <param name="nextRetryUtc"></param>
-    public void SetFailed(DateTime utcNow, string? error, DateTime? nextRetryUtc)
+    public void SetFailed(DateTime utcNow, string? error, DateTime? nextRetryUtc = null)
     {
         //possible some domain event failed
         if (error.HasValueExt()) Error = error; //dont want to ovveride error message        

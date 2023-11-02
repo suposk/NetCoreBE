@@ -9,6 +9,7 @@ namespace NetCoreBE.Api.Infrastructure.BackroundJobs;
 public class ProcessOutboxMessageDomaintEventsJob : IJob
 {
     private readonly IPublisher _publisher;
+    private readonly IMediator _mediator;
     private readonly IOutboxMessageDomaintEventRepository _outboxMessageRepository;
     private readonly IDateTimeService _dateTimeService;
     private readonly ICacheProvider _cacheProvider;
@@ -17,6 +18,7 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
     public ProcessOutboxMessageDomaintEventsJob
         (
         IPublisher publisher, 
+        IMediator mediator,
         IOutboxMessageDomaintEventRepository outboxMessageRepository,
         IDateTimeService dateTimeService,
         ICacheProvider cacheProvider,
@@ -24,6 +26,7 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
         )
     {
         _publisher = publisher;
+        _mediator = mediator;
         _outboxMessageRepository = outboxMessageRepository;
         _dateTimeService = dateTimeService;
         _cacheProvider = cacheProvider;
@@ -49,17 +52,24 @@ public class ProcessOutboxMessageDomaintEventsJob : IJob
                     continue;
                 }
                 var domainEvent = JsonConvert.DeserializeObject(message.Content, type);
+                var de = domainEvent as DomainEvent;
+                if (de != null)
+                {
+                    de.SetToProcess(message.Id);
+                    domainEvent = de;
+                }
                 //var domainEvent = JsonConvert.DeserializeObject<TicketCreatedEvent>(message.Content); //works 
                 if (domainEvent == null)
                 {
                     _logger.LogWarning("Domain Event: {DomainEvent} deserialization failed", message.Type);
                     continue;
-                }
-                //await _publisher.Publish(domainEvent);                
-                message.SetProcessed(_dateTimeService.UtcNow);
-                await _outboxMessageRepository.UpdateAsync(message, nameof(ProcessOutboxMessageDomaintEventsJob));
-                //await _publisher.Publish(domainEvent);                
-                _logger.LogDebug("Domain Event: {DomainEvent} processed", message.Type);
+                }                
+                await _publisher.Publish(domainEvent);                
+                //move to event handler
+                //message.SetProcessed(_dateTimeService.UtcNow);
+                //await _outboxMessageRepository.UpdateAsync(message, nameof(ProcessOutboxMessageDomaintEventsJob));                           
+
+                _logger.LogDebug("Domain Event: {DomainEvent} Published", message.Type);
             }
             catch (Exception ex)
             {                

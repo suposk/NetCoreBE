@@ -48,6 +48,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\..\Shared\SharedCommon\SharedCommon.csproj" />
     <ProjectReference Include="..\CommonCleanArch\CommonCleanArch.csproj" />
   </ItemGroup>
 

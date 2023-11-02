@@ -36,15 +36,39 @@ public class TicketCreatedEventHandler : INotificationHandler<CreatedEvent<Ticke
             {
                 return notification.GetType();                
             });
-            var outboxMessage = OutboxMessageDomaintEvent.Create(entityId: notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, json);
-            var _repository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
-            if (await _repository.Exist(entityId: outboxMessage.EntityId, outboxMessage.Type))
+            //OutboxMessageDomaintEvent outboxMessage = OutboxMessageDomaintEvent.Create(entityId: notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, json);
+            OutboxMessageDomaintEvent outboxMessage = null;
+            var _outboxMessageRepository = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxMessageDomaintEventRepository>();
+            //if (await _outboxMessageRepository.Exist(entityId: outboxMessage.EntityId, outboxMessage.Type))
+            //if (notification.IsPublished == true)
+            if (notification.IsProcessing && notification.Id.HasValueExt())
+                outboxMessage = await _outboxMessageRepository.GetId(notification.Id);
+            
+            if (outboxMessage != null)
             {
-                _logger.LogWarning("Domain Event: {DomainEvent} already exist, {@notification}", outboxMessage.Type, notification);
+                _logger.LogWarning("Process Domain Event: {DomainEvent} already stored, {@notification}", outboxMessage.Type, notification);
+                var mediator = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
+                var command = new ConfrimCommand { TicketId = notification.Entity.Id };
+                var result = await mediator.Send(command);
+                if (result == false)
+                {
+                    _logger.LogWarning("Process Command: {Command} failed to confirm", @command);
+                    outboxMessage.SetFailed(_dateTimeService.UtcNow, $"SOME ERROR");
+                }
+                else
+                {
+                    _logger.LogWarning("Process Command: {Command} sussess", @command);
+                    outboxMessage.SetProcessed(_dateTimeService.UtcNow);
+                }
+                await _outboxMessageRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler));
                 return;
             }
-            var res = await _repository.AddAsync(outboxMessage, nameof(TicketCreatedEventHandler));
-            _logger.LogDebug("Domain Event: {DomainEvent}", type);
+            else
+            {
+                outboxMessage = OutboxMessageDomaintEvent.Create(entityId: notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, json);
+                var res = await _outboxMessageRepository.AddAsync(outboxMessage, nameof(TicketCreatedEventHandler));
+                _logger.LogDebug("Domain Event: {DomainEvent}", type);
+            }
         }
         catch (Exception ex)
         {

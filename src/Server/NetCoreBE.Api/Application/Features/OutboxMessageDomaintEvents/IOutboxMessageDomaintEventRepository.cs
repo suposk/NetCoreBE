@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Api.Application.Features.OutboxMessageDomaintEvents;
+﻿namespace NetCoreBE.Api.Application.Features.Examples;
 
 public interface IOutboxMessageDomaintEventRepository : IRepository<OutboxMessageDomaintEvent>
 {
