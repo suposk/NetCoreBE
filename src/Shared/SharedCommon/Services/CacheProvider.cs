@@ -163,9 +163,7 @@ public class CacheProvider : ICacheProvider
         }).Value);
         if (res == null) //remove from cache if null
             _cache.Remove(key);
-#if DEBUG
         _logger?.LogDebug($"{nameof(GetOrAddAsync)} {key} getting from cache");
-#endif
         return res;
     }
 
@@ -180,9 +178,7 @@ public class CacheProvider : ICacheProvider
         }).Value);
         if (res == null) //remove from cache if null     
             _cache.Remove(comKey);
-#if DEBUG
         _logger?.LogDebug($"{nameof(GetOrAddAsync)} {comKey} getting from cache");
-#endif            
         return res;
     }
 
