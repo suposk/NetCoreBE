@@ -8,5 +8,6 @@ public interface IEntityEmailBase
 
 public abstract class EntityEmailBase : EntityBase, IEntityEmailBase
 {
+    [MaxLength(200)]
     public string? Email { get; set; }
 }

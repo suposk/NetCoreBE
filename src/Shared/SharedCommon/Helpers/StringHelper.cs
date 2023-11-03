@@ -1,4 +1,4 @@
-﻿using Azure.Core;
+﻿using System.Text.RegularExpressions;
 
 namespace System;
 
@@ -21,7 +21,7 @@ public static class StringHelper
 		return $"{text.Substring(0, visibleCharsCount)}...";
 	}
 
-	public static bool IsNullOrEmptyExt(this string text)
+	public static bool IsNullOrEmptyExt(this string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return true;
@@ -34,7 +34,7 @@ public static class StringHelper
         return !IsNullOrEmptyExt(text);
     }
 
-    public static bool HasValueExt(this string text)
+    public static bool HasValueExt(this string? text)
     {
         return !IsNullOrEmptyExt(text);
     }

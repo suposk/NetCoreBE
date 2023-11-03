@@ -6,6 +6,8 @@ using FluentValidation.AspNetCore;
 using Carter;
 using Serilog;
 using CommonCleanArch.Infrastructure;
+using Quartz;
+using NetCoreBE.Api.Infrastructure.BackroundJobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,9 @@ var services = builder.Services;
 var Configuration = builder.Configuration;
 var myType = typeof(Program);
 var _namespace = myType.Namespace;
+
+services.RegisterCommonCleanArchServices(Configuration);
+services.RegisterSharedCommonServices(Configuration);
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 services.AddMvc(options => //Validation filter
@@ -49,8 +54,6 @@ services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBear
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddInMemoryTokenCaches();
 
-services.RegisterCommonCleanArchServices(Configuration);
-
 // register PropertyMappingService for Search functionality
 services.AddTransient<IPropertyMappingService, PropertyMappingService>();
 
@@ -62,6 +65,7 @@ services.AddScoped<ITicketLogic, TicketLogic>();
 
 services.AddScoped<IRequestRepository, RequestRepository>();
 services.AddScoped<IRequestLogic, RequestLogic>();
+services.AddScoped<IOutboxMessageDomaintEventRepository, OutboxMessageDomaintEventRepository>();
 
 DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
 try
@@ -105,6 +109,23 @@ services.AddMediatR(config =>
     //config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
 });
 
+services.AddQuartz(config => 
+{
+    
+    var jobKey = new JobKey(nameof(ProcessOutboxMessageDomaintEventsJob));
+    config
+    .AddJob<ProcessOutboxMessageDomaintEventsJob>(jobKey)
+    .AddTrigger(options =>
+    {
+        options.ForJob(jobKey);
+        //options.StartNow();        
+        options.StartAt(DateTimeOffset.UtcNow.AddSeconds(30));
+        options.WithSimpleSchedule(x => x.WithIntervalInSeconds(30).RepeatForever());
+    });
+    config.UseMicrosoftDependencyInjectionJobFactory();//Important for DI
+});
+services.AddQuartzHostedService();
+
 var app = builder.Build();
 app.UseApiExceptionHandler(options =>
 {
@@ -112,12 +133,8 @@ app.UseApiExceptionHandler(options =>
     options.DetermineLogLevel = ApiExceptionMiddlewareExtensions.DetermineLogLevel;
 });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
@@ -144,8 +161,8 @@ using (var scope = app.Services.CreateScope())
         }
     }
     catch (Exception ex)
-    {
-        Console.WriteLine(ex.Message);
+    {        
+        Log.Error(ex, "An error occurred while migrating or initializing the database.");
     }
 }
 

@@ -1,4 +1,7 @@
-﻿namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
+﻿using SharedCommon.Helpers;
+using SharedCommon.Services;
+
+namespace NetCoreBE.Api.Infrastructure.Persistence.Repositories
 {
     public class TicketRepository : Repository<Ticket>, ITicketRepository
     {
@@ -18,6 +21,14 @@
         {
             //return _repository.GetListFilter(a => a.IsDeleted != true); //for soft delete
             return _repository.GetList();
+        }
+
+        public override void Add(Ticket entity, string UserId = null)
+        {
+            entity.SetNewTicket();            
+            base.Add(entity, UserId);
+            //entity.AddDomainEvent(new TicketCreatedExampleEvent(entity)); //example, test only
+            entity.AddDomainEvent(new CreatedEvent<Ticket>(entity)); //if called from repo, this would not get fired
         }
 
         public async Task<PagedList<Ticket>> Search(TicketSearchParameters searchParameters)
@@ -81,9 +92,10 @@
                 if (countExisintg == 0)
                     ticket.Id = i.GetSimpleGuidString();
                 list.Add(ticket);
-                await Task.Delay(10);
+                Add(ticket, UserId);
+                //await Task.Delay(10);
             }
-            _repository.AddRange(list, UserId);
+            //_repository.AddRange(list, UserId);
             await _repository.SaveChangesAsync();
             return list;
         }

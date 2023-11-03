@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedKernel", "Shared\Shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreBE.Api", "Server\NetCoreBE.Api\NetCoreBE.Api.csproj", "{03FF3991-570B-4AA5-B911-DB736F856928}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedCommon", "Shared\SharedCommon\SharedCommon.csproj", "{4412F62B-054F-485B-A026-DCF16D28F242}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{03FF3991-570B-4AA5-B911-DB736F856928}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03FF3991-570B-4AA5-B911-DB736F856928}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03FF3991-570B-4AA5-B911-DB736F856928}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4412F62B-054F-485B-A026-DCF16D28F242}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4412F62B-054F-485B-A026-DCF16D28F242}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4412F62B-054F-485B-A026-DCF16D28F242}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4412F62B-054F-485B-A026-DCF16D28F242}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 		{8D6885E2-9BF4-4FA9-B531-CBEEFC3505CC} = {7106204E-05DD-41D7-B4D1-F15759FD7B35}
 		{70FB7318-85DA-4925-BFE1-42E8C727A618} = {7106204E-05DD-41D7-B4D1-F15759FD7B35}
 		{03FF3991-570B-4AA5-B911-DB736F856928} = {5F86648C-7AC0-4741-B234-87DF133F4923}
+		{4412F62B-054F-485B-A026-DCF16D28F242} = {7106204E-05DD-41D7-B4D1-F15759FD7B35}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {711BADAD-0338-4B3C-AD13-00EE76A3529A}

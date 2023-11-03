@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Api.Infrastructure.Persistence;
+﻿using SharedCommon.Services;
+
+namespace NetCoreBE.Api.Infrastructure.Persistence;
 
 /// <summary>
 /// /// <summary>

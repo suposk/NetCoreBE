@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Api.Application.Features.Tickets;
+﻿using SharedCommon.Services;
+
+namespace NetCoreBE.Api.Application.Features.Tickets;
 
 public interface ITicketLogic : IDomainLogicBase<Ticket, TicketDto>
 {
@@ -35,5 +37,11 @@ public class TicketLogic : DomainLogicBase<Ticket, TicketDto>, ITicketLogic
         //var notDel = _repository.GetListActive(); //error
         return await base.GetListLogic();
     }
+
+    //public override Task<Ticket> AddAsyncLogicEntity(Ticket entity, bool saveChanges = true)
+    //{
+    //    entity.SetNewTicket();
+    //    return base.AddAsyncLogicEntity(entity, saveChanges);
+    //}
 
 }

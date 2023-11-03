@@ -32,6 +32,7 @@ public class ApiDbContext : DbContext, IApiDbContext
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<Request> Requests { get; set; }
     public DbSet<RequestHistory> RequestHistorys { get; set; }
+    public DbSet<OutboxMessageDomaintEvent> OutboxMessageDomaintEvents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

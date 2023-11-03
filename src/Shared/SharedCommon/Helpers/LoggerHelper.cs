@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+
+namespace SharedCommon.Helpers;
 
 public static class LoggerHelper
 {

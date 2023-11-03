@@ -8,4 +8,5 @@ public interface IApiDbContext
     DbSet<RequestHistory> RequestHistorys { get; set; }
     DbSet<Request> Requests { get; set; }
     DbSet<Ticket> Tickets { get; set; }
+    DbSet<OutboxMessageDomaintEvent> OutboxMessageDomaintEvents { get; set; }
 }

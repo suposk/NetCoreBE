@@ -7,6 +7,9 @@ global using System.Text.RegularExpressions;
 global using System.Linq.Expressions;
 
 global using SharedKernel.Base;
+global using SharedCommon.Services;
+global using SharedCommon.Helpers;
+
 global using CommonCleanArch;
 global using CommonCleanArch.Base;
 global using CommonCleanArch.Helpers;
