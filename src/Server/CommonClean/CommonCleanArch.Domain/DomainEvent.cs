@@ -7,6 +7,7 @@ public abstract class DomainEvent : INotification
 {
     protected DomainEvent()
     {
+        //todo. fix this
         DateOccurred = DateTimeOffset.UtcNow;
     }
 
