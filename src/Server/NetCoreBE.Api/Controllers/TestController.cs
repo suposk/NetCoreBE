@@ -1,4 +1,6 @@
 ﻿#if DEBUG
+using CommonCleanArch.Domain;
+
 namespace NetCoreBE.Api.Controllers;
 
 /// <summary>

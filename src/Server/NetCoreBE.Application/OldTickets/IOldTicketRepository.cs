@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Application.OldTickets
+﻿using CommonCleanArch.Domain;
+
+namespace NetCoreBE.Application.OldTickets
 {
     public interface IOldTicketRepository : IRepository<OldTicket>
     {

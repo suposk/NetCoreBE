@@ -1,4 +1,6 @@
-﻿using CommonCleanArch.Application.Services;
+﻿using CommonCleanArch.Application.Search;
+using CommonCleanArch.Application.Services;
+using CommonCleanArch.Domain;
 
 namespace NetCoreBE.Infrastructure.Persistence.Repositories
 {

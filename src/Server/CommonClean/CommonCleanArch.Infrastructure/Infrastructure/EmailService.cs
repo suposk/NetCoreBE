@@ -7,7 +7,6 @@
 //using System.Threading.Tasks;
 
 namespace CommonCleanArch.Infrastructure;
-public record SentEmailDto(string From, string To, string Subject, string Text, bool IsHtml);
 
 public class EmailConfig
 {
@@ -19,13 +18,6 @@ public class EmailConfig
     public required string SmtpPass { get; set; }
 
     public bool HasPassword => !string.IsNullOrWhiteSpace(SmtpPass);
-}
-
-public interface IEmailService
-{
-    Task SendEmail(string from, string to, string subject, string text, bool isHtml);
-    Task<bool> SendEmail(SentEmailDto sentEmail);
-    Task SendEmail(string from, List<string> toList, string subject, string text, bool isHtml);
 }
 
 public class EmailService : IEmailService

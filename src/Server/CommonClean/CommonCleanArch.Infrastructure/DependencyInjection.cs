@@ -1,5 +1,4 @@
 ﻿using Azure.Identity;
-using CommonCleanArch.Application.Services;
 using CommonCleanArch.Infrastructure;
 using CommonCleanArch.Infrastructure.Interceptors;
 using Microsoft.Azure.KeyVault;

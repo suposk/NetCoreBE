@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Application.Tickets;
+﻿using CommonCleanArch.Domain;
+
+namespace NetCoreBE.Application.Tickets;
 
 public class SearchTicketQuery : IRequest<ResultCom<PagedListDto<TicketDto>>>
 {

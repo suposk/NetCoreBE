@@ -1,5 +1,3 @@
-using CommonCleanArch.Infrastructure;
-using CommonCleanArch.Infrastructure.Persistence;
 using System.Diagnostics;
 
 namespace NetCoreBE.Application.Tickets.EventHandlers;

@@ -1,4 +1,4 @@
-﻿namespace CommonCleanArch.Infrastructure.Search;
+﻿namespace CommonCleanArch.Domain;
 
 public class PagedList<T>
 {
@@ -15,7 +15,7 @@ public class PagedList<T>
         TotalCount = totalPages;
         CurrentPage = currentPage;
         PageSize = pageSize;
-        TotalPages = (int)Math.Ceiling(totalPages / (double)pageSize);        
+        TotalPages = (int)Math.Ceiling(totalPages / (double)pageSize);
         Results = items;
     }
     public static PagedList<T> Create(IQueryable<T> source, int pageNumber, int pageSize)

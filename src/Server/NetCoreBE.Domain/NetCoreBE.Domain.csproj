@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CommonClean\CommonCleanArch\CommonCleanArch.csproj" />
+    <ProjectReference Include="..\..\Shared\SharedCommon\SharedCommon.csproj" />
+    <ProjectReference Include="..\CommonClean\CommonCleanArch.Domain\CommonCleanArch.Domain.csproj" />
   </ItemGroup>
 
 </Project>

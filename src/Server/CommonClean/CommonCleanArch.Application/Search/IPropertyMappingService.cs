@@ -1,4 +1,4 @@
-﻿namespace CommonCleanArch.Infrastructure.Search;
+﻿namespace CommonCleanArch.Application.Search;
 
 public interface IPropertyMappingService
 {

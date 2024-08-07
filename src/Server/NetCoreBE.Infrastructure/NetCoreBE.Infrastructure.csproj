@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommonClean\CommonCleanArch.Infrastructure\CommonCleanArch.Infrastructure.csproj" />
     <ProjectReference Include="..\NetCoreBE.Application\NetCoreBE.Application.csproj" />
   </ItemGroup>
 
