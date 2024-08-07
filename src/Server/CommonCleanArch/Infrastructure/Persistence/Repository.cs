@@ -1,29 +1,4 @@
-﻿using MassTransit;
-
-namespace CommonCleanArch.Infrastructure.Persistence;
-
-public interface IRepository<TEntity> where TEntity : class
-{
-    DbContext DatabaseContext { get; }
-    Task<TEntity> GetId(string id);
-    virtual Task<List<TEntity>> GetByUserId(string userId) { throw new NotImplementedException(); }
-    Task<List<TEntity>> GetList();
-    void Add(TEntity entity, string UserId = null);
-    void AddRange(IEnumerable<TEntity> entitys, string UserId = null);
-    void Remove(TEntity entity, string UserId = null);
-    void Update(TEntity entity, string UserId = null);
-    Task<TEntity> AddAsync(TEntity entity, string UserId = null);
-    Task<TEntity> UpdateAsync(TEntity entity, string UserId = null);
-    Task<bool> SaveChangesAsync();
-    Task<TEntity> GetFilter(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
-    Task<TEntity> GetFilter(Expression<Func<TEntity, bool>> expression);
-    Task<List<TEntity>> GetListFilter(Expression<Func<TEntity, bool>> expression);
-    Task<List<TEntity>> GetListFilter(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
-    void ResetAtByUser(TEntity entity);
-    Task<int> CountAsync();
-    Task<bool> RemoveAsync(string Id, string UserId = null);
-    Task<List<EntitySoftDeleteBase>> GetListActive(params Expression<Func<EntitySoftDeleteBase, object>>[] includes);
-}
+﻿namespace CommonCleanArch.Infrastructure.Persistence;
 
 
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
@@ -63,9 +38,10 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBa
     {
         //if (entity.Id != 0)
         //    throw new ArgumentException($"Id {entity.Id} can not be set while add operation.");        
-        if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)
+        //if (string.IsNullOrWhiteSpace(entity.Id) || Guid.Parse(entity.Id) == Guid.Empty)
+        if (entity is not null && entity.Id.IsNullNotValidIdExt())
             //entity.Id = Guid.NewGuid().ToString();            
-            entity.Id = NewId.Next().ToString();
+            entity.Id = StringHelper.GetStringGuidExt();
         entity.CreatedBy = UserId ?? ApiIdentity.GetUserNameOrIp();
         entity.CreatedAt ??= DateTimeService.UtcNow;
     }
@@ -178,7 +154,9 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBa
             //throw new DbUpdateException("Conflict detected, refresh and try again.");
             //if (e.InnerException != null && e.InnerException.Message.Contains("when IDENTITY_INSERT is set to OFF"))
             //    return true;
-            throw new DbUpdateException(e?.Message);
+
+            //throw new DbUpdateException(e?.Message);
+            throw;
         }
         catch (Exception ee)
         {

@@ -1,23 +1,50 @@
-using MediatR.Pipeline;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Identity.Web;
-using System.Reflection;
 using FluentValidation.AspNetCore;
-using Carter;
-using Serilog;
-using CommonCleanArch.Infrastructure;
-using Quartz;
-using NetCoreBE.Api.Infrastructure.BackroundJobs;
+using NetCoreBE.Api;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using Asp.Versioning.ApiExplorer;
+using Asp.Versioning;
+using NetCoreBE.Api.OpenApi;
+using SharedCommon;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//for retriving secrets from Azure Key Vault only
+using var loggerFactory = LoggerFactory.Create(builder =>
+{
+    builder.SetMinimumLevel(LogLevel.Information);
+    builder.AddConsole();
+    builder.AddEventSourceLogger();
+});
+var _logger = loggerFactory.CreateLogger(nameof(ProgramApi));
+_logger.LogInformation($"Created {nameof(ProgramApi)} _logger");
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCarter(); //minimal API
+
 builder.Services.AddSwaggerGen();
-builder.Services.AddCarter();
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(AppApiVersions.Default);
+        options.ReportApiVersions = true;
+        options.ApiVersionReader = new UrlSegmentApiVersionReader();
+    })
+    .AddMvc()
+    .EnableApiVersionBinding()
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'V";        
+        options.SubstituteApiVersionInUrl = true;
+    });
 
 //Serilog
 builder.Host.UseSerilog((context, config) =>
@@ -25,106 +52,28 @@ builder.Host.UseSerilog((context, config) =>
 
 var services = builder.Services;
 var Configuration = builder.Configuration;
-var myType = typeof(Program);
-var _namespace = myType.Namespace;
 
-services.RegisterCommonCleanArchServices(Configuration);
+services.RegisterCommonCleanArchServices(Configuration, _logger);
 services.RegisterSharedCommonServices(Configuration);
 
-services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 services.AddMvc(options => //Validation filter
 {
-    options.Filters.Add(new ValidationFilter());
+    options.Filters.Add(new ValidationFilterMvc());
 })
 .AddFluentValidation(options =>
 {    
-    options.RegisterValidatorsFromAssemblyContaining<NetCoreBE.Api.Application.BaseAbstractValidator>();
+    options.RegisterValidatorsFromAssemblyContaining<BaseAbstractValidator>();
 });
 
-services.AddAuthorization(options =>
-{
-    // By default, all incoming requests will be authorized according to the default policy
-    //Will automatical sign in user
-    //options.FallbackPolicy = options.DefaultPolicy;
-    //options.AddPolicy(PoliciesCsro.IsAdminPolicy, policy => policy.RequireClaim(ClaimTypes.Role, RolesCsro.Admin));
-});
 
-services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd")
-    .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddInMemoryTokenCaches();
-
-// register PropertyMappingService for Search functionality
-services.AddTransient<IPropertyMappingService, PropertyMappingService>();
-
-services.AddScoped(typeof(IRepository<>), typeof(ApiRepositoryBase<>));
-services.AddScoped(typeof(IDomainLogicBase<,>), typeof(ApiDomainLogicBase<,>));
-
-services.AddScoped<ITicketRepository, TicketRepository>();
-services.AddScoped<ITicketLogic, TicketLogic>();
-
-services.AddScoped<IRequestRepository, RequestRepository>();
-services.AddScoped<IRequestLogic, RequestLogic>();
-services.AddScoped<IOutboxMessageDomaintEventRepository, OutboxMessageDomaintEventRepository>();
-
-DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
-try
-{
-    DbTypeEnum = Configuration.GetValue<DbTypeEnum>(nameof(DbTypeEnum));
-}
-catch { }
-
-if (DbTypeEnum == DbTypeEnum.Unknown)
-    throw new Exception($"Unable to read {nameof(DbTypeEnum)} from config. Please set value to SqlServer, InMemory for testing or.....");
-
-////factory methods, not used yet
-//services.AddScoped<IDbContextFactory<ApiDbContext>, DbContextFactory<ApiDbContext>>();
-//services.AddTransient<IApiDbContext>(provider =>    
-//    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
-
-services.AddDbContext<ApiDbContext>((p, m) =>
-{
-    //var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
-    m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
-    //m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
-    
-    if (DbTypeEnum == DbTypeEnum.SqlLite)
-        m.UseSqlite(Configuration.GetConnectionString("ApiDbCsLite"), x => x.MigrationsAssembly(_namespace));
-    else if (DbTypeEnum == DbTypeEnum.InMemory)
-        m.UseInMemoryDatabase(databaseName: Configuration.GetConnectionString("ApiDbCs"));
-    else
-        m.UseSqlServer(Configuration.GetConnectionString("ApiDbCs"), x => x.MigrationsAssembly(_namespace));
-});
-
-services.AddMediatR(config =>
-{
-    config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-    config.NotificationPublisher = new ParallelNoWaitPublisher();
-    //config.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
-    //config.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
-    config.AddOpenBehavior(typeof(RequestExceptionProcessorBehavior<,>));
-    //config.AddOpenBehavior(typeof(ValidationBehaviour<,>));
-    //config.AddOpenBehavior(typeof(MemoryCacheBehaviour<,>));
-    //config.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
-    //config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
-});
-
-services.AddQuartz(config => 
-{
-    
-    var jobKey = new JobKey(nameof(ProcessOutboxMessageDomaintEventsJob));
-    config
-    .AddJob<ProcessOutboxMessageDomaintEventsJob>(jobKey)
-    .AddTrigger(options =>
+builder.Services.AddRateLimiter(_ => 
+    _.AddFixedWindowLimiter(policyName: "FixedWindowLimiter", options =>
     {
-        options.ForJob(jobKey);
-        //options.StartNow();        
-        options.StartAt(DateTimeOffset.UtcNow.AddSeconds(30));
-        options.WithSimpleSchedule(x => x.WithIntervalInSeconds(30).RepeatForever());
-    });
-    config.UseMicrosoftDependencyInjectionJobFactory();//Important for DI
-});
-services.AddQuartzHostedService();
+        options.PermitLimit = 5;
+        options.Window = TimeSpan.FromSeconds(10);
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 2;
+    }));
 
 var app = builder.Build();
 app.UseApiExceptionHandler(options =>
@@ -134,13 +83,35 @@ app.UseApiExceptionHandler(options =>
 });
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options =>
+{
+    foreach (ApiVersionDescription description in app.DescribeApiVersions())
+    {
+        string url = $"/swagger/{description.GroupName}/swagger.json";
+        string name = description.GroupName.ToUpperInvariant();
+        options.SwaggerEndpoint(url, name);
+    }
+});
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.MapCarter();
+
+var ApiVersionSet = app.NewApiVersionSet()
+    .HasApiVersion(new ApiVersion(AppApiVersions.V1))
+    .HasApiVersion(new ApiVersion(AppApiVersions.V2))
+    .HasApiVersion(new ApiVersion(AppApiVersions.V3))
+    .ReportApiVersions()
+    .Build();
+
+var RouteGroupBuilder = app.MapGroup("api/v{version:apiVersion}").WithApiVersionSet(ApiVersionSet);
+RouteGroupBuilder.MapCarter(); 
+//app.MapCarter(); 
+
 //app.UseSerilogRequestLogging();
+
+app.UseRateLimiter();
+app.AddKeyVaultExtensions();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -153,11 +124,11 @@ using (var scope = app.Services.CreateScope())
 
         if (app.Environment.IsDevelopment())
         {
-            var ticketRepo = sp.GetRequiredService<ITicketRepository>();
-            var s2 = await ticketRepo.Seed(2, 2, "SEED Startup");
+            var OldTicketRepo = sp.GetRequiredService<IOldTicketRepository>();
+            var s2 = await OldTicketRepo.Seed(2, 2, "SEED Startup");
             //seed data
-            var requestRepository = sp.GetRequiredService<IRequestRepository>();
-            var s4 = await requestRepository.Seed(4, 4, "SEED Startup");
+            var TicketRepository = sp.GetRequiredService<ITicketRepository>();
+            var s4 = await TicketRepository.Seed(4, 4, "SEED Startup");
         }
     }
     catch (Exception ex)
@@ -167,3 +138,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 await app.RunAsync();
+
+namespace NetCoreBE.Api
+{
+    public partial class ProgramApi { }
+}

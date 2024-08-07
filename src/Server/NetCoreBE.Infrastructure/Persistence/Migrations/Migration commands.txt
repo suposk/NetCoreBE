@@ -1,0 +1,11 @@
+﻿//SqlServer
+//add commands here
+Add-Migration InitSql -Context ApiDbContext -OutputDir Persistence\Migrations\SqlServer
+
+
+Update-Database -Context ApiDbContext
+Remove-Migration -Context ApiDbContext
+
+
+//SQL LITE
+Add-Migration InitLite -Context ApiDbContext -OutputDir Persistence\Migrations\SqlLite

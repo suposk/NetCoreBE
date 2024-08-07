@@ -9,26 +9,15 @@ namespace SharedCommon.Services;
 public interface ICacheProvider
 {
     const int CacheSeconds = 300; //5 min
-    T GetFromCache<T>(string key) where T : class;
-    T GetFromCache<T>(string key, string id) where T : class;
-    void SetCache<T>(string key, T value) where T : class;
-    void SetCache<T>(string key, T value, int seconds = CacheSeconds) where T : class;
-    void SetCache<T>(string key, string id, T value) where T : class;
-    void SetCache<T>(string key, string id, T value, int seconds = CacheSeconds) where T : class;
+    
     void ClearCache(string key);
-    void ClearCache(string key, string id);
-    Task<T> GetOrAddAsync<T>(string key, int seconds, Func<Task<T>> taskFactory);
-    Task<T> GetOrAddAsync<T>(string key, string id, int seconds, Func<Task<T>> taskFactory);
-
-    /// <summary>
-    /// null, ToString(), Auto
-    /// </summary>
-    /// <param name="userId">userId can by null</param>
-    /// <param name="className">ToString() recomended</param>
-    /// <param name="caller">optional, is automatic</param>
-    /// <returns></returns>
-    static string GetCacheKey(string userId, string className, [CallerMemberName] string caller = null) => $"{caller}||{userId}||{className}";
+    //void ClearCache(string key, string id);
+    void ClearCache(string key, params string[] otherParams);
     void ClearCacheForAllKeysAndIds(string key);
+    void ClearCacheOnlyKeyAndId(string key, string id);
+    Task<T> GetOrAddAsync<T>(string key, int seconds, Func<Task<T>> taskFactory);
+    //Task<T> GetOrAddAsync<T>(string key, string id, int seconds, Func<Task<T>> taskFactory);
+    Task<T> GetOrAddAsync<T>(string key, int seconds, Func<Task<T>> taskFactory, params string[] otherParams);
 }
 
 public class KeyIdPair
@@ -79,6 +68,7 @@ public class CacheProvider : ICacheProvider
     private readonly IMemoryCache _cache;
     private readonly ILogger<CacheProvider> _logger;
     private readonly ConcurrentDictionary<KeyIdPair, object> _Dic = new();
+    private const string _separator = "_";
 
     public CacheProvider(IMemoryCache cache, ILogger<CacheProvider> logger)
     {
@@ -92,11 +82,21 @@ public class CacheProvider : ICacheProvider
     /// <param name="key"></param>
     /// <param name="id"></param>
     /// <returns></returns>
-    string GetCombinedKey(string key, string id) => $"{(!string.IsNullOrWhiteSpace(id) ? $"{key}-{id}" : key)}";
+    string GetCombinedKey(string key, string id) => $"{(!string.IsNullOrWhiteSpace(id) ? $"{key}{_separator}{id}" : key)}";
+    string GetCombinedKey(string key, params string [] otherParams) 
+    {
+        if (otherParams == null || otherParams.Length == 0)
+            return key;
+        return $"{key}{_separator}{GetParamsKey}";
+    }
 
-    public T GetFromCache<T>(string key) where T : class => _cache.Get(key) as T;
-
-    public T GetFromCache<T>(string key, string id) where T : class => _cache.Get(GetCombinedKey(key, id)) as T;
+    string GetParamsKey(params string[] otherParams)
+    {
+        if (otherParams == null || otherParams.Length == 0)
+            return string.Empty;
+        return $"{string.Join(_separator, otherParams)}";
+        //return $"{string.Join(string.Empty, otherParams)}";
+    }
 
     public void SetCache<T>(string key, T value) where T : class => SetCache(key, value, ICacheProvider.CacheSeconds);
 
@@ -113,13 +113,6 @@ public class CacheProvider : ICacheProvider
         _cache.Set(GetCombinedKey(key, id), value, DateTimeOffset.Now.AddSeconds(ICacheProvider.CacheSeconds));
     }
 
-    public void SetCache<T>(string key, string id, T value, int seconds = ICacheProvider.CacheSeconds) where T : class
-    {
-        //SetCache($"{key}-{id}", value, seconds);
-        _Dic.AddOrUpdate(new KeyIdPair(key, id), value, (k, v) => value);
-        _cache.Set(GetCombinedKey(key, id), value, DateTimeOffset.Now.AddSeconds(seconds));
-    }
-
     public void ClearCache(string key)
     {
         _cache.Remove(key);
@@ -131,8 +124,9 @@ public class CacheProvider : ICacheProvider
         }
     }
 
-    public void ClearCache(string key, string id)
+    public void ClearCache(string key, params string[] otherParams)
     {
+        string id = GetParamsKey(otherParams);
         _cache.Remove(GetCombinedKey(key, id));
         var allPairs = _Dic.Where(x => x.Key.Key == key).Select(a => a.Key).ToList();
         foreach (var pair in allPairs)
@@ -153,35 +147,51 @@ public class CacheProvider : ICacheProvider
         }
     }
 
+    public void ClearCacheOnlyKeyAndId(string key, string id)
+    {
+        _cache.Remove(key);
+        var allPairs = _Dic.Where(x => x.Key.Key == key && x.Key.Id == id).Select(a => a.Key).ToList();
+        foreach (var pair in allPairs)
+        {
+            _Dic.TryRemove(pair, out _);
+            _cache.Remove(GetCombinedKey(pair.Key, pair.Id));
+        }
+    }
+
+
     public async Task<T> GetOrAddAsync<T>(string key, int seconds, Func<Task<T>> taskFactory)
     {
+        bool setCache = false;
         var res = await _cache.GetOrCreateAsync(key, async entry => await new AsyncLazy<T>(async () =>
         {
+            setCache = true;
             _Dic.AddOrUpdate(new KeyIdPair(key, null), string.Empty, (k, v) => v);
             entry.SlidingExpiration = TimeSpan.FromSeconds(seconds);
             return await taskFactory.Invoke();
         }).Value);
         if (res == null) //remove from cache if null
             _cache.Remove(key);
-        _logger?.LogDebug($"{nameof(GetOrAddAsync)} {key} getting from cache");
+        _logger?.LogDebug($"{nameof(GetOrAddAsync)} {key} {(setCache ? "note in cache" : "getting from cache")}");
         return res;
     }
 
-    public async Task<T> GetOrAddAsync<T>(string key, string id, int seconds, Func<Task<T>> taskFactory)
+    public async Task<T> GetOrAddAsync<T>(string key, int seconds, Func<Task<T>> taskFactory, params string[] otherParams)
     {
+        bool setCache = false;
+        string id = GetParamsKey(otherParams);
         var comKey = GetCombinedKey(key, id);
         var res = await _cache.GetOrCreateAsync(comKey, async entry => await new AsyncLazy<T>(async () =>
         {
-            _Dic.AddOrUpdate(new KeyIdPair(key, id?.ToString()), id, (k, v) => v);
+            setCache = true;
+            _Dic.AddOrUpdate(new KeyIdPair(key, id), id, (k, v) => v);
             entry.SlidingExpiration = TimeSpan.FromSeconds(seconds);
             return await taskFactory.Invoke();
         }).Value);
         if (res == null) //remove from cache if null     
             _cache.Remove(comKey);
-        _logger?.LogDebug($"{nameof(GetOrAddAsync)} {comKey} getting from cache");
+        _logger?.LogDebug($"{nameof(GetOrAddAsync)} {comKey} {(setCache ? "note in cache" : "getting from cache")}");
         return res;
     }
-
 }
 
 public class AsyncLazy<T> : Lazy<Task<T>>
