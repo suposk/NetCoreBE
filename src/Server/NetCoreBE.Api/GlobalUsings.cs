@@ -1,47 +1,54 @@
-﻿//global using AA.BB.CC;
+﻿//global using Api;
+global using Asp.Versioning;
 global using MediatR;
+global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
-global using System.ComponentModel.DataAnnotations;
 global using System.Linq.Expressions;
 global using AutoMapper;
 global using FluentValidation;
-global using System.ComponentModel.DataAnnotations.Schema;
+global using Carter;
+global using System.Net;
+global using System.Text;
+global using Microsoft.AspNetCore.RateLimiting;
+global using Serilog;
+global using System.Text.Json;
 
 //Shared
 global using SharedKernel.Base;
-global using SharedCommon;
+//global using SharedCommon;
 global using SharedCommon.Services;
 global using SharedCommon.Helpers;
 
 //Contracts
-global using Contracts.Common;
-global using Contracts.Types;
-global using Contracts.Dtos;
+global using SharedContract.Common;
+global using SharedContract.Types;
+global using SharedContract.Dtos;
 
 //CommonCleanArch
 global using CommonCleanArch;
 global using CommonCleanArch.Base;
+global using CommonCleanArch.Application;
 global using CommonCleanArch.Helpers;
 global using CommonCleanArch.CustomExceptions;
 global using CommonCleanArch.Domain.Events;
 global using CommonCleanArch.Services;
+global using CommonCleanArch.Infrastructure;
 global using CommonCleanArch.Infrastructure.ApiMiddleware;
 global using CommonCleanArch.Infrastructure.Enums;
 global using CommonCleanArch.Infrastructure.Persistence;
 global using CommonCleanArch.Infrastructure.Search;
 
+//Infrastructure
+global using NetCoreBE.Infrastructure;
+global using NetCoreBE.Infrastructure.Persistence;
+
 //Application
-global using NetCoreBE.Api.Application;
-global using NetCoreBE.Api.Application.Interfaces;
-global using NetCoreBE.Api.Application.Features.Requests;
-global using NetCoreBE.Api.Application.Features.Tickets;
-global using NetCoreBE.Api.Application.Features.Examples;
+global using NetCoreBE.Application;
+global using NetCoreBE.Application.Interfaces;
+global using NetCoreBE.Application.Tickets;
+global using NetCoreBE.Application.OldTickets;
+global using NetCoreBE.Application.OutboxDomaintEvents;
 
 //Domain
-global using NetCoreBE.Api.Domain.Entities;
-global using NetCoreBE.Api.Domain.Events;
-
-//Infrastructure
-global using NetCoreBE.Api.Infrastructure.Persistence;
-global using NetCoreBE.Api.Infrastructure.Persistence.Repositories;
-global using NetCoreBE.Api.Infrastructure.Search;
+global using NetCoreBE.Domain.Entities;
+global using NetCoreBE.Domain.Events;

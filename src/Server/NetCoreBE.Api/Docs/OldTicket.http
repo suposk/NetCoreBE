@@ -1,0 +1,71 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+@hostname=localhost
+@port=6006
+@host={{hostname}}:{{port}}
+@version=v2
+@id=OldTicket-11
+
+#GET https://localhost:6006/api/v2/OldTicket/
+
+GET https://{{host}}/api/{{version}}/OldTicket/
+
+###
+
+GET https://{{host}}/api/{{version}}/OldTicket/{{id}}
+
+###
+
+GET https://{{host}}/api/{{version}}/OldTicket/SearchQuery?Description=52&currentPage=1
+
+###
+
+GET https://{{host}}/api/{{version}}/OldTicket/Search
+Content-Type: application/json
+{
+  "isActive": null,
+  "searchTerm": "seed",
+  "currentPage": 2,
+  "pageSize": 15,
+  "orderBy": "CreatedAt",
+  "description": ""
+}
+###
+
+POST https://{{host}}/api/{{version}}/OldTicket/
+Content-Type: application/json
+{
+  "id": "OldTicket-11",     
+  "createdBy": "Api",
+  "description": "Post Api Call 2",
+  "requestedFor": "Some User"  
+}
+
+###
+
+PUT https://{{host}}/api/{{version}}/OldTicket/
+Content-Type: application/json
+{
+  "description": "Post Api Call 2 edited",
+  "requestedFor": "Some User",
+  "isOnBehalf": false,
+  "id": "OldTicket-11",
+  "isDeleted": null,
+  "createdAt": "2024-07-30T05:10:32.1283836Z",
+  "createdBy": "Api",
+  "modifiedAt": null,
+  "modifiedBy": null,
+  "rowVersion": "AAAAAAAApBc=",
+  "email": null
+}
+
+###
+
+DELETE https://{{host}}/api/{{version}}/OldTicket/{{id}}
+
+###
+
+#Seed Data. Only works if count is less Seed/number
+POST https://{{host}}/api/{{version}}/OldTicket/Seed/52
+
+###

@@ -1,8 +1,0 @@
-﻿//API
-Add-Migration Init -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlServer
-Add-Migration OutboxMessageDomaintEvent -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlServer
-
-Add-Migration InitLite -Context ApiDbContext -OutputDir Infrastructure\Persistence\Migrations\SqlLite
-
-Update-Database -Context ApiDbContext
-Remove-Migration -Context ApiDbContext

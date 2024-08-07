@@ -1,0 +1,75 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+@hostname=localhost
+@port=6006
+@host={{hostname}}:{{port}}
+@version=v2
+@id=Ticket-01
+
+#GET https://localhost:6006/api/v2/Ticket/
+
+GET https://{{host}}/api/{{version}}/Ticket/
+
+###
+
+GET https://{{host}}/api/{{version}}/Ticket/{{id}}
+
+# ###
+
+GET https://{{host}}/api/{{version}}/Ticket/Ticket-1
+
+# ###
+
+GET https://{{host}}/api/{{version}}/Ticket/SearchQuery?Note=21&currentPage=2&TicketType=Laptop
+
+###
+
+GET https://{{host}}/api/{{version}}/Ticket/Search
+Content-Type: application/json
+{
+  "searchTerm": "",
+  "TicketType": "Laptop",
+  "Status": "",
+  "Note": "21",
+  "currentPage": 1,
+  "pageSize": 15,
+  "orderBy": "CreatedAt"  
+}
+###
+
+POST https://{{host}}/api/{{version}}/Ticket/
+Content-Type: application/json
+{
+  "id": "Ticket-11",
+  "ticketType": "New Laptop",
+  "note": "N Post",        
+  "createdBy": "Api"
+}
+
+###
+
+PUT https://{{host}}/api/{{version}}/Ticket/
+Content-Type: application/json
+{
+  "id": "Ticket-11",
+  "createdAt": "2024-08-05T13:03:11.6467073Z",
+  "ticketType": "New Laptop",
+  "note": "N Put",        
+  "createdBy": "Api",
+  "modifiedAt": null,
+  "modifiedBy": null,
+  "isDeleted": null,
+  "rowVersion": "AAAAAAAAB+I=",
+  "email": null
+}
+
+###
+
+DELETE https://{{host}}/api/{{version}}/Ticket/{{id}}
+
+###
+
+#Seed Data. Only works if count is less Seed/number
+POST https://{{host}}/api/{{version}}/Ticket/Seed/21
+
+###

@@ -1,16 +1,16 @@
 {
 	"info": {
-		"_postman_id": "ef4b9465-ed93-4c04-a869-8a8a6d780f75",
+		"_postman_id": "02dfd826-fd53-4790-9360-45ae5a4c659c",
 		"name": "NetCoreBE",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2772023"
 	},
 	"item": [
 		{
-			"name": "Ticket Requests",
+			"name": "OldTicket Requests",
 			"item": [
 				{
-					"name": "Get Ticket",
+					"name": "Get OldTicket",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -28,15 +28,16 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/ticket/00000000-2000-0000-0000-000000000000",
+							"raw": "https://localhost:6006/api/v2/OldTicket/00000000-2000-0000-0000-000000000000",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"ticket",
+								"v2",
+								"OldTicket",
 								"00000000-2000-0000-0000-000000000000"
 							]
 						}
@@ -62,15 +63,16 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/ticket/",
+							"raw": "https://localhost:6006/api/v2/OldTicket/",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"ticket",
+								"v2",
+								"OldTicket",
 								""
 							]
 						}
@@ -78,7 +80,7 @@
 					"response": []
 				},
 				{
-					"name": "Post ticket",
+					"name": "Post OldTicket",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -93,15 +95,16 @@
 							"raw": "    {\r\n      \"id\": \"00000000-2000-0000-0000-000000000000\",     \r\n      \"createdBy\": \"Api\",\r\n      \"description\": \"Post Api Call 2\",\r\n      \"requestedFor\": \"Some User\"  \r\n    } "
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/ticket/",
+							"raw": "https://localhost:6006/api/v2/OldTicket/",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"ticket",
+								"v2",
+								"OldTicket",
 								""
 							]
 						}
@@ -109,7 +112,7 @@
 					"response": []
 				},
 				{
-					"name": "PUT ticket",
+					"name": "PUT OldTicket",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -124,15 +127,16 @@
 							"raw": "    {\r\n      \"id\": \"00000000-1000-0000-0000-000000000000\",     \r\n        \"rowVersion\": \"AAAAAAAAZak=\",\r\n      \"createdBy\": \"Api\",\r\n      \"createdAt\": \"2023-10-18T09:29:55.0756023Z\",\r\n      \"description\": \"Updated Api Call\",\r\n      \"requestedFor\": \"Some User\"  \r\n    } "
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/ticket/",
+							"raw": "https://localhost:6006/api/v2/OldTicket/",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"ticket",
+								"v2",
+								"OldTicket",
 								""
 							]
 						}
@@ -140,7 +144,7 @@
 					"response": []
 				},
 				{
-					"name": "Post ticket seed",
+					"name": "Post OldTicket seed",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -155,15 +159,16 @@
 							"raw": "    {\r\n      \"id\": \"00000000-1000-0000-0000-000000000000\",     \r\n      \"createdBy\": \"Api\",\r\n      \"description\": \"From Api Call\",\r\n      \"requestedFor\": \"Some User\"  \r\n    } "
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/ticket/Seed/62",
+							"raw": "https://localhost:6006/api/v2/OldTicket/Seed/62",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"ticket",
+								"v2",
+								"OldTicket",
 								"Seed",
 								"62"
 							]
@@ -172,7 +177,7 @@
 					"response": []
 				},
 				{
-					"name": "DEL Ticket",
+					"name": "DEL OldTicket",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -187,15 +192,16 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/ticket/00000000-2000-0000-0000-000000000000",
+							"raw": "https://localhost:6006/api/v2/OldTicket/00000000-2000-0000-0000-000000000000",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"ticket",
+								"v2",
+								"OldTicket",
 								"00000000-2000-0000-0000-000000000000"
 							]
 						}
@@ -221,15 +227,16 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/Ticket/SearchQuery?Description=62&currentPage=1",
+							"raw": "https://localhost:6006/api/v2/OldTicket/SearchQuery?Description=62&currentPage=1",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"Ticket",
+								"v2",
+								"OldTicket",
 								"SearchQuery"
 							],
 							"query": [
@@ -265,15 +272,16 @@
 							"raw": "{\r\n  \"isActive\": null,\r\n  \"searchTerm\": \"seed 62\",\r\n  \"currentPage\": 2,\r\n  \"pageSize\": 15,\r\n  \"orderBy\": \"CreatedAt\",\r\n  \"description\": \"\"\r\n}"
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/Ticket/Search",
+							"raw": "https://localhost:6006/api/v2/OldTicket/Search",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"Ticket",
+								"v2",
+								"OldTicket",
 								"Search"
 							]
 						}
@@ -283,10 +291,10 @@
 			]
 		},
 		{
-			"name": "Request Requests",
+			"name": "Ticket Requests",
 			"item": [
 				{
-					"name": "Get request",
+					"name": "Get ticket",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -304,23 +312,24 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/request/00000000-2000-0000-0000-000000000000",
+							"raw": "https://localhost:6006/api/v2/ticket/00000000-1000-0000-0000-000000000000",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"request",
-								"00000000-2000-0000-0000-000000000000"
+								"v2",
+								"ticket",
+								"00000000-1000-0000-0000-000000000000"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get list request",
+					"name": "Get list ticket",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -338,15 +347,16 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/request/",
+							"raw": "https://localhost:6006/api/v2/ticket/",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"request",
+								"v2",
+								"ticket",
 								""
 							]
 						}
@@ -354,7 +364,7 @@
 					"response": []
 				},
 				{
-					"name": "Post request",
+					"name": "Post ticket",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -366,18 +376,19 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "    {\r\n      \"id\": \"00000000-2000-0000-0000-000000000000\",   \r\n      \"requestType\": \"New Laptop\",\r\n      \"note\": \"Description 2000\",        \r\n      \"createdBy\": \"Api\"\r\n    } "
+							"raw": "    {\r\n      \"id\": \"00000000-2000-0000-0000-000000000000\",   \r\n      \"ticketType\": \"New Laptop\",\r\n      \"note\": \"Description 2000\",        \r\n      \"createdBy\": \"Api\"\r\n    } "
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/request/",
+							"raw": "https://localhost:6006/api/v2/ticket/",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"request",
+								"v2",
+								"ticket",
 								""
 							]
 						}
@@ -397,18 +408,19 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "    {\r\n      \"id\": \"00000000-2000-0000-0000-000000000000\",     \r\n    \"rowVersion\": \"AAAAAAAAZZM=\",\r\n      \"createdBy\": \"Api\",\r\n      \"createdAt\": \"2023-10-18T09:29:55.0756023Z\",\r\n      \"description\": \"Updated Api Call\",\r\n      \"requestedFor\": \"Some User\"  \r\n    } "
+							"raw": "    {\r\n      \"id\": \"00000000-2000-0000-0000-000000000000\",     \r\n    \"rowVersion\": \"AAAAAAAAZZM=\",\r\n      \"createdBy\": \"Api\",\r\n      \"createdAt\": \"2023-10-18T09:29:55.0756023Z\",\r\n      \"description\": \"Updated Api Call\",\r\n      \"ticketedFor\": \"Some User\"  \r\n    } "
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/request/",
+							"raw": "https://localhost:6006/api/v2/ticket/",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"request",
+								"v2",
+								"ticket",
 								""
 							]
 						}
@@ -416,7 +428,7 @@
 					"response": []
 				},
 				{
-					"name": "Post request seed",
+					"name": "Post ticket seed",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -428,18 +440,19 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "    {\r\n      \"id\": \"00000000-1000-0000-0000-000000000000\",     \r\n      \"createdBy\": \"Api\",\r\n      \"description\": \"From Api Call\",\r\n      \"requestedFor\": \"Some User\"  \r\n    } "
+							"raw": "    {\r\n      \"id\": \"00000000-1000-0000-0000-000000000000\",     \r\n      \"createdBy\": \"Api\",\r\n      \"description\": \"From Api Call\",\r\n      \"ticketedFor\": \"Some User\"  \r\n    } "
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/request/Seed/5",
+							"raw": "https://localhost:6006/api/v2/ticket/Seed/5",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"request",
+								"v2",
+								"ticket",
 								"Seed",
 								"5"
 							]
@@ -448,7 +461,7 @@
 					"response": []
 				},
 				{
-					"name": "DEL request",
+					"name": "DEL ticket",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -463,15 +476,16 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://localhost:5001/api/request/00000000-2000-0000-0000-000000000000",
+							"raw": "https://localhost:6006/api/v2/ticket/00000000-2000-0000-0000-000000000000",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
-							"port": "5001",
+							"port": "6006",
 							"path": [
 								"api",
-								"request",
+								"v2",
+								"ticket",
 								"00000000-2000-0000-0000-000000000000"
 							]
 						}
@@ -499,16 +513,156 @@
 					"formdata": []
 				},
 				"url": {
-					"raw": "https://localhost:5001/api/test/",
+					"raw": "https://localhost:6006/api/test/",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
-					"port": "5001",
+					"port": "6006",
 					"path": [
 						"api",
 						"test",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Test appsettings",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "https://localhost:6006/api/Test/appsettings/somekey",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6006",
+					"path": [
+						"api",
+						"Test",
+						"appsettings",
+						"somekey"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Test PowerShell Get-Date",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "https://localhost:6006/api/Test/PowerShell/Get-Date",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6006",
+					"path": [
+						"api",
+						"Test",
+						"PowerShell",
+						"Get-Date"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Test Get-InstalledModule",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "https://localhost:6006/api/Test/PowerShell/Get-InstalledModule",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6006",
+					"path": [
+						"api",
+						"Test",
+						"PowerShell",
+						"Get-InstalledModule"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Test Get-InstalledModule Copy",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "https://localhost:6006/api/Test/PowerShell/Get-Module",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6006",
+					"path": [
+						"api",
+						"Test",
+						"PowerShell",
+						"Get-Module"
 					]
 				}
 			},

@@ -4,6 +4,12 @@ namespace System;
 
 public static class StringHelper
 {
+    /// <summary>
+    /// Guid/Uuid/unique identifier, but is guaranteed to be both unique and ordered. Calls MassTransit.NewId.Next().ToString()
+    /// </summary>
+    /// <returns></returns>
+    public static string GetStringGuidExt() => MassTransit.NewId.Next().ToString();
+
     public static string ReplaceWithStars(this string text, int visibleCharsCount = 8)
     {
         if (string.IsNullOrWhiteSpace(text) || text.Length <= visibleCharsCount)

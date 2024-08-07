@@ -7,6 +7,8 @@ namespace CommonCleanArch.Services;
 public enum RoleEnumType { Unknown = 0, User = 1, Reader = 2, Contributor = 5, Admin = 10 }
 public interface IApiIdentity
 {
+    bool CanModifyFunc(string? createdBy);
+    Task<bool> CanModifyFuncAsync(string? createdBy);
     Task<string> GetAccessTokenForUserAsync(string scope);
     Task<string> GetCurrentUserEmail();
     string GetCurrentUserEmailClaim();
@@ -119,6 +121,35 @@ public class ApiIdentity : IApiIdentity
         {
             //SignIn();
             return null;
+        }
+    }
+
+    /// <summary>
+    /// Only Admin or user who created can modify record
+    /// To add custom execution, validation must override this.    
+    /// </summary>
+    /// <param name="createdBy"></param>
+    /// <returns></returns>
+    public virtual Task<bool> CanModifyFuncAsync(string? createdBy) => Task.FromResult(CanModifyFunc(createdBy));
+    
+    /// <summary>
+    /// Only Admin or user who created can modify record
+    /// To add custom execution, validation must override this.    
+    /// </summary>
+    /// <param name="createdBy"></param>
+    /// <returns></returns>
+    public virtual bool CanModifyFunc(string? createdBy)
+    {
+#if DEBUG
+        //TODO fix this
+        return true;
+#endif
+        if (IsAdmin())
+            return true;
+        else
+        {
+            var res = createdBy == GetUserName();
+            return res;
         }
     }
 
