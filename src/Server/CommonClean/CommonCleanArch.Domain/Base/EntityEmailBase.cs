@@ -1,4 +1,4 @@
-﻿namespace CommonCleanArch.Base;
+﻿namespace CommonCleanArch.Domain.Base;
 
 public interface IEntityEmailBase
 {

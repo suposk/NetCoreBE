@@ -1,4 +1,4 @@
-﻿namespace CommonCleanArch.Base;
+﻿namespace CommonCleanArch.Domain.Base;
 
 /// <summary>
 /// has Extra 2 properties IsDeleted and Email

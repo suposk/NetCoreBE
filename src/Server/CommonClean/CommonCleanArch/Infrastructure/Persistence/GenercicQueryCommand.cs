@@ -1,4 +1,4 @@
-﻿using CommonCleanArch.Base;
+﻿using CommonCleanArch.Domain.Base;
 
 namespace CommonCleanArch.Infrastructure.Persistence;
 

@@ -14,7 +14,7 @@ global using System.ComponentModel.DataAnnotations.Schema;
 
 //CommonCleanArch
 global using CommonCleanArch;
-global using CommonCleanArch.Base;
+global using CommonCleanArch.Domain.Base;
 
 //Domain
 global using NetCoreBE.Domain.Entities;

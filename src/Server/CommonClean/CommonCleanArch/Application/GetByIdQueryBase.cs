@@ -1,5 +1,5 @@
 ﻿//using AutoMapper;
-//using CommonCleanArch.Base;
+//using CommonCleanArch.Domain.Base;
 //using CommonCleanArch.Infrastructure.Persistence;
 //using Microsoft.AspNetCore.Http;
 //using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,4 @@
-﻿using CommonCleanArch;
+﻿using CommonCleanArch.Domain;
 
 namespace NetCoreBE.Domain.Test;
 

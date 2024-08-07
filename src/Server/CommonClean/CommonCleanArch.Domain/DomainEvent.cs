@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace CommonCleanArch;
+namespace CommonCleanArch.Domain;
 
 public abstract class DomainEvent : INotification
 {
@@ -18,7 +18,7 @@ public abstract class DomainEvent : INotification
     /// <summary>
     /// Id of OutboxMessage
     /// </summary>
-    public string? Id { get; set; } 
+    public string? Id { get; set; }
     public DateTimeOffset DateOccurred { get; protected set; }
 
     /// <summary>

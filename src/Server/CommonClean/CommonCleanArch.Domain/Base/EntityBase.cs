@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using CommonCleanArch.Domain;
 
 [PrimaryKey(nameof(Id))]
 [Index(nameof(Id))]

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CommonCleanArch.Domain;
+using Newtonsoft.Json;
 using Quartz;
 
 namespace NetCoreBE.Infrastructure.BackroundJobs;

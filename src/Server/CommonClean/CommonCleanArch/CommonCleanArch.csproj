@@ -29,6 +29,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\SharedCommon\SharedCommon.csproj" />
     <ProjectReference Include="..\..\..\Shared\SharedKernel\SharedKernel.csproj" />
+    <ProjectReference Include="..\CommonCleanArch.Domain\CommonCleanArch.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Domain\" />
   </ItemGroup>
 
 </Project>

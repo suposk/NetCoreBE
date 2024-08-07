@@ -24,7 +24,7 @@ global using SharedContract.Dtos;
 
 //CommonCleanArch
 global using CommonCleanArch;
-global using CommonCleanArch.Base;
+global using CommonCleanArch.Domain.Base;
 global using CommonCleanArch.Application;
 global using CommonCleanArch.Helpers;
 global using CommonCleanArch.CustomExceptions;

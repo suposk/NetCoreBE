@@ -14,7 +14,7 @@ global using SharedCommon.Services;
 global using SharedCommon.Helpers;
 
 global using CommonCleanArch;
-global using CommonCleanArch.Base;
+global using CommonCleanArch.Domain.Base;
 global using CommonCleanArch.Application;
 global using CommonCleanArch.Helpers;
 global using CommonCleanArch.CustomExceptions;
