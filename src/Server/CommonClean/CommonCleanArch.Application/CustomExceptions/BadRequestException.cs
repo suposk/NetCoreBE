@@ -1,4 +1,4 @@
-﻿namespace CommonCleanArch.CustomExceptions;
+﻿namespace CommonCleanArch.Application.CustomExceptions;
 
 /// <summary>
 /// Custom 400 Exception

@@ -1,4 +1,4 @@
-﻿namespace CommonCleanArch.CustomExceptions;
+﻿namespace CommonCleanArch.Application.CustomExceptions;
 
 public sealed record ValidationError(string PropertyName, string ErrorMessage);
 

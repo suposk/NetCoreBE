@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Application.OldTickets;
+﻿using CommonCleanArch.Application.Services;
+
+namespace NetCoreBE.Application.OldTickets;
 
 public interface IOldTicketRepositoryDecorator : IRepositoryDecoratorBase<OldTicket, OldTicketDto>
 {

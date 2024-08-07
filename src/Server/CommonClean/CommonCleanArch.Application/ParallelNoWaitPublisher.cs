@@ -1,4 +1,4 @@
-﻿namespace CommonCleanArch;
+﻿namespace CommonCleanArch.Application;
 public class ParallelNoWaitPublisher : INotificationPublisher
 {
     public Task Publish(IEnumerable<NotificationHandlerExecutor> handlerExecutors, INotification notification, CancellationToken cancellationToken)

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace CommonCleanArch.Helpers;
+namespace CommonCleanArch.Application.Helpers;
 
 public static class OtherHelper
 {

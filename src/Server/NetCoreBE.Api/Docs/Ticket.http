@@ -40,7 +40,7 @@ Content-Type: application/json
 POST https://{{host}}/api/{{version}}/Ticket/
 Content-Type: application/json
 {
-  "id": "Ticket-11",
+  "id": "Ticket-01",
   "ticketType": "New Laptop",
   "note": "N Post",        
   "createdBy": "Api"
@@ -51,7 +51,7 @@ Content-Type: application/json
 PUT https://{{host}}/api/{{version}}/Ticket/
 Content-Type: application/json
 {
-  "id": "Ticket-11",
+  "id": "Ticket-01",
   "createdAt": "2024-08-05T13:03:11.6467073Z",
   "ticketType": "New Laptop",
   "note": "N Put",        

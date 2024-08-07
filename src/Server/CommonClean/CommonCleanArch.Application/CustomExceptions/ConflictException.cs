@@ -1,12 +1,12 @@
-﻿namespace CommonCleanArch.CustomExceptions;
+﻿namespace CommonCleanArch.Application.CustomExceptions;
 
 /// <summary>
 /// Custome 409 duplicate record Exception
 /// </summary>
 public class ConflictException : ApplicationException
 {
-	public ConflictException(string message) : base(message)
-	{
+    public ConflictException(string message) : base(message)
+    {
 
-	}
+    }
 }

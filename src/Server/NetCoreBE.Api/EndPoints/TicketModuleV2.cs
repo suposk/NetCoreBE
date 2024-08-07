@@ -74,7 +74,7 @@ public class TicketModuleV2 : CarterModule
 #if DEBUG
         app.MapPost("/Seed/{countToCreate}", async (int countToCreate, ITicketRepository repository, ITicketRepositoryDecorator decorator, ICacheProvider cacheProvider) =>
         {
-            var PrimaryCacheKey = $"{typeof(Ticket).Name}{CommonCleanArch.Helpers.OtherHelper.CACHECONST}";
+            var PrimaryCacheKey = $"{typeof(Ticket).Name}{CommonCleanArch.Application.Helpers.OtherHelper.CACHECONST}";
             var res = await repository.Seed(countToCreate, null, "SEED API").ConfigureAwait(false);            
             cacheProvider.ClearCacheForAllKeysAndIds(PrimaryCacheKey); //clear cache for all Ids
             return res;

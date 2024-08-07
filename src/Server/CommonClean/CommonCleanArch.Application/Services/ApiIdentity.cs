@@ -2,7 +2,7 @@
 using Microsoft.Identity.Web;
 using System.Security.Claims;
 
-namespace CommonCleanArch.Services;
+namespace CommonCleanArch.Application.Services;
 
 public enum RoleEnumType { Unknown = 0, User = 1, Reader = 2, Contributor = 5, Admin = 10 }
 public interface IApiIdentity
@@ -131,7 +131,7 @@ public class ApiIdentity : IApiIdentity
     /// <param name="createdBy"></param>
     /// <returns></returns>
     public virtual Task<bool> CanModifyFuncAsync(string? createdBy) => Task.FromResult(CanModifyFunc(createdBy));
-    
+
     /// <summary>
     /// Only Admin or user who created can modify record
     /// To add custom execution, validation must override this.    

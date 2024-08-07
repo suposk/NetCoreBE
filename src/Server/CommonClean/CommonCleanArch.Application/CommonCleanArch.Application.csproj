@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="7.1.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Identity.Web.TokenAcquisition" Version="2.18.1" /> 
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />   	  
+  </ItemGroup>	
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\SharedCommon\SharedCommon.csproj" />
+    <ProjectReference Include="..\..\..\Shared\SharedKernel\SharedKernel.csproj" />
+    <ProjectReference Include="..\CommonCleanArch.Domain\CommonCleanArch.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

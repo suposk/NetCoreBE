@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Application.Tickets;
+﻿using CommonCleanArch.Application.Services;
+
+namespace NetCoreBE.Application.Tickets;
 
 ///// <summary>
 ///// V1. Replaced IRepository<Ticket> with  IRequestRepository

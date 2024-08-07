@@ -4,9 +4,8 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SharedCommon;
 
-namespace CommonCleanArch.Helpers;
+namespace CommonCleanArch.Application.Helpers;
 
 public static class KeyVaultExtensions
 {

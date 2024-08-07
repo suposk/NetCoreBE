@@ -1,4 +1,6 @@
-﻿namespace CommonCleanArch.Infrastructure.Persistence;
+﻿using CommonCleanArch.Application.Services;
+
+namespace CommonCleanArch.Infrastructure.Persistence;
 
 
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase

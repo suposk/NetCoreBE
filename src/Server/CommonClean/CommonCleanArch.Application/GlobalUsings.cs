@@ -1,6 +1,6 @@
 ﻿//global using AA.BB.CC;
 global using MediatR;
-global using Microsoft.AspNetCore.Mvc;
+//global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using System.ComponentModel.DataAnnotations;
 global using System.Text;
@@ -13,10 +13,7 @@ global using SharedKernel.Base;
 global using SharedCommon.Services;
 global using SharedCommon.Helpers;
 
-global using CommonCleanArch;
 global using CommonCleanArch.Domain.Base;
-global using CommonCleanArch.Application;
-global using CommonCleanArch.Application.Helpers;
 global using CommonCleanArch.Application.CustomExceptions;
 global using CommonCleanArch.Domain.Events;
 global using CommonCleanArch.Application.Services;

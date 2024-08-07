@@ -1,4 +1,4 @@
-﻿using CommonCleanArch.CustomExceptions;
+﻿using CommonCleanArch.Application.CustomExceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -55,7 +55,7 @@ public class ApiExceptionMiddleware
         HttpStatusCode httpStatusCode = HttpStatusCode.InternalServerError;
         switch (exception)
         {
-            case CustomExceptions.ValidationException validationException:
+            case Application.CustomExceptions.ValidationException validationException:
                 httpStatusCode = HttpStatusCode.BadRequest;
                 error.ApiTitle = $"{validationException.Message} {ERRORText}";
                 break;
