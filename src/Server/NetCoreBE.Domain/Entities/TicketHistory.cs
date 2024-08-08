@@ -4,10 +4,10 @@ public class TicketHistory : EntityBase
 {
     private TicketHistory() { }
 
-    public TicketHistory(string requestId, string operation)
+    public TicketHistory(string ticketId, string operation)
     {
-        if (string.IsNullOrEmpty(requestId))
-            throw new ArgumentException($"'{nameof(requestId)}' cannot be null or empty.", nameof(requestId));
+        if (string.IsNullOrEmpty(ticketId))
+            throw new ArgumentException($"'{nameof(ticketId)}' cannot be null or empty.", nameof(ticketId));
         if (string.IsNullOrEmpty(operation))
             throw new ArgumentException($"'{nameof(operation)}' cannot be null or empty.", nameof(operation));
 
