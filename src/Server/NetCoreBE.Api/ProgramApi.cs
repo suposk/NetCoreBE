@@ -121,6 +121,7 @@ using (var scope = app.Services.CreateScope())
 
         var dbContext = sp.GetRequiredService<ApiDbContext>();
         //dbContext.Database.Migrate();
+        dbContext.Database.EnsureDeleted();
         dbContext.Database.EnsureCreated();
 
         if (app.Environment.IsDevelopment())
