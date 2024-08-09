@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Quartz" Version="3.8.1" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.8.1" />
+    <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />	  
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />	  
   </ItemGroup>
 

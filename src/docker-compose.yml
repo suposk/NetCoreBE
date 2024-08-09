@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  netcorebe.api:
+    image: ${DOCKER_REGISTRY-}netcorebeapi
+    container_name: NetCoreBE.Api
+    build:
+      context: .
+      dockerfile: Server/NetCoreBE.Api/Dockerfile
+    depends_on:
+      - netcorebe-db
+
+  netcorebe-db:
+    image: postgres:latest
+    container_name: NetCoreBE.Db
+    environment:
+      - POSTGRES_DB=netcorebe
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./.containers/database:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
