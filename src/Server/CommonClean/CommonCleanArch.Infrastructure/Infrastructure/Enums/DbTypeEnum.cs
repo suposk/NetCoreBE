@@ -2,5 +2,5 @@
 
 public enum DbTypeEnum
 {
-    Unknown, SqlServer, InMemory, SqlLite
+    Unknown, SqlServer, InMemory, SqlLite, PostgreSQL
 }

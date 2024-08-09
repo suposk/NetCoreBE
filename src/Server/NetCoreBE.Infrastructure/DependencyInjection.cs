@@ -63,6 +63,8 @@ public static class DependencyInjection
                 m.UseSqlite(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}Lite"), x => x.MigrationsAssembly(_namespace));
             else if (DbTypeEnum == DbTypeEnum.InMemory)
                 m.UseInMemoryDatabase(databaseName: configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}Memory"));
+            else if (DbTypeEnum == DbTypeEnum.PostgreSQL)
+                m.UseNpgsql(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL"), x => x.MigrationsAssembly(_namespace));
             else
                 m.UseSqlServer(configuration.GetConnectionString(InfrastructureConstants.ConnectionStrings.Database), x => x.MigrationsAssembly(_namespace));
         });
