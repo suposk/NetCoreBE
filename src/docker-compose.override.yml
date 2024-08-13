@@ -6,6 +6,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=6606
       - ASPNETCORE_HTTPS_PORTS=6006
+      - DbTypeEnum=PostgreSQL  
     ports:
       - 6606:6606
       - 6006:6006

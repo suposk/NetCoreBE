@@ -17,6 +17,7 @@ services:
       - POSTGRES_DB=netcorebe
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      #- DbTypeEnum=PostgreSQL nefunguje, iba override
     volumes:
       - ./.containers/database:/var/lib/postgresql/data
     ports:

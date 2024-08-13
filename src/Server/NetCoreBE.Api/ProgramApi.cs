@@ -6,6 +6,7 @@ using Asp.Versioning.ApiExplorer;
 using Asp.Versioning;
 using NetCoreBE.Api.OpenApi;
 using SharedCommon;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -120,19 +121,33 @@ using (var scope = app.Services.CreateScope())
         var sp = scope.ServiceProvider;
 
         var dbContext = sp.GetRequiredService<ApiDbContext>();
-        
-        //dbContext.Database.Migrate();
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
 
         if (app.Environment.IsDevelopment())
         {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
+            try
+            {
+                DbTypeEnum = configuration.GetValue<DbTypeEnum>(nameof(DbTypeEnum));
+            }
+            catch { }
+            if (DbTypeEnum == DbTypeEnum.PostgreSQL)
+            {
+                dbContext.Database.EnsureDeleted();
+                dbContext.Database.EnsureCreated();
+            }
+            else
+                dbContext.Database.Migrate();            
+
             var OldTicketRepo = sp.GetRequiredService<IOldTicketRepository>();
             var s2 = await OldTicketRepo.Seed(2, 2, "SEED Startup");
             //seed data
             var TicketRepository = sp.GetRequiredService<ITicketRepository>();
             var s4 = await TicketRepository.Seed(4, 4, "SEED Startup");
         }
+        else        
+            dbContext.Database.Migrate();
+        
     }
     catch (Exception ex)
     {        
