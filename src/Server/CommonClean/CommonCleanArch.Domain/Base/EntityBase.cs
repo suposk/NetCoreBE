@@ -48,8 +48,8 @@ public abstract class EntityBase : IEntity<string?>
     /// <summary>
     /// Postgres RowVersion
     /// </summary>
-    [ConcurrencyCheck]
-    public int RowVersion { get; set; }
+    //[Timestamp]
+    public uint RowVersion { get; set; }
 
     //public virtual bool IsSavedInDb => CreatedAt.HasValue && CreatedAt > DateTime.MinValue || RowVersion?.Length >= 0;    
     public virtual bool IsSavedInDb => CreatedAt.HasValue && CreatedAt > DateTime.MinValue;

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace NetCoreBE.Infrastructure.Persistence;
 
@@ -41,13 +42,9 @@ public class ApiDbContext : DbContext, IApiDbContext
         //        .HasDefaultValue(0)
         //        .IsRowVersion();
 
-        //builder.Entity<OldTicket>().Property(c => c.RowVersion).IsRowVersion();
-        //builder.Entity<Ticket>().Property(c => c.RowVersion).IsRowVersion();
-        //builder.Entity<TicketHistory>().Property(c => c.RowVersion).IsRowVersion();        
-
-        builder.Entity<OldTicket>().Property(c => c.RowVersion).IsConcurrencyToken();
-        builder.Entity<Ticket>().Property(c => c.RowVersion).IsConcurrencyToken();
-        builder.Entity<TicketHistory>().Property(c => c.RowVersion).IsConcurrencyToken();
+        builder.Entity<OldTicket>().Property(c => c.RowVersion).IsRowVersion();
+        builder.Entity<Ticket>().Property(c => c.RowVersion).IsRowVersion();
+        builder.Entity<TicketHistory>().Property(c => c.RowVersion).IsRowVersion();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
