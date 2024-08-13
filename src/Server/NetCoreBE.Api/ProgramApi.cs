@@ -137,7 +137,11 @@ using (var scope = app.Services.CreateScope())
                 dbContext.Database.EnsureCreated();
             }
             else
-                dbContext.Database.Migrate();            
+            {
+                //dbContext.Database.Migrate();
+                dbContext.Database.EnsureDeleted();
+                dbContext.Database.EnsureCreated();
+            }
 
             var OldTicketRepo = sp.GetRequiredService<IOldTicketRepository>();
             var s2 = await OldTicketRepo.Seed(2, 2, "SEED Startup");

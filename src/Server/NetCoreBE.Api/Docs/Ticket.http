@@ -60,7 +60,7 @@ Content-Type: application/json
   "modifiedAt": null,
   "modifiedBy": null,
   "isDeleted": null,
-  "rowVersion": "AAAAAAAAB9Y=",
+  "rowVersion": 0,
   "email": null
 }
 

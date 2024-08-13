@@ -10,6 +10,6 @@ public interface IDtoBase
     bool? IsDeleted { get; set; }
     DateTime? ModifiedAt { get; set; }
     string? ModifiedBy { get; set; }
-    byte[]? RowVersion { get; set; }
-    //int Version { get; set; }
+    //byte[]? RowVersion { get; set; }
+    int RowVersion { get; set; }
 }

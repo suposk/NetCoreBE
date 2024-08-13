@@ -9,7 +9,7 @@ public class DtoBase : IDtoBase
     public string? CreatedBy { get; set; }
     public DateTime? ModifiedAt { get; set; }
     public string? ModifiedBy { get; set; }
-    public byte[]? RowVersion { get; set; }
-    //public int Version { get; set; }
+    //public byte[]? RowVersion { get; set; }
+    public int RowVersion { get; set; }
     public string? Email { get; set; }
 }
