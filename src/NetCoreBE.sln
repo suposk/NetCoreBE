@@ -40,6 +40,8 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreBE.Domain.Test", "Test\NetCoreBE.Domain.Test\NetCoreBE.Domain.Test.csproj", "{CDF5115F-1064-4385-B149-7DF47479AFC0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCoreBE.Application.IntegrationTests", "..\NetCoreBE.Application.IntegrationTests\NetCoreBE.Application.IntegrationTests.csproj", "{EC799BEA-3E1A-4EE1-8140-2CACE3D18D62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +96,10 @@ Global
 		{CDF5115F-1064-4385-B149-7DF47479AFC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDF5115F-1064-4385-B149-7DF47479AFC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDF5115F-1064-4385-B149-7DF47479AFC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC799BEA-3E1A-4EE1-8140-2CACE3D18D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC799BEA-3E1A-4EE1-8140-2CACE3D18D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC799BEA-3E1A-4EE1-8140-2CACE3D18D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC799BEA-3E1A-4EE1-8140-2CACE3D18D62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +117,7 @@ Global
 		{385ED9F7-3F9A-4CE3-B812-FAF4C8F0F6B2} = {0E1CD2D3-3758-4E10-AA66-125485B16287}
 		{56051F74-5737-4087-A4D7-20D266184AAC} = {0E1CD2D3-3758-4E10-AA66-125485B16287}
 		{CDF5115F-1064-4385-B149-7DF47479AFC0} = {C8AD4E93-6AD1-4CF2-BDA6-A28D23CB45D0}
+		{EC799BEA-3E1A-4EE1-8140-2CACE3D18D62} = {C8AD4E93-6AD1-4CF2-BDA6-A28D23CB45D0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {711BADAD-0338-4B3C-AD13-00EE76A3529A}
