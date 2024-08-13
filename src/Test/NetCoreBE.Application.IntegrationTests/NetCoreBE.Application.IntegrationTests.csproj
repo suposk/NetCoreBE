@@ -27,9 +27,9 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\src\Server\NetCoreBE.Application\NetCoreBE.Application.csproj" />
-  </ItemGroup>
+   <ItemGroup>
+     <ProjectReference Include="..\..\Server\NetCoreBE.Application\NetCoreBE.Application.csproj" />
+   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />

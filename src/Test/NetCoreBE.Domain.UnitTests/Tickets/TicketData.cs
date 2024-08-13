@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Domain.Test.Tickets;
+﻿namespace NetCoreBE.Domain.UnitTests.Tickets;
 
 internal static class TicketData
 {
@@ -7,7 +7,7 @@ internal static class TicketData
         Id = "Ticket-1-test",
         TicketType = "New Laptop",
         Note = "Description Post",
-        Status = "Status", 
+        Status = "Status",
         CreatedBy = "test",
     };
 }

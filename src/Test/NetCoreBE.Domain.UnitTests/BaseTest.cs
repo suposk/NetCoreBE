@@ -1,6 +1,6 @@
 ﻿using CommonCleanArch.Domain;
 
-namespace NetCoreBE.Domain.Test;
+namespace NetCoreBE.Domain.UnitTests;
 
 public abstract class BaseTest
 {
@@ -15,5 +15,5 @@ public abstract class BaseTest
         return domainEvent;
     }
 
-    public static readonly DateTime UtcNow = new DateTime(2021, 1, 1, 1, 1, 1);    
+    public static readonly DateTime UtcNow = new DateTime(2021, 1, 1, 1, 1, 1);
 }

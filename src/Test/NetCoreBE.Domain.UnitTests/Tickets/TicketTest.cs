@@ -1,4 +1,4 @@
-﻿namespace NetCoreBE.Domain.Test.Tickets;
+﻿namespace NetCoreBE.Domain.UnitTests.Tickets;
 
 public class TicketTest : BaseTest
 {
