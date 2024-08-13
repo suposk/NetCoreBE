@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Server\NetCoreBE.Domain\NetCoreBE.Domain.csproj" />
+    <ProjectReference Include="..\..\Server\NetCoreBE.Domain\NetCoreBE.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
