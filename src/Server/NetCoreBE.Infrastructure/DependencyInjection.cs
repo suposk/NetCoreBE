@@ -62,7 +62,7 @@ public static class DependencyInjection
             if (DbTypeEnum == DbTypeEnum.SqlLite)
                 m.UseSqlite(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}Lite"), x => x.MigrationsAssembly(_namespace));
             else if (DbTypeEnum == DbTypeEnum.InMemory)
-                m.UseInMemoryDatabase(databaseName: configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}Memory"));
+                m.UseInMemoryDatabase(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}InMemory"));
             else if (DbTypeEnum == DbTypeEnum.PostgreSQL)
                 //m.UseNpgsql(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL"), x => x.MigrationsAssembly(_namespace));
                 //m.UseNpgsql(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL")).UseSnakeCaseNamingConvention();
