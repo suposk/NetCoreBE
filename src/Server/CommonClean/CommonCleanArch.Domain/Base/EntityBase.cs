@@ -33,17 +33,23 @@ public abstract class EntityBase : IEntity<string?>
     [MaxLength(200)]
     public virtual string? ModifiedBy { get; set; }
 
-    /// <summary>
-    /// Sql Server RowVersion
-    /// </summary>
-    [Timestamp]
-    public byte[]? RowVersion { get; set; }
+    ///// <summary>
+    ///// Sql Server RowVersion
+    ///// </summary>
+    //[Timestamp]
+    //public byte[]? RowVersion { get; set; }
 
     /// <summary>
-    /// Postgres RowVersion
+    /// Must configure in DbContext OnModelCreating
     /// </summary>
     [ConcurrencyCheck]
-    public int Version { get; set; }
+    public byte[]? RowVersion { get; set; }
+
+    ///// <summary>
+    ///// Postgres RowVersion
+    ///// </summary>
+    //[ConcurrencyCheck]
+    //public int Version { get; set; }
 
     //public virtual bool IsSavedInDb => CreatedAt.HasValue && CreatedAt > DateTime.MinValue || RowVersion?.Length >= 0;    
     public virtual bool IsSavedInDb => CreatedAt.HasValue && CreatedAt > DateTime.MinValue;

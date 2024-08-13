@@ -120,6 +120,7 @@ using (var scope = app.Services.CreateScope())
         var sp = scope.ServiceProvider;
 
         var dbContext = sp.GetRequiredService<ApiDbContext>();
+        
         //dbContext.Database.Migrate();
         dbContext.Database.EnsureDeleted();
         dbContext.Database.EnsureCreated();

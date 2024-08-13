@@ -11,5 +11,5 @@ public interface IDtoBase
     DateTime? ModifiedAt { get; set; }
     string? ModifiedBy { get; set; }
     byte[]? RowVersion { get; set; }
-    int Version { get; set; }
+    //int Version { get; set; }
 }

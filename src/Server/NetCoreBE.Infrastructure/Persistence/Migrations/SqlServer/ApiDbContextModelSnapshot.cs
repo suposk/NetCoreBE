@@ -125,8 +125,7 @@ namespace NetCoreBE.Infrastructure.Persistence.Migrations.SqlServer
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Type")
                         .HasMaxLength(200)

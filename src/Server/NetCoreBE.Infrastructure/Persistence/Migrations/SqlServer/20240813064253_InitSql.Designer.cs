@@ -12,7 +12,7 @@ using NetCoreBE.Infrastructure.Persistence;
 namespace NetCoreBE.Infrastructure.Persistence.Migrations.SqlServer
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20240730164414_InitSql")]
+    [Migration("20240813064253_InitSql")]
     partial class InitSql
     {
         /// <inheritdoc />
@@ -128,8 +128,7 @@ namespace NetCoreBE.Infrastructure.Persistence.Migrations.SqlServer
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Type")
                         .HasMaxLength(200)

@@ -50,7 +50,7 @@ namespace NetCoreBE.Infrastructure.Persistence.Migrations.SqlServer
                     CreatedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    RowVersion = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {

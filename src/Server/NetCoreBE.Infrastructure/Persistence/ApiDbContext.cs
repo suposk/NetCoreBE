@@ -40,6 +40,11 @@ public class ApiDbContext : DbContext, IApiDbContext
         //    .Property(c => c.Version)
         //        .HasDefaultValue(0)
         //        .IsRowVersion();
+
+        builder.Entity<OldTicket>().Property(c => c.RowVersion).IsRowVersion();
+        builder.Entity<Ticket>().Property(c => c.RowVersion).IsRowVersion();
+        builder.Entity<TicketHistory>().Property(c => c.RowVersion).IsRowVersion();        
+
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
