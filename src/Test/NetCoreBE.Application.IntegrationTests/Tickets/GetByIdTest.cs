@@ -22,6 +22,8 @@ public class GetByIdTest : BaseIntegrationTest
         var result = await Sender.Send(q);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.ErrorMessage.Should().BeNullOrEmpty();
     }
 }
