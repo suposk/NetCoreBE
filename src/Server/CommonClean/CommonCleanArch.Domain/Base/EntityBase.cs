@@ -40,7 +40,7 @@ public abstract class EntityBase : IEntity<string?>
     //public byte[]? RowVersion { get; set; }
 
     ///// <summary>
-    ///// Must configure in DbContext OnModelCreating
+    ///// Must manulay change value in save changes
     ///// </summary>
     //[ConcurrencyCheck]
     //public byte[]? RowVersion { get; set; }

@@ -10,6 +10,6 @@ public class DtoBase : IDtoBase
     public DateTime? ModifiedAt { get; set; }
     public string? ModifiedBy { get; set; }
     //public byte[]? RowVersion { get; set; }
-    public int RowVersion { get; set; }
+    public uint RowVersion { get; set; }
     public string? Email { get; set; }
 }
