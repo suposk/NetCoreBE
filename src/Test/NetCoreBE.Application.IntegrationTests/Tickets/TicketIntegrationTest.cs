@@ -9,5 +9,5 @@ public abstract class TicketIntegrationTest : BaseIntegrationTest, IClassFixture
         TicketRepository = Scope.ServiceProvider.GetRequiredService<ITicketRepository>();        
     }
 
-    public Task Seed(int count, string seed) => TicketRepository.Seed(count, count, seed);            
+    public Task Seed(int count) => TicketRepository.Seed(count, count, "Seed Test");            
 }
