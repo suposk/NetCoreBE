@@ -33,7 +33,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<ProgramApi>, I
 
             services.RemoveAll(typeof(DbContextOptions<ApiDbContext>));
             services.RemoveAll(typeof(IApiDbContext));
-            //services.RemoveAll(typeof(IHostedService));
+            services.RemoveAll(typeof(IHostedService)); //backround jobs
 
             string connectionString = $"{_dbContainer.GetConnectionString()};Pooling=False";
 

@@ -29,7 +29,7 @@ public class QueryTest : TicketIntegrationTest
     public async Task GetByIdQuery_ShouldReturn_NotFound()
     {
         // Arrange        
-        var q = new GetByIdQuery<TicketDto> { Id = "Ticket-NotFound" };
+        var q = new GetByIdQuery<TicketDto> { Id = "Ticket-Fake" };
 
         // Act
         var result = await Sender.Send(q);
