@@ -84,18 +84,15 @@ public class TicketDecoratorTest : TicketIntegrationTest
 
     [Fact]
     public async Task Update_ShouldReturn_Ok()
-    {
+    {        
         // Arrange        
-        var upd = DbContext.Tickets.AsNoTracking().FirstOrDefault(a => a.Id == TicketId);
+        var q = new GetByIdQuery<TicketDto> { Id = TicketId };                
+        var old = (await Sender.Send(q)).Value;
         DbContext.ChangeTracker.Clear();
-        
-        var dtoAdd = _decorator.Mapper.Map<TicketDto>(upd);
+        old.Note = "Update test";
 
         // Act        
-        dtoAdd.Note = "Update test";
-
-        // Act
-        var result = await _decorator.UpdateDtoAsync(dtoAdd);
+        var result = await _decorator.UpdateDtoAsync(old);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
