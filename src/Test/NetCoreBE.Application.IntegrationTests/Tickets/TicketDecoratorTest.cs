@@ -28,7 +28,6 @@ public class TicketDecoratorTest : TicketIntegrationTest
     public async Task GetById_ShouldReturn_Ok()
     {
         // Arrange        
-        //await Seed(4);
 
         // Act
         var result = await _decorator.GetIdDto(TicketId);
@@ -43,7 +42,6 @@ public class TicketDecoratorTest : TicketIntegrationTest
     public async Task GetById_ShouldReturn_NotFound()
     {
         // Arrange        
-        //await Seed(4);
 
         // Act
         var result = await _decorator.GetIdDto("Ticket-Fake");
@@ -58,11 +56,11 @@ public class TicketDecoratorTest : TicketIntegrationTest
     public async Task GetList_ShouldReturn_Ok()
     {
         // Arrange        
-        //await Seed(4);
 
         // Act
         var result = await _decorator.GetListDto();
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Should().NotBeEmpty();
@@ -103,9 +101,6 @@ public class TicketDecoratorTest : TicketIntegrationTest
     [Fact]
     public async Task Update_ShouldReturn_Failed()
     {
-        // Arrange        
-        //await Seed(4);
-
         // Act
         var obj = dtoAdd;
         obj.Note = "Update test";
@@ -121,9 +116,6 @@ public class TicketDecoratorTest : TicketIntegrationTest
     [Fact]
     public async Task Remove_ShouldReturn_NoContent()
     {
-        // Arrange        
-        //await Seed(4);
-
         // Act
         var result = await _decorator.RemoveAsync(TicketId);
 
