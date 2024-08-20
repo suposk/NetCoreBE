@@ -1,14 +1,11 @@
-﻿using NetCoreBE.Infrastructure;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 //using Testcontainers.Keycloak;
 using Testcontainers.PostgreSql;
 using NetCoreBE.Api;
-using NetCoreBE.Infrastructure.Persistence;
 using NetCoreBE.Application.Interfaces;
 using Quartz;
 using Microsoft.Extensions.Hosting;
@@ -29,8 +26,6 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<ProgramApi>, I
     {
         builder.ConfigureTestServices(services =>
         {
-            //Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production");            
-
             services.RemoveAll(typeof(DbContextOptions<ApiDbContext>));
             services.RemoveAll(typeof(IApiDbContext));
             services.RemoveAll(typeof(IHostedService)); //backround jobs
