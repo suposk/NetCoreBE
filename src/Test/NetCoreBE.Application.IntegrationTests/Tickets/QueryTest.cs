@@ -4,7 +4,7 @@ using SharedContract.Dtos;
 
 namespace NetCoreBE.Application.IntegrationTests.Tickets;
 
-public class QueryTest : BaseIntegrationTest
+public class QueryTest : TicketIntegrationTest
 {
     private static readonly string TicketId = "Ticket-1";
 

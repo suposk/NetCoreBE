@@ -29,6 +29,8 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<ProgramApi>, I
     {
         builder.ConfigureTestServices(services =>
         {
+            //Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production");            
+
             services.RemoveAll(typeof(DbContextOptions<ApiDbContext>));
             services.RemoveAll(typeof(IApiDbContext));
             //services.RemoveAll(typeof(IHostedService));
@@ -42,6 +44,8 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<ProgramApi>, I
 
             services.AddScoped<IApiDbContext>(provider => provider.GetService<ApiDbContext>());                   
         });
+
+        builder.UseEnvironment("Production");
     }
 
     public async Task InitializeAsync()

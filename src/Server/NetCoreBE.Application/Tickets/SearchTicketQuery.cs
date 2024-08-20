@@ -15,7 +15,6 @@ public class SearchQueryHandler : IRequestHandler<SearchTicketQuery, ResultCom<P
     private readonly ILogger<SearchQueryHandler> _logger;    
 
     public SearchQueryHandler(
-        ITicketRepository ticketRepository,
         IPropertyMappingService propertyMappingService,
         IMapper mapper,
         IApiDbContext apiDbContext,
