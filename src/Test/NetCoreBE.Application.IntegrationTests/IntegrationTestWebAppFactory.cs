@@ -10,6 +10,8 @@ using Testcontainers.PostgreSql;
 using NetCoreBE.Api;
 using NetCoreBE.Infrastructure.Persistence;
 using NetCoreBE.Application.Interfaces;
+using Quartz;
+using Microsoft.Extensions.Hosting;
 //using Testcontainers.Redis;
 
 namespace NetCoreBE.Application.IntegrationTests;
@@ -29,6 +31,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<ProgramApi>, I
         {
             services.RemoveAll(typeof(DbContextOptions<ApiDbContext>));
             services.RemoveAll(typeof(IApiDbContext));
+            //services.RemoveAll(typeof(IHostedService));
 
             string connectionString = $"{_dbContainer.GetConnectionString()};Pooling=False";
 
@@ -37,7 +40,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<ProgramApi>, I
                     .UseNpgsql(connectionString)
                     .UseSnakeCaseNamingConvention());
 
-            services.AddScoped<IApiDbContext>(provider => provider.GetService<ApiDbContext>());
+            services.AddScoped<IApiDbContext>(provider => provider.GetService<ApiDbContext>());                   
         });
     }
 
