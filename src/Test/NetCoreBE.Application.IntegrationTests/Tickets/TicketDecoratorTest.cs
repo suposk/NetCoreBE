@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Application.IntegrationTests.Tickets;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace NetCoreBE.Application.IntegrationTests.Tickets;
 
 public class TicketDecoratorTest : TicketIntegrationTest
 {
@@ -84,13 +86,16 @@ public class TicketDecoratorTest : TicketIntegrationTest
     public async Task Update_ShouldReturn_Ok()
     {
         // Arrange        
+        var upd = DbContext.Tickets.AsNoTracking().FirstOrDefault(a => a.Id == TicketId);
+        DbContext.ChangeTracker.Clear();
+        
+        var dtoAdd = _decorator.Mapper.Map<TicketDto>(upd);
+
+        // Act        
+        dtoAdd.Note = "Update test";
 
         // Act
-        var obj = dtoAdd;
-        obj.Note = "Update test";
-
-        // Act
-        var result = await _decorator.UpdateDtoAsync(obj);
+        var result = await _decorator.UpdateDtoAsync(dtoAdd);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
