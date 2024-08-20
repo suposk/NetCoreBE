@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CommonCleanArch.Application.Services;
 using Microsoft.Extensions.Logging;
 
 namespace CommonCleanArch.Application;
