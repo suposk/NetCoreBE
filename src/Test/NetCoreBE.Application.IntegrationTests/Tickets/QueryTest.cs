@@ -1,8 +1,4 @@
-﻿using CommonCleanArch.Application;
-using NetCoreBE.Application.Tickets;
-using SharedContract.Dtos;
-
-namespace NetCoreBE.Application.IntegrationTests.Tickets;
+﻿namespace NetCoreBE.Application.IntegrationTests.Tickets;
 
 public class QueryTest : TicketIntegrationTest
 {
@@ -11,7 +7,7 @@ public class QueryTest : TicketIntegrationTest
     public QueryTest(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
-        Seed(4, "Seed Test");
+        Seed(4, "Seed Test").RunSynchronously();
     }
 
     [Fact]

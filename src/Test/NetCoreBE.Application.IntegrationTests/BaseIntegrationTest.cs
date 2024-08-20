@@ -1,8 +1,4 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using NetCoreBE.Infrastructure.Persistence;
-
-namespace NetCoreBE.Application.IntegrationTests;
+﻿namespace NetCoreBE.Application.IntegrationTests;
 
 public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppFactory>
 {
