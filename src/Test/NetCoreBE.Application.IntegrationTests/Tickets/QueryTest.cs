@@ -11,7 +11,7 @@ public class QueryTest : TicketIntegrationTest
     public QueryTest(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
-
+        Seed(4, "Seed Test");
     }
 
     [Fact]

@@ -9,7 +9,11 @@ public abstract class TicketIntegrationTest : BaseIntegrationTest, IClassFixture
 
     protected TicketIntegrationTest(IntegrationTestWebAppFactory factory) : base(factory)
     {
-        TicketRepository = Scope.ServiceProvider.GetRequiredService<ITicketRepository>();
-        var seed = TicketRepository.Seed(4, 4, "SEED Startup").Result;
+        TicketRepository = Scope.ServiceProvider.GetRequiredService<ITicketRepository>();        
+    }
+
+    public void Seed(int count, string seed)
+    {
+        var seedData = TicketRepository.Seed(count, count, seed).Result;
     }
 }
