@@ -12,7 +12,7 @@ public class TicketTests : BaseFunctionalTest
     }
 
     [Theory]
-    //[InlineData(" ")]
+    [InlineData(" ")]
     [InlineData("Ticket-Fake")]
     public async Task Register_ShouldReturnBadRequest_WhenRequestIsInvalid(
         string id)
