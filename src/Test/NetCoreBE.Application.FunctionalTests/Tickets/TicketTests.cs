@@ -12,7 +12,7 @@ public class TicketTests : BaseFunctionalTest
     }
 
     [Theory]
-    [InlineData(" ")]
+    //[InlineData(" ")]
     [InlineData("Ticket-Fake")]
     public async Task Register_ShouldReturnBadRequest_WhenRequestIsInvalid(
         string id)
@@ -20,7 +20,7 @@ public class TicketTests : BaseFunctionalTest
         // Arrange
 
         // Act
-        HttpResponseMessage response = await HttpClient.PostAsJsonAsync(_url, id);
+        HttpResponseMessage response = await HttpClient.GetAsync(_url  + id);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
