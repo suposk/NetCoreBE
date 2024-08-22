@@ -58,7 +58,7 @@ public class QueryTest : TicketIntegrationTest
     public async Task SearchTicketQuery_Laptop_ShouldReturn_Ok()
     {
         // Arrange        
-        var q = new SearchTicketQuery { SearchParameters = new TicketSearchParameters() { TicketType = "Laptop" } };
+        var q = new SearchTicketQuery { SearchParameters = new() { TicketType = "Laptop" } };
 
         // Act
         var result = await Sender.Send(q);
