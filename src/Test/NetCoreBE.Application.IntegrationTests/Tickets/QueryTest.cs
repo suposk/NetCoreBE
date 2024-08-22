@@ -1,9 +1,9 @@
-﻿namespace NetCoreBE.Application.IntegrationTests.Tickets;
+﻿using NetCoreBE.Domain.UnitTests.Tickets;
+
+namespace NetCoreBE.Application.IntegrationTests.Tickets;
 
 public class QueryTest : TicketIntegrationTest
 {
-    private static readonly string TicketId = "Ticket-1";
-
     public QueryTest(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
@@ -14,7 +14,7 @@ public class QueryTest : TicketIntegrationTest
     public async Task GetByIdQuery_ShouldReturn_Ok()
     {
         // Arrange        
-        var q = new GetByIdQuery<TicketDto> { Id = TicketId };
+        var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };
 
         // Act
         var result = await Sender.Send(q);

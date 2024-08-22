@@ -1,19 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NetCoreBE.Domain.UnitTests.Tickets;
 
 namespace NetCoreBE.Application.IntegrationTests.Tickets;
 
 public class TicketDecoratorTest : TicketIntegrationTest
 {
-    private static readonly string TicketId = "Ticket-1";
-    private static readonly string AddTicketId = "Ticket-01";
-    private static readonly TicketDto dtoAdd = new TicketDto
-    {
-        Id = AddTicketId,
-        TicketType = "New Laptop",
-        Note = "add test",
-        CreatedBy = "Test",
-    };
-
     private readonly ITicketRepositoryDecorator _decorator;
 
     public TicketDecoratorTest(IntegrationTestWebAppFactory factory)
@@ -30,7 +21,7 @@ public class TicketDecoratorTest : TicketIntegrationTest
         // Arrange        
 
         // Act
-        var result = await _decorator.GetIdDto(TicketId);
+        var result = await _decorator.GetIdDto(TicketData.TicketId);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -72,7 +63,7 @@ public class TicketDecoratorTest : TicketIntegrationTest
         // Arrange        
 
         // Act
-        var result = await _decorator.AddAsyncDto(dtoAdd);
+        var result = await _decorator.AddAsyncDto(TicketData.Add);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -84,7 +75,7 @@ public class TicketDecoratorTest : TicketIntegrationTest
     public async Task Update_ShouldReturn_Ok()
     {        
         // Arrange        
-        var q = new GetByIdQuery<TicketDto> { Id = TicketId };                
+        var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };                
         var old = (await Sender.Send(q)).Value;
         DbContext.ChangeTracker.Clear();
         old.Note = "Update test";
@@ -102,7 +93,7 @@ public class TicketDecoratorTest : TicketIntegrationTest
     public async Task Update_ShouldReturn_Failed()
     {
         // Act
-        var obj = dtoAdd;
+        var obj = TicketData.Add;
         obj.Note = "Update test";
 
         // Act
@@ -117,7 +108,7 @@ public class TicketDecoratorTest : TicketIntegrationTest
     public async Task Remove_ShouldReturn_NoContent()
     {
         // Act
-        var result = await _decorator.RemoveAsync(TicketId);
+        var result = await _decorator.RemoveAsync(TicketData.TicketId);
 
         // Assert
         result.IsSuccess.Should().BeTrue();        
