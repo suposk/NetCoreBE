@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Infrastructure.Search;
+﻿using CommonCleanArch.Application.Search;
+
+namespace NetCoreBE.Infrastructure.Search;
 
 public class PropertyMappingService : IPropertyMappingService
 {

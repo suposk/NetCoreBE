@@ -1,7 +1,9 @@
 ﻿//SqlServer
 //add commands here
 Add-Migration InitSql -Context ApiDbContext -OutputDir Persistence\Migrations\SqlServer
+Add-Migration ConcurrencyCheck -Context ApiDbContext -OutputDir Persistence\Migrations\SqlServer
 
+Add-Migration InitPostgreSQL -Context ApiDbContext -OutputDir Persistence\Migrations\PostgreSQL
 
 Update-Database -Context ApiDbContext
 Remove-Migration -Context ApiDbContext

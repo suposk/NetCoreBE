@@ -1,4 +1,8 @@
-﻿namespace NetCoreBE.Infrastructure.Persistence.Repositories
+﻿using CommonCleanArch.Application.Search;
+using CommonCleanArch.Application.Services;
+using CommonCleanArch.Domain;
+
+namespace NetCoreBE.Infrastructure.Persistence.Repositories
 {
     public class OldTicketRepository : Repository<OldTicket>, IOldTicketRepository
     {

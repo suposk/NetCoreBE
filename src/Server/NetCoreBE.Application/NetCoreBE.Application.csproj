@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\SharedContract\SharedContract.csproj" />
-    <ProjectReference Include="..\NetCoreBE.Domain\NetCoreBE.Domain.csproj" />    
-	<ProjectReference Include="..\CommonCleanArch\CommonCleanArch.csproj" />
+    <ProjectReference Include="..\CommonClean\CommonCleanArch.Application\CommonCleanArch.Application.csproj" />
+    <ProjectReference Include="..\NetCoreBE.Domain\NetCoreBE.Domain.csproj" />
   </ItemGroup>
 
 </Project>

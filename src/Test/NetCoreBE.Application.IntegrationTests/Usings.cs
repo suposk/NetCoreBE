@@ -1,0 +1,9 @@
+global using Xunit;
+global using MediatR;
+global using Microsoft.Extensions.DependencyInjection;
+global using NetCoreBE.Domain.Entities;
+global using CommonCleanArch.Application;
+global using NetCoreBE.Application.Tickets;
+global using NetCoreBE.Infrastructure.Persistence;
+global using SharedContract.Dtos;
+global using FluentAssertions;

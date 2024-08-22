@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Infrastructure.Persistence;
+﻿using CommonCleanArch.Application.Services;
+
+namespace NetCoreBE.Infrastructure.Persistence;
 
 /// <summary>
 /// /// <summary>

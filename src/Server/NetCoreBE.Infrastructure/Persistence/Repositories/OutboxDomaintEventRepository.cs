@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Infrastructure.Persistence.Repositories;
+﻿using CommonCleanArch.Application.Services;
+
+namespace NetCoreBE.Infrastructure.Persistence.Repositories;
 
 public class OutboxDomaintEventRepository : Repository<OutboxDomaintEvent>, IOutboxDomaintEventRepository
 {

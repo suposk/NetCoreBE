@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Application.Tickets;
+﻿using CommonCleanArch.Domain;
+
+namespace NetCoreBE.Application.Tickets;
 
 public class SearchTicketQuery : IRequest<ResultCom<PagedListDto<TicketDto>>>
 {
@@ -13,7 +15,6 @@ public class SearchQueryHandler : IRequestHandler<SearchTicketQuery, ResultCom<P
     private readonly ILogger<SearchQueryHandler> _logger;    
 
     public SearchQueryHandler(
-        ITicketRepository ticketRepository,
         IPropertyMappingService propertyMappingService,
         IMapper mapper,
         IApiDbContext apiDbContext,

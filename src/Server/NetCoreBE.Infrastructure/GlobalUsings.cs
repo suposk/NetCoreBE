@@ -24,16 +24,14 @@ global using SharedContract.Dtos;
 
 //CommonCleanArch
 global using CommonCleanArch;
-global using CommonCleanArch.Base;
+global using CommonCleanArch.Domain.Base;
 global using CommonCleanArch.Application;
-global using CommonCleanArch.Helpers;
-global using CommonCleanArch.CustomExceptions;
 global using CommonCleanArch.Domain.Events;
-global using CommonCleanArch.Services;
+global using CommonCleanArch.Application.Services;
+global using CommonCleanArch.Application.Search;
 global using CommonCleanArch.Infrastructure.ApiMiddleware;
 global using CommonCleanArch.Infrastructure.Enums;
 global using CommonCleanArch.Infrastructure.Persistence;
-global using CommonCleanArch.Infrastructure.Search;
 
 //Infrastructure
 global using NetCoreBE.Infrastructure.Persistence;
