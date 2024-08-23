@@ -1,6 +1,7 @@
 global using Xunit;
 global using MediatR;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.EntityFrameworkCore;
 global using NetCoreBE.Domain.Entities;
 global using CommonCleanArch.Application;
 global using NetCoreBE.Application.Tickets;
