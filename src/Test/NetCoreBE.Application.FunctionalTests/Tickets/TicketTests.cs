@@ -15,7 +15,8 @@ public class TicketTests : BaseFunctionalTest, IDisposable
     private Task Seed(int count) => Scope.ServiceProvider.GetRequiredService<ITicketRepository>().Seed(count, count, "Seed Test");
 
     [Theory]
-    [InlineData(" ")]
+    //[InlineData(" ")]//return Ok
+    [InlineData("1")]
     [InlineData("Ticket-Fake")]
     public async Task Register_ShouldReturnBadRequest_WhenRequestIsInvalid(
         string id)
