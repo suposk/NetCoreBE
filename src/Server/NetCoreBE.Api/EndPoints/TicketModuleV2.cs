@@ -54,6 +54,8 @@ public class TicketModuleV2 : CarterModule
         app.MapPost("/", async ([FromBody] TicketDto dto, ITicketRepositoryDecorator decorator) =>
         {
             var res = await decorator.AddAsyncDto(dto).ConfigureAwait(false);
+            if (res.IsSuccess)
+                return Results.Created($"/{res.Value?.Id}", res.Value);
             return res.GetIResultExt();
         }).MapToApiVersion(AppApiVersions.V2)
         .AddEndpointFilter<ValidationFilterEndpoint<TicketDto>>();
@@ -61,7 +63,7 @@ public class TicketModuleV2 : CarterModule
         app.MapPut("/", async (TicketDto dto, ITicketRepositoryDecorator decorator) =>
         {
             var res = await decorator.UpdateDtoAsync(dto).ConfigureAwait(false);
-            return res.GetIResultExt();
+            return res.GetIResultNoContentExt();
         }).MapToApiVersion(AppApiVersions.V2)
         .AddEndpointFilter<ValidationFilterEndpoint<TicketDto>>();
 

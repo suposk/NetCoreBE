@@ -43,6 +43,8 @@ public class TicketV1Controller : ControllerBase
     public async Task<IResult> Post([FromBody] TicketDto dto)
     {        
         var res = await _decorator.AddAsyncDto(dto).ConfigureAwait(false);
+        if (res.IsSuccess)
+            return Results.Created($"/{res.Value?.Id}", res.Value);
         return res.GetIResultExt();
     }
 
@@ -50,7 +52,7 @@ public class TicketV1Controller : ControllerBase
     public async Task<IResult> Put(TicketDto dto)
     {        
         var res = await _decorator.UpdateDtoAsync(dto).ConfigureAwait(false);
-        return res.GetIResultExt();
+        return res.GetIResultNoContentExt();
     }
 
     [HttpDelete("{id}")]

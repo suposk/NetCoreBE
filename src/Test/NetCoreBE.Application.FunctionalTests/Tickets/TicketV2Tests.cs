@@ -2,11 +2,11 @@ using NetCoreBE.Application.FunctionalTests.Tickets;
 
 namespace Bookify.Api.FunctionalTests.Users;
 
-public class TicketTests : BaseFunctionalTest, IDisposable
+public class TicketV2Tests : BaseFunctionalTest, IDisposable
 {
     private static readonly string _url = "api/v2/Ticket/";
 
-    public TicketTests(FunctionalTestWebAppFactory factory)
+    public TicketV2Tests(FunctionalTestWebAppFactory factory)
         : base(factory)
     {
         Seed(4).Wait();
@@ -62,9 +62,30 @@ public class TicketTests : BaseFunctionalTest, IDisposable
 
         // Act
         HttpResponseMessage response = await HttpClient.PostAsJsonAsync(_url, request);
+        var content = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        content.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    //put should return no content
+    public async Task Put_ShouldReturn_NoContent()
+    {
+        // Arrange
+        var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };
+        var request = (await Sender.Send(q)).Value;
+        DbContext.ChangeTracker.Clear();
+        request.Note = "Update test";
+
+        // Act
+        HttpResponseMessage response = await HttpClient.PutAsJsonAsync(_url, request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        content.Should().BeNullOrEmpty();
     }
 
     [Fact]    
@@ -95,20 +116,5 @@ public class TicketTests : BaseFunctionalTest, IDisposable
     {
         HttpClient.Dispose();
     }
-
-
-    //[Fact]
-    //public async Task Register_ShouldReturnOk_WhenRequestIsValid()
-    //{
-    //    // Arrange
-    //    var request = new RegisterUserRequest("create@test.com", "first", "last", "12345");
-
-    //    // Act
-    //    HttpResponseMessage response = await HttpClient.PostAsJsonAsync(_url, request);
-
-    //    // Assert
-    //    response.StatusCode.Should().Be(HttpStatusCode.OK);
-    //}
-
 
 }
