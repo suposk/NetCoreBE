@@ -3,12 +3,12 @@
 /// <summary>
 /// Only sample Command
 /// </summary>
-public class RCommand : IRequest<bool>
+public class RCommand : IRequest<ResultCom<object>>
 {
-    public string SomePam { get; set; }
+    public string ComParam { get; set; }
 }
 
-public class RCommandHandler : IRequestHandler<RCommand, bool>
+public class RCommandHandler : IRequestHandler<RCommand, ResultCom<object>>
 {
     private readonly ILogger<RCommandHandler> _logger;
 
@@ -18,12 +18,12 @@ public class RCommandHandler : IRequestHandler<RCommand, bool>
     {
         _logger = logger;
     }
-    public async Task<bool> Handle(RCommand request, CancellationToken cancellationToken)
+    public async Task<ResultCom<object>> Handle(RCommand request, CancellationToken cancellationToken)
     {
         await Task.Yield();
-        if (request is null || string.IsNullOrWhiteSpace(request.SomePam))
-            return false;
+        if (request is null || string.IsNullOrWhiteSpace(request.ComParam))
+            return ResultCom<object>.Failure($"{nameof(request.ComParam)} parameter is missing");
         else
-            return true;
+            return ResultCom<object>.Success(null);
     }
 }
