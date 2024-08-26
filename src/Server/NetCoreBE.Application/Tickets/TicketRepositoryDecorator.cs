@@ -42,7 +42,7 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
 
     public async override Task<ResultCom<Ticket>> AddEntityAsync(Ticket entity, bool saveChanges = true)
     {
-        entity?.Create(_dateTimeService.UtcNow);
+        entity?.Init(_dateTimeService.UtcNow);
         return await base.AddEntityAsync(entity, saveChanges);        
     }
 
