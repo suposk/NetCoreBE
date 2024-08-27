@@ -10,7 +10,7 @@ public static class StringHelper
     /// <returns></returns>
     public static string GetStringGuidExt() => MassTransit.NewId.Next().ToString();
 
-    public static string ReplaceWithStars(this string text, int visibleCharsCount = 8)
+    public static string? ReplaceWithStars(this string? text, int visibleCharsCount = 8)
     {
         if (string.IsNullOrWhiteSpace(text) || text.Length <= visibleCharsCount)
             return text;
@@ -20,7 +20,7 @@ public static class StringHelper
         return result;
     }
 
-	public static string ShrinkTextExt(this string text, int visibleCharsCount = 20)
+	public static string? ShrinkTextExt(this string? text, int visibleCharsCount = 20)
 	{
 		if (string.IsNullOrWhiteSpace(text) || text.Length <= visibleCharsCount)
 			return text;
@@ -35,10 +35,8 @@ public static class StringHelper
             return false;
     }
 
-    public static bool NotNullOrEmptyExt(this string text)
-    {
-        return !IsNullOrEmptyExt(text);
-    }
+    public static bool NotNullOrEmptyExt(this string? text) => !IsNullOrEmptyExt(text);
+    public static bool IsNotNullOrEmptyExt(this string? text) => !IsNullOrEmptyExt(text);
 
     public static bool HasValueExt(this string? text)
     {
