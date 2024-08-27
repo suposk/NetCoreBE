@@ -45,6 +45,7 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
     public override Task<ResultCom<TicketDto>> AddAsyncDto(TicketDto dto, bool saveChanges = true)
     {
         //1. Store note value from request
+        dto.Notes?.Clear();
         _NoteToAdd = dto.Note;
         return base.AddAsyncDto(dto, saveChanges);
     }
