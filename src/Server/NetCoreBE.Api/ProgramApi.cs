@@ -133,11 +133,10 @@ using (var scope = app.Services.CreateScope())
             catch { }
             if (DbTypeEnum == DbTypeEnum.PostgreSQL)
             {
-                //dbContext.Database.EnsureDeleted();
-                dbContext.Database.Migrate();
-                
                 //dbContext.Database.Migrate();
-                //dbContext.Database.EnsureCreated();
+
+                dbContext.Database.EnsureDeleted();
+                dbContext.Database.EnsureCreated();
             }
             else
             {

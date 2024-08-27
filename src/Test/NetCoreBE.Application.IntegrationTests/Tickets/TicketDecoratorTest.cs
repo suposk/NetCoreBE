@@ -71,7 +71,8 @@ public class TicketDecoratorTest : TicketIntegrationTest
         result.ErrorMessage.Should().BeNullOrEmpty();
     }
 
-    [Fact(Skip = "Not using UpdateDtoAsync")]
+    //[Fact(Skip = "Not using UpdateDtoAsync")]
+    [Fact]
     public async Task Update_ShouldReturn_Ok()
     {        
         // Arrange        
@@ -89,7 +90,8 @@ public class TicketDecoratorTest : TicketIntegrationTest
         result.ErrorMessage.Should().BeNullOrEmpty();
     }
 
-    [Fact(Skip = "Not using UpdateDtoAsync")]
+    //[Fact(Skip = "Not using UpdateDtoAsync")]
+    [Fact]
     public async Task Update_ShouldReturn_Failed()
     {
         // Act

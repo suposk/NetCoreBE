@@ -27,7 +27,7 @@ public class TicketCreatedEventHandler(
 
             var scope = _serviceScopeFactory.CreateScope();
             var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
-            var add = new TicketHistory(ticketId: notification.Entity.Id, operation: "AwaitingConfirmation", createdBy: $"{nameof(TicketCreatedEventHandler)}", details : $"Email sent to {notification.Entity.CreatedBy} for request {notification.Entity.Id}", null);            
+            var add = TicketHistory.Create(ticketId: notification.Entity.Id, operation: "AwaitingConfirmation", createdBy: $"{nameof(TicketCreatedEventHandler)}", details : $"Email sent to {notification.Entity.CreatedBy} for request {notification.Entity.Id}", null);            
 
             //simulate email service
             await emailService.SendEmail("abc.com", "toemaul", "Ticket Confirmation", "Please confirm your request", true);
@@ -40,7 +40,7 @@ public class TicketCreatedEventHandler(
                 _logger.LogWarning("Ticket not found for RequestId: {RequestId}", add.TicketId);
                 return;
             }
-            if (request.CanAddHistory() is false)
+            if (Ticket.CanAddUpdate(notification.Entity.Status) is false)
             {
                 _logger.LogWarning("Ticket status is Closed for RequestId: {RequestId}", add.TicketId);
                 return;

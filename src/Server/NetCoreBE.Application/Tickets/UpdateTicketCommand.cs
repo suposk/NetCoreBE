@@ -1,7 +1,7 @@
 ﻿namespace NetCoreBE.Application.Tickets;
 
 /// <summary>
-/// Only sample Command
+/// Update Ticket Command
 /// </summary>
 public class UpdateTicketCommand : IRequest<ResultCom<TicketDto>>
 {
@@ -12,20 +12,26 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
 {
     private readonly IMapper _mapper;
     private readonly ITicketRepository _repository;
+    private readonly IDateTimeService _dateTimeService;
     private readonly ILogger<UpdateTicketCommandHandler> _logger;
 
     public UpdateTicketCommandHandler(
         IMapper mapper,
         ITicketRepository repository,
+        IDateTimeService dateTimeService,
         ILogger<UpdateTicketCommandHandler> logger
         )
     {
         _mapper = mapper;
         _repository = repository;
+        _dateTimeService = dateTimeService;
         _logger = logger;
     }
+
     public async Task<ResultCom<TicketDto>> Handle(UpdateTicketCommand request, CancellationToken cancellationToken)
     {        
+        _logger.LogInformation("Started");
+
         if (string.IsNullOrWhiteSpace(request.Dto.Id))
             return ResultCom<TicketDto>.Failure($"{nameof(request.Dto.Id)} parameter is missing");
         if (string.IsNullOrWhiteSpace(request.Dto.Note))
@@ -37,12 +43,26 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
             if (entity is null)
                 return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} not found", HttpStatusCode.NotFound);
 
-            var dto = _mapper.Map<TicketDto>(entity);
+            if (entity.RowVersion != request.Dto.RowVersion)
+                return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} has been modified by another user", HttpStatusCode.Conflict);
+
+            //todo domain entity update method  
+            var upd = entity.Update(request.Dto.Status, request.Dto.Note, _dateTimeService.UtcNow);
+            if (upd.IsFailure)
+                return ResultCom<TicketDto>.Failure(upd.ErrorMessage, HttpStatusCode.BadRequest);
+
+            var res = await _repository.UpdateAsync(entity);
+            if (res is null)
+                return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
+
+            var dto = _mapper.Map<TicketDto>(res);
+            _logger.LogInformation("Completed");
             return ResultCom<TicketDto>.Success(dto);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            _logger?.LogError(ex, "Error");
+            return ResultCom<TicketDto>.Failure($"{ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 }

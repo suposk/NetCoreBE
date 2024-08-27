@@ -4,31 +4,40 @@ public class TicketHistory : EntityBase
 {
     private TicketHistory() { }
 
-    public TicketHistory(string ticketId, string operation)
+    //public TicketHistory(string ticketId, string operation, string createdBy, string? details, DateTime? createdAt)
+    //{
+    //    if (string.IsNullOrEmpty(ticketId))        
+    //        throw new ArgumentException($"'{nameof(ticketId)}' cannot be null or empty.", nameof(ticketId));
+    //    if (string.IsNullOrEmpty(operation))        
+    //        throw new ArgumentException($"'{nameof(operation)}' cannot be null or empty.", nameof(operation));
+
+    //    Id ??= StringHelper.GetStringGuidExt();
+
+    //    TicketId = ticketId;        
+    //    Operation = operation;
+    //    Details = details;
+
+    //    CreatedBy = createdBy;
+    //    CreatedAt = createdAt;        
+    //}
+
+    public static TicketHistory Create(string ticketId, string operation, string createdBy, string? details, DateTime? createdAt)
     {
-        if (string.IsNullOrEmpty(ticketId))
-            throw new ArgumentException($"'{nameof(ticketId)}' cannot be null or empty.", nameof(ticketId));
-        if (string.IsNullOrEmpty(operation))
-            throw new ArgumentException($"'{nameof(operation)}' cannot be null or empty.", nameof(operation));
+        //if (string.IsNullOrEmpty(ticketId))
+        //    throw new ArgumentException($"'{nameof(ticketId)}' cannot be null or empty.", nameof(ticketId));
+        //if (string.IsNullOrEmpty(operation))
+        //    throw new ArgumentException($"'{nameof(operation)}' cannot be null or empty.", nameof(operation));
 
-        Id ??= StringHelper.GetStringGuidExt();
-    }
+        TicketHistory ticketHistory = new();
+        ticketHistory.Id ??= StringHelper.GetStringGuidExt();
 
-    public TicketHistory(string ticketId, string operation, string createdBy, string? details, DateTime? createdAt)
-    {
-        if (string.IsNullOrEmpty(ticketId))        
-            throw new ArgumentException($"'{nameof(ticketId)}' cannot be null or empty.", nameof(ticketId));
-        if (string.IsNullOrEmpty(operation))        
-            throw new ArgumentException($"'{nameof(operation)}' cannot be null or empty.", nameof(operation));
+        ticketHistory.TicketId = ticketId;
+        ticketHistory.Operation = operation;
+        ticketHistory.Details = details;
 
-        Id ??= StringHelper.GetStringGuidExt();
-
-        TicketId = ticketId;        
-        Operation = operation;
-        Details = details;
-
-        CreatedBy = createdBy;
-        CreatedAt = createdAt;        
+        ticketHistory.CreatedBy = createdBy;
+        ticketHistory.CreatedAt = createdAt;
+        return ticketHistory;
     }
 
     [MaxLength(36)]

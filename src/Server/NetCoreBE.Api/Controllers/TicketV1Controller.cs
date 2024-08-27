@@ -52,7 +52,7 @@ public class TicketV1Controller : ControllerBase
     public async Task<IResult> Put(TicketDto dto)
     {        
         var res = await _decorator.UpdateDtoAsync(dto).ConfigureAwait(false);
-        return res.GetIResultNoContentExt();
+        return res.GetIResultExt();
     }
 
     [HttpDelete("{id}")]
