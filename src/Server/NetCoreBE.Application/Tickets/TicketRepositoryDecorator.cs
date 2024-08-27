@@ -40,9 +40,20 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
 
     protected override Task<bool> CanModifyFunc(Ticket entity) => base.CanModifyFunc(entity);
 
+    string? _NoteToAdd;
+
+    public override Task<ResultCom<TicketDto>> AddAsyncDto(TicketDto dto, bool saveChanges = true)
+    {
+        //1. Store note value from request
+        _NoteToAdd = dto.Note;
+        return base.AddAsyncDto(dto, saveChanges);
+    }
+
     public async override Task<ResultCom<Ticket>> AddEntityAsync(Ticket entity, bool saveChanges = true)
     {
-        entity?.Init(_dateTimeService.UtcNow);
+        //2. Add note to entity
+        entity?.Init(_NoteToAdd, _dateTimeService.UtcNow);
+        _NoteToAdd = null;
         return await base.AddEntityAsync(entity, saveChanges);        
     }
 

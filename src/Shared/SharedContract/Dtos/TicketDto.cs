@@ -8,5 +8,7 @@ public class TicketDto : DtoBase
 
     public string? Status { get; set; }
 
+    public List<string> Notes { get; set; } = new();
+
     public List<TicketHistoryDto> TicketHistoryList { get; set; } = new();
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Protocol;
 using SharedCommon;
+using System.Net.Sockets;
 using System.Text;
 
 public enum StatusTicketType
@@ -31,7 +32,9 @@ public class Ticket : EntityBase
         //cousing issues, ctro exeption
         if (string.IsNullOrWhiteSpace(ticketType))
             throw new ArgumentException("ticketType must be provided");
-        Note = note;
+        Notes ??= new();
+        if (note.IsNotNullOrEmptyExt())
+            Notes.Add(note);
         Status = status;
         CreatedBy = createdBy;
         TicketHistoryList = ticketHistoryList ?? new();
@@ -40,8 +43,9 @@ public class Ticket : EntityBase
     [MaxLength(50)]
     public string? TicketType { get; private set; }
 
-    [MaxLength(500)]
-    public string? Note { get; set; }
+    //[MaxLength(500)]
+    //public string? Note { get; set; }
+    public List<string> Notes { get; private set; } = new();
 
     [MaxLength(50)]
     public string? Status { get; private set; }
@@ -64,12 +68,14 @@ public class Ticket : EntityBase
         //var ticket = new Ticket(id, ticketType, note, status: StatusTicketType.Submited.ToString(), createdBy, null);
         if (ticketType.IsNullOrEmptyExt())
             throw new ArgumentException("ticketType must be provided");
-        var ticket = new Ticket() { Id = id, TicketType = ticketType, Note = note, Status = StatusTicketType.Submited.ToString(), CreatedBy = createdBy, TicketHistoryList = new() };
+        var ticket = new Ticket() { Id = id, TicketType = ticketType,Status = StatusTicketType.Submited.ToString(), CreatedBy = createdBy, TicketHistoryList = new() };
+        if (note.IsNotNullOrEmptyExt())
+            ticket.Notes.Add(note);
         ticket.AddHistory(ticket.Status, null, DateTime.UtcNow);
         return ticket;
     }
 
-    public ResultCom Init(DateTime utc)
+    public ResultCom Init(string? note, DateTime utc)
     {
         if (CanAddUpdate(Status) is false) //exidently can be called multiple times
             return ResultCom.Failure($"Can not add history. Current status is {Status}");
@@ -77,6 +83,9 @@ public class Ticket : EntityBase
         Id ??= StringHelper.GetStringGuidExt();
         if (StatusEnum is not StatusTicketType.Submited)            
             Status = StatusTicketType.Submited.ToString();
+
+        if (note.IsNotNullOrEmptyExt())
+            Notes.Add(note);
         AddHistory($"{Status} Init", null, utc);
         CreatedAt = utc;
         return ResultCom.Success();
@@ -99,7 +108,13 @@ public class Ticket : EntityBase
         if (sb.Length == 0)
             return ResultCom.Failure("Nothing to update");
 
-        Note += "\n" + note; //add note
+        //Note += "\n" + note; //add note
+        if (note.IsNotNullOrEmptyExt())
+        {
+            Notes ??= new();
+            Notes.Add(note);
+            
+        }
         ModifiedAt = utc;
         //status changes added
         var operation = string.Equals(Status, status) ? $"{Status} Update" : "Update";

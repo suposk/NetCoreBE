@@ -7,7 +7,7 @@ public class TicketTest : BaseTest
     public void Create_Should_Create_Init_History()
     {
         //areange
-        var request = Ticket.Create(TicketData.Ticket.Id, TicketData.Ticket.TicketType, TicketData.Ticket.Note, TicketData.Ticket.CreatedBy);
+        var request = Ticket.Create(TicketData.Ticket.Id, TicketData.Ticket.TicketType, TicketData.Ticket.Notes.FirstOrDefault(), TicketData.Ticket.CreatedBy);
 
         //act
         //request.Create(UtcNow);
@@ -27,7 +27,7 @@ public class TicketTest : BaseTest
         var request = TicketData.Ticket;
 
         //act
-        request.Init(UtcNow);
+        request.Init(TicketData.Ticket.Notes.FirstOrDefault(), UtcNow);
 
         //assert
         request.Status.Should().Be("Submited");
