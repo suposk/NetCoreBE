@@ -15,27 +15,27 @@ public enum StatusTicketType
 
 public class Ticket : EntityBase
 {
-    public static Ticket EmptyTicket = Create("", "", "", "");
+    public static Ticket EmptyTicket = Create("1", "None", "", "");
 
     private Ticket() { }
 
-    //private Ticket(string? id,
-    //               string? ticketType,
-    //               string? note,
-    //               string? status,
-    //               string? createdBy,
-    //               List<TicketHistory>? ticketHistoryList)
-    //{
-    //    Id = id ?? StringHelper.GetStringGuidExt();
-    //    TicketType = ticketType;
-    //    //cousing issues, ctro exeption
-    //    //if (string.IsNullOrWhiteSpace(ticketType))
-    //    //    throw new ArgumentException("ticketType must be provided");
-    //    Note = note;
-    //    Status = status;
-    //    CreatedBy = createdBy;
-    //    TicketHistoryList = ticketHistoryList ?? new();
-    //}
+    private Ticket(string? id,
+                   string? ticketType,
+                   string? note,
+                   string? status,
+                   string? createdBy,
+                   List<TicketHistory>? ticketHistoryList)
+    {
+        Id = id ?? StringHelper.GetStringGuidExt();
+        TicketType = ticketType;
+        //cousing issues, ctro exeption
+        //if (string.IsNullOrWhiteSpace(ticketType))
+        //    throw new ArgumentException("ticketType must be provided");
+        Note = note;
+        Status = status;
+        CreatedBy = createdBy;
+        TicketHistoryList = ticketHistoryList ?? new();
+    }
 
     [MaxLength(50)]
     public string? TicketType { get; private set; }
@@ -61,7 +61,9 @@ public class Ticket : EntityBase
 
     public static Ticket Create(string? id, string? ticketType, string? note, string? createdBy)
     {
-        //var ticket = new Ticket(id, ticketType, note, status: StatusTicketType.Submited.ToString(), createdBy, null);                
+        //var ticket = new Ticket(id, ticketType, note, status: StatusTicketType.Submited.ToString(), createdBy, null);
+        if (ticketType.IsNullOrEmptyExt())
+            throw new ArgumentException("ticketType must be provided");
         var ticket = new Ticket() { Id = id, TicketType = ticketType, Note = note, Status = StatusTicketType.Submited.ToString(), CreatedBy = createdBy, TicketHistoryList = new() };
         ticket.AddHistory(ticket.Status, null, DateTime.UtcNow);
         return ticket;

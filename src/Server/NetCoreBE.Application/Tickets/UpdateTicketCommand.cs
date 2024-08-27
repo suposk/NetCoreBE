@@ -12,18 +12,21 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
 {
     private readonly IMapper _mapper;
     private readonly ITicketRepository _repository;
+    private readonly IRepository<TicketHistory> _repositoryTicketHistory;
     private readonly IDateTimeService _dateTimeService;
     private readonly ILogger<UpdateTicketCommandHandler> _logger;
 
     public UpdateTicketCommandHandler(
         IMapper mapper,
         ITicketRepository repository,
+        IRepository<TicketHistory> repositoryTicketHistory,
         IDateTimeService dateTimeService,
         ILogger<UpdateTicketCommandHandler> logger
         )
     {
         _mapper = mapper;
         _repository = repository;
+        _repositoryTicketHistory = repositoryTicketHistory;
         _dateTimeService = dateTimeService;
         _logger = logger;
     }
@@ -51,9 +54,12 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
             if (upd.IsFailure)
                 return ResultCom<TicketDto>.Failure(upd.ErrorMessage, HttpStatusCode.BadRequest);
 
+            var resHistory = await _repositoryTicketHistory.AddAsync(entity.TicketHistoryList.Last());
+
+            entity.AddDomainEvent(new UpdatedEvent<Ticket>(entity)); //raise event to invaliated cache
             var res = await _repository.UpdateAsync(entity);
             if (res is null)
-                return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
+                return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);                       
 
             var dto = _mapper.Map<TicketDto>(res);
             _logger.LogInformation("Completed");

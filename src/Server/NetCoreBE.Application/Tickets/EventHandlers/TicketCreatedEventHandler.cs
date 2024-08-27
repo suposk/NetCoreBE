@@ -23,7 +23,8 @@ public class TicketCreatedEventHandler(
             _logger.LogInformation("Domain Event: {DomainEvent}, started", notification.GetType().FullName);
             _timer.Start();
             //simulate some processsing
-            await Task.Delay(20 * 1000, cancellationToken);
+            //await Task.Delay(20 * 1000, cancellationToken);
+            await Task.Delay(10 * 1000, cancellationToken);
 
             var scope = _serviceScopeFactory.CreateScope();
             var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
