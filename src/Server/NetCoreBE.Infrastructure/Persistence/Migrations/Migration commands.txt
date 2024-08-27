@@ -4,6 +4,7 @@ Add-Migration InitSql -Context ApiDbContext -OutputDir Persistence\Migrations\Sq
 Add-Migration ConcurrencyCheck -Context ApiDbContext -OutputDir Persistence\Migrations\SqlServer
 
 Add-Migration InitPostgreSQL -Context ApiDbContext -OutputDir Persistence\Migrations\PostgreSQL
+Add-Migration TicketHistoryFix -Context ApiDbContext -OutputDir Persistence\Migrations\PostgreSQL
 
 Update-Database -Context ApiDbContext
 Remove-Migration -Context ApiDbContext
