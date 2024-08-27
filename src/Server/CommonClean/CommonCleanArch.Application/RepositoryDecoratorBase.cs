@@ -162,8 +162,7 @@ public abstract class RepositoryDecoratorBase<TEntity, TDto> : IRepository<TEnti
             Logger?.LogError($"{nameof(UpdateDtoAsync)} {nameof(dto)} missing Id");
             return ResultCom<TDto>.Failure($"{nameof(UpdateDtoAsync)} {nameof(dto)} is missing Id", HttpStatusCode.BadRequest);
         }
-
-        Logger?.LogInformation($"{nameof(UpdateDtoAsync)} {dto}", dto);
+            
         var repoObj = Mapper.Map<TEntity>(dto);
         var res = await UpdateEntityAsync(repoObj, saveChanges);
         if (res.IsFailure)

@@ -4,14 +4,8 @@ namespace NetCoreBE.Application.Tickets;
 
 public interface ITicketRepositoryDecorator : IRepositoryDecoratorBase<Ticket, TicketDto>
 {
+    Task<ResultCom<TicketDto>> UpdateDtoAsync(TicketUpdateDto? dtoUpdate);
 }
-
-//public class TicketCache
-//{
-//    public static string PrimaryCacheKey = nameof(TicketCache);
-//    public static string GetList = nameof(ITicketRepositoryDecorator.GetListDto);
-//    public static string GetId = nameof(ITicketRepositoryDecorator.GetIdDto);
-//}
 
 public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketDto>, ITicketRepositoryDecorator
 {
@@ -56,6 +50,40 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
         entity?.Init(_NoteToAdd, _dateTimeService.UtcNow);
         _NoteToAdd = null;
         return await base.AddEntityAsync(entity, saveChanges);        
+    }
+
+    //public override async Task<ResultCom<TicketDto>> UpdateDtoAsync(TicketDto dto, bool saveChanges = true) =>      
+    //    throw new NotImplementedException($"Use  {nameof(UpdateTicketCommand)} instead");    
+
+    public async Task<ResultCom<TicketDto>> UpdateDtoAsync(TicketUpdateDto? dtoUpdate)
+    {        
+        if (dtoUpdate is null)
+            return ResultCom<TicketDto>.Failure($"{nameof(dtoUpdate)} parameter is null", HttpStatusCode.BadRequest);
+        if (dtoUpdate.Id.IsNullOrEmptyExt())
+            return ResultCom<TicketDto>.Failure($"{nameof(dtoUpdate.Id)} parameter is missing");
+
+        var entity = await Repository.GetId(dtoUpdate.Id);
+        if (entity is null)
+            return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} not found", HttpStatusCode.NotFound);
+
+        if (entity.RowVersion != dtoUpdate.RowVersion)
+            return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} has been modified by another user", HttpStatusCode.Conflict);
+
+        //todo domain entity update method  
+        var upd = entity.Update(dtoUpdate.Status, dtoUpdate.Note, _dateTimeService.UtcNow);
+        if (upd.IsFailure)
+            return ResultCom<TicketDto>.Failure(upd.ErrorMessage, HttpStatusCode.BadRequest);
+
+        var resHistory = await _repositoryTicketHistory.AddAsync(entity.TicketHistoryList.Last());
+
+        //todo Fix invlidate cache
+        entity.AddDomainEvent(new UpdatedEvent<Ticket>(entity)); //raise event to invaliated cache
+        var res = await Repository.UpdateAsync(entity);
+        if (res is null)
+            return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
+
+        var dto = Mapper.Map<TicketDto>(res);
+        return ResultCom<TicketDto>.Success(dto);
     }
 
     public async override Task<ResultCom> RemoveAsync(string id, bool saveChanges = true)

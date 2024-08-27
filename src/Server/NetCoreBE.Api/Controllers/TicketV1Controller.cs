@@ -49,7 +49,7 @@ public class TicketV1Controller : ControllerBase
     }
 
     [HttpPut()]
-    public async Task<IResult> Put(TicketDto dto)
+    public async Task<IResult> Put([FromBody] TicketUpdateDto dto)
     {        
         var res = await _decorator.UpdateDtoAsync(dto).ConfigureAwait(false);
         return res.GetIResultExt();
