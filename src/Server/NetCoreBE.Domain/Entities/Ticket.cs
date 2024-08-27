@@ -29,8 +29,8 @@ public class Ticket : EntityBase
         Id = id ?? StringHelper.GetStringGuidExt();
         TicketType = ticketType;
         //cousing issues, ctro exeption
-        //if (string.IsNullOrWhiteSpace(ticketType))
-        //    throw new ArgumentException("ticketType must be provided");
+        if (string.IsNullOrWhiteSpace(ticketType))
+            throw new ArgumentException("ticketType must be provided");
         Note = note;
         Status = status;
         CreatedBy = createdBy;
