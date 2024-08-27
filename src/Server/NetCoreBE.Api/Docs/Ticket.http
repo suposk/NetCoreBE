@@ -74,8 +74,8 @@ PUT https://{{host}}/api/{{version}}/Ticket/
 Content-Type: application/json
 {
   "id": "Ticket-01",
-  "note": "Put 1",        
-  "rowVersion": 1127  
+  "note": "Put 3",        
+  "rowVersion": 1137  
 }
 
 ###

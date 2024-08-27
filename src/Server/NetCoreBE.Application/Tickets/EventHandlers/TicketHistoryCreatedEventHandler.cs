@@ -13,12 +13,8 @@ public class TicketHistoryCreatedEventHandler(
         try
         {
             _logger.LogInformation("Domain Event: {DomainEvent}, started", notification.GetType().FullName);
-            //_cacheProvider.ClearCache(TicketCache.PrimaryCacheKey, TicketCache.GetId + notification?.Entity?.Id);
-            //_cacheProvider.ClearCache(TicketCache.PrimaryCacheKey, TicketCache.GetList);            
-            //_cacheProvider.ClearCacheForAllKeysAndIds(TicketCache.PrimaryCacheKey); //clear cache for all Ids       
-            //_cacheProvider.ClearCacheForAllKeysAndIds(notification.GetPrimaryCacheKeyExt()); //clear cache for all Ids
-            _cacheProvider.ClearCacheOnlyKeyAndId(notification.Entity.GetPrimaryCacheKeyExt(), notification.Entity.Id); //clear cache for all Ids
-            _cacheProvider.ClearCacheOnlyKeyAndId(Ticket.EmptyTicket.GetPrimaryCacheKeyExt(), notification.Entity.TicketId); //clear cache for all Ids
+            _cacheProvider.ClearCacheOnlyKeyAndId(notification.Entity.GetPrimaryCacheKeyExt(), notification.Entity.Id); //clear history cache for all Ids
+            _cacheProvider.ClearCacheOnlyKeyAndId(Ticket.EmptyTicket.GetPrimaryCacheKeyExt(), notification.Entity.TicketId); //clear Ticket cache for all Ids
         }
         catch (Exception ex)
         {

@@ -56,6 +56,7 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
 
             var resHistory = await _repositoryTicketHistory.AddAsync(entity.TicketHistoryList.Last());
 
+            //todo Fix invlidate cache
             entity.AddDomainEvent(new UpdatedEvent<Ticket>(entity)); //raise event to invaliated cache
             var res = await _repository.UpdateAsync(entity);
             if (res is null)

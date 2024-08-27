@@ -10,7 +10,9 @@ public class TicketUpdatedEventHandler(
         try
         {
             logger.LogInformation("Domain Event: {DomainEvent}, started", notification.GetType().FullName);            
-            cacheProvider.ClearCacheOnlyKeyAndId(notification.GetPrimaryCacheKeyExt(), notification.Entity.Id); //clear cache for all Ids
+            //cacheProvider.ClearCacheOnlyKeyAndId(notification.GetPrimaryCacheKeyExt(), notification.Entity.Id); //wrong cache key
+            cacheProvider.ClearCacheOnlyKeyAndId(notification.Entity.GetPrimaryCacheKeyExt(), notification.Entity.Id); //ok clear cache for all Ids
+            cacheProvider.ClearCacheOnlyKeyAndId(Ticket.EmptyTicket.GetPrimaryCacheKeyExt(), notification.Entity.Id); //ok clear cache for all Ids
         }
         catch (Exception ex)
         {

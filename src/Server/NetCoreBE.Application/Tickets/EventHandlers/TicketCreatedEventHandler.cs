@@ -51,7 +51,8 @@ public class TicketCreatedEventHandler(
             add.AddDomainEvent(new CreatedEvent<TicketHistory>(add));
             await RequestHistoryRepository.AddAsync(add, add.CreatedBy);
 
-            _cacheProvider.ClearCacheOnlyKeyAndId(notification.GetPrimaryCacheKeyExt(), notification.Entity.Id); //clear cache for all Ids
+            //_cacheProvider.ClearCacheOnlyKeyAndId(notification.GetPrimaryCacheKeyExt(), notification.Entity.Id); //wrong cache key
+            _cacheProvider.ClearCacheOnlyKeyAndId(notification.Entity.GetPrimaryCacheKeyExt(), notification.Entity.Id); //ok clear cache for all Ids
 
             _timer.Stop();
             _logger.LogInformation("Domain Event: {DomainEvent}, end {ElapsedMilliseconds}ms", notification.GetType().FullName,
