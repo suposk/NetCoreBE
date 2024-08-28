@@ -40,8 +40,12 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
         if (string.IsNullOrWhiteSpace(request.Dto.Note))
             return ResultCom<TicketDto>.Failure($"{nameof(request.Dto.Note)} parameter is missing");
 
+        IDbContextTransaction? dbTransaction = null;
         try
         {
+            dbTransaction = _repository.GetTransaction();
+            _repositoryTicketHistory.UseTransaction(dbTransaction);
+
             var entity = await _repository.GetId(request.Dto.Id);
             if (entity is null)
                 return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} not found", HttpStatusCode.NotFound);
@@ -60,7 +64,9 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
             entity.AddDomainEvent(new UpdatedEvent<Ticket>(entity)); //raise event to invaliated cache
             var res = await _repository.UpdateAsync(entity);
             if (res is null)
-                return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);                       
+                return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
+
+            dbTransaction.Commit();
 
             var dto = _mapper.Map<TicketDto>(res);
             _logger.LogInformation("Completed");
@@ -68,8 +74,13 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
         }
         catch (Exception ex)
         {
+            dbTransaction?.Rollback();
             _logger?.LogError(ex, "Error");
             return ResultCom<TicketDto>.Failure($"{ex.Message}", HttpStatusCode.InternalServerError);
+        }
+        finally
+        {
+            dbTransaction?.Dispose();
         }
     }
 }

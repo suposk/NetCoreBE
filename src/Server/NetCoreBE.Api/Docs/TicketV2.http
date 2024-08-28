@@ -49,24 +49,7 @@ Content-Type: application/json
 
 ###
 
-# PUT https://{{host}}/api/{{version}}/Ticket/
-# Content-Type: application/json
-# {
-#   "id": "Ticket-01",
-#   "createdAt": "2024-08-05T13:03:11.6467073Z",
-#   "ticketType": "New Laptop",
-#   "note": "N Put 1",        
-#   "createdBy": "Api",
-#   "modifiedAt": null,
-#   "modifiedBy": null,
-#   "isDeleted": null,
-#   "rowVersion": 925,
-#   "email": null
-# }
-
-# ###
-
-GET https://{{host}}/api/{{version}}/Ticket/Ticket-1
+GET https://{{host}}/api/{{version}}/Ticket/Ticket-01
 
 # ###
 
@@ -74,8 +57,8 @@ PUT https://{{host}}/api/{{version}}/Ticket/
 Content-Type: application/json
 {
   "id": "Ticket-01",
-  "note": "Put 1",        
-  "rowVersion": 760  
+  "note": "Put 3",        
+  "rowVersion": 7745  
 }
 
 ###

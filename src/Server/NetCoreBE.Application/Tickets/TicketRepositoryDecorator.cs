@@ -62,28 +62,47 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
         if (dtoUpdate.Id.IsNullOrEmptyExt())
             return ResultCom<TicketDto>.Failure($"{nameof(dtoUpdate.Id)} parameter is missing");
 
-        var entity = await Repository.GetId(dtoUpdate.Id);
-        if (entity is null)
-            return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} not found", HttpStatusCode.NotFound);
+        IDbContextTransaction? dbTransaction = null;
+        try
+        {
+            dbTransaction = Repository.GetTransaction();
+            _repositoryTicketHistory.UseTransaction(dbTransaction);
 
-        if (entity.RowVersion != dtoUpdate.RowVersion)
-            return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} has been modified by another user", HttpStatusCode.Conflict);
+            var entity = await Repository.GetId(dtoUpdate.Id);
+            if (entity is null)
+                return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} not found", HttpStatusCode.NotFound);
 
-        //todo domain entity update method  
-        var upd = entity.Update(dtoUpdate.Status, dtoUpdate.Note, _dateTimeService.UtcNow);
-        if (upd.IsFailure)
-            return ResultCom<TicketDto>.Failure(upd.ErrorMessage, HttpStatusCode.BadRequest);
+            if (entity.RowVersion != dtoUpdate.RowVersion)
+                return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} has been modified by another user", HttpStatusCode.Conflict);
 
-        var resHistory = await _repositoryTicketHistory.AddAsync(entity.TicketHistoryList.Last());
+            //todo domain entity update method  
+            var upd = entity.Update(dtoUpdate.Status, dtoUpdate.Note, _dateTimeService.UtcNow);
+            if (upd.IsFailure)
+                return ResultCom<TicketDto>.Failure(upd.ErrorMessage, HttpStatusCode.BadRequest);
 
-        //todo Fix invlidate cache
-        entity.AddDomainEvent(new UpdatedEvent<Ticket>(entity)); //raise event to invaliated cache
-        var res = await Repository.UpdateAsync(entity);
-        if (res is null)
-            return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
+            var resHistory = await _repositoryTicketHistory.AddAsync(entity.TicketHistoryList.Last());
 
-        var dto = Mapper.Map<TicketDto>(res);
-        return ResultCom<TicketDto>.Success(dto);
+            //todo Fix invlidate cache
+            entity.AddDomainEvent(new UpdatedEvent<Ticket>(entity)); //raise event to invaliated cache
+            var res = await Repository.UpdateAsync(entity);
+            if (res is null)
+                return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
+
+            dbTransaction.Commit();
+
+            var dto = Mapper.Map<TicketDto>(res);
+            return ResultCom<TicketDto>.Success(dto);
+        }
+        catch (Exception ex)
+        {
+            dbTransaction?.Rollback();
+            Logger.LogError(ex, "Error");
+            return ResultCom<TicketDto>.Failure($"{ex.Message}", HttpStatusCode.InternalServerError);
+        }
+        finally
+        {
+            dbTransaction?.Dispose();
+        }
     }
 
     public async override Task<ResultCom> RemoveAsync(string id, bool saveChanges = true)
