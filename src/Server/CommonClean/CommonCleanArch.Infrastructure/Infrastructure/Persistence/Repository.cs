@@ -38,25 +38,6 @@ public class Repository<TEntity> : IDisposable, IRepository<TEntity> where TEnti
         DatabaseContext.Database.UseTransaction(transaction.GetDbTransaction());
     }
 
-    //public virtual bool CommitTransaction()
-    //{
-    //    try
-    //    {
-    //        _CurrentTransaction?.Commit();
-    //        return true;
-    //    }
-    //    catch
-    //    {
-    //        _CurrentTransaction?.Rollback();                        
-    //    }
-    //    finally
-    //    {
-    //        _CurrentTransaction?.Dispose();
-    //        _CurrentTransaction = null;            
-    //    }
-    //    return false;
-    //}
-
     public virtual void Add(TEntity entity, string UserId = null)
     {
         SetAddProperties(entity, UserId);
