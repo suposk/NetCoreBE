@@ -1,4 +1,5 @@
 ﻿using CommonCleanArch.Application.Services;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CommonCleanArch.Infrastructure.Persistence;
 
@@ -15,6 +16,46 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBa
         ApiIdentity = apiIdentity ?? throw new ArgumentNullException(nameof(apiIdentity));
         DateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
     }
+
+    private IDbContextTransaction? _CurrentTransaction;
+    public virtual IDbContextTransaction GetTransaction(bool newTransaction = false)
+    {
+        if (newTransaction)
+        {
+            _CurrentTransaction?.Dispose();
+            _CurrentTransaction = DatabaseContext.Database.BeginTransaction();
+            return _CurrentTransaction;
+        }
+        if (_CurrentTransaction is not null)
+            return _CurrentTransaction;
+        _CurrentTransaction = DatabaseContext.Database.BeginTransaction();
+        return _CurrentTransaction;
+    }
+
+    public virtual void UseTransaction(IDbContextTransaction transaction)
+    {
+        _CurrentTransaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
+        DatabaseContext.Database.UseTransaction(transaction.GetDbTransaction());
+    }
+
+    //public virtual bool CommitTransaction()
+    //{
+    //    try
+    //    {
+    //        _CurrentTransaction?.Commit();
+    //        return true;
+    //    }
+    //    catch
+    //    {
+    //        _CurrentTransaction?.Rollback();                        
+    //    }
+    //    finally
+    //    {
+    //        _CurrentTransaction?.Dispose();
+    //        _CurrentTransaction = null;            
+    //    }
+    //    return false;
+    //}
 
     public virtual void Add(TEntity entity, string UserId = null)
     {

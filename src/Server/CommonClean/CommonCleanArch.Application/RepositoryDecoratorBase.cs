@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace CommonCleanArch.Application;
@@ -20,6 +21,8 @@ public interface IRepositoryDecoratorBase<TEntity, TDto> where TEntity : EntityB
     Task<ResultCom> RemoveAsync(string id, bool saveChanges = true);
     Task<ResultCom<TDto>> AddOrUpdateDtoAsync(TDto dto, bool saveChanges = true);
     Task<ResultCom<TEntity>> AddOrUpdateEntityAsync(TEntity entity, bool saveChanges = true);
+    IDbContextTransaction GetTransaction(bool newTransaction = false);
+    void UseTransaction(IDbContextTransaction transaction);
 }
 
 public abstract class RepositoryDecoratorBase<TEntity, TDto> : IRepository<TEntity>, IRepositoryDecoratorBase<TEntity, TDto> where TEntity : EntityBase where TDto : IDtoBase
@@ -320,6 +323,10 @@ public abstract class RepositoryDecoratorBase<TEntity, TDto> : IRepository<TEnti
 
 
     #region IRepository<TEntity> methods
+
+    public IDbContextTransaction GetTransaction(bool newTransaction = false) => Repository.GetTransaction(newTransaction);
+
+    public void UseTransaction(IDbContextTransaction transaction) => Repository.UseTransaction(transaction);
 
     public Task<TEntity> GetId(string id) => Repository.GetId(id);
 

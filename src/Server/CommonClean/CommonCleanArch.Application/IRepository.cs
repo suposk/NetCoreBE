@@ -1,4 +1,6 @@
-﻿namespace CommonCleanArch.Application;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace CommonCleanArch.Application;
 
 public interface IRepository<TEntity> where TEntity : class
 {
@@ -21,4 +23,6 @@ public interface IRepository<TEntity> where TEntity : class
     Task<int> CountAsync();
     Task<bool> RemoveAsync(string Id, string UserId = null);
     Task<List<EntitySoftDeleteBase>> GetListActive(params Expression<Func<EntitySoftDeleteBase, object>>[] includes);
+    IDbContextTransaction GetTransaction(bool newTransaction = false);
+    void UseTransaction(IDbContextTransaction transaction);
 }

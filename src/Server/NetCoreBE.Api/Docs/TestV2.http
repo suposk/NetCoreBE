@@ -1,0 +1,18 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+@hostname=localhost
+@port=6006
+#@port=8081
+@host={{hostname}}:{{port}}
+@version=v2
+@id=Ticket-01
+
+#GET https://localhost:6006/api/v2/Test/
+
+GET https://{{host}}/api/{{version}}/Test/TestTransaction
+
+# ###
+
+GET https://{{host}}/api/{{version}}/Test/Test1
+
+# ###

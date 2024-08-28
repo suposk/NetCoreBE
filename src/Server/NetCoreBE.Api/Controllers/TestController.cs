@@ -1,5 +1,8 @@
 ﻿#if DEBUG
+using Azure.Core;
 using CommonCleanArch.Domain;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 
 namespace NetCoreBE.Api.Controllers;
 
@@ -11,15 +14,58 @@ namespace NetCoreBE.Api.Controllers;
 [Route("api/v{version:apiVersion}/test")]
 public class TestController : ControllerBase
 {
-    private readonly IOldTicketRepository _ticketRepository;
-    private readonly IOldTicketRepository _ticketRepository2;
+    private readonly IOldTicketRepository _OldTicketRepository;
+    private readonly ITicketRepository _ticketRepository;
+    private readonly IRepository<TicketHistory> _repositoryTicketHistory;
     string _id = "10000000-0000-0000-0000-000000000000";
     //string _id = "bfc90000-9ba5-98fa-9843-08dbcf4521f0"; //lite
 
-    public TestController(IOldTicketRepository ticketRepository, IOldTicketRepository ticketRepository2)
+    public TestController
+        (
+        IOldTicketRepository OldTicketRepository, 
+        ITicketRepository ticketRepository, 
+        IRepository<TicketHistory> repositoryTicketHistory
+        )
     {
+        _OldTicketRepository = OldTicketRepository;
         _ticketRepository = ticketRepository;
-        _ticketRepository2 = ticketRepository2;
+        _repositoryTicketHistory = repositoryTicketHistory;
+    }
+
+
+    [HttpGet("TestTransaction")]
+    public async Task<object> TestTransaction()
+    {
+        IDbContextTransaction? dbTransaction = null;
+        try
+        {
+            dbTransaction = _ticketRepository.GetTransaction();
+
+            string Id = "Ticket-01";
+            var entity = await _ticketRepository.GetId(Id);
+            if (entity is null)
+                return null;
+
+            var upd = entity.Update(null, $"Up ${DateTime.Now.ToShortTimeString()}", DateTime.UtcNow);
+            if (upd.IsFailure)
+                return null;
+
+            _repositoryTicketHistory.UseTransaction(dbTransaction);
+            var resHistory = await _repositoryTicketHistory.AddAsync(entity.TicketHistoryList.Last());
+            var res = await _ticketRepository.UpdateAsync(entity);
+
+            dbTransaction?.Commit();
+        }
+        catch (Exception ex)
+        {
+            dbTransaction?.Rollback();
+        }
+        finally
+        {
+            dbTransaction?.Dispose();
+        }
+
+        return null;
     }
 
     //[HttpGet("appsettings/{key}")]
@@ -61,7 +107,7 @@ public class TestController : ControllerBase
         {
             TicketSearchParameters p1 = new();
             p1.Description = commnad;
-            var res = await _ticketRepository.Search(p1);
+            var res = await _OldTicketRepository.Search(p1);
 
             var previousPageLink = res.HasPrevious;
             var nextPageLink = res.HasNext;
@@ -96,33 +142,6 @@ public class TestController : ControllerBase
         }
         return null;
     }
-
-
-    //[HttpGet]
-    //public async Task<IEnumerable<string>> Get()
-    //{
-    //    try
-    //    {
-    //        var item = await _ticketRepository.GetId(_id);
-    //        var copy = CopyObjectHelper.CreateDeepCopyXml(item);
-    //        //OldTicket copy = new OldTicket {  CreatedAt = item.CreatedAt , Description = item.Description, Id = item.Id, 
-    //        //    IsOnBehalf = item.IsOnBehalf, ModifiedAt = item.ModifiedAt, RequestedFor = item.RequestedFor, Version = item.Version };
-
-    //        item.Description = $"{item.Description} -> Mod old ";
-    //        var up = await _ticketRepository.UpdateAsync(item);
-    //        var itemUpdated = await _ticketRepository.GetId(_id);
-    //        var ctx = _ticketRepository.DatabaseContext;
-    //        ctx.ChangeTracker.Clear();
-
-    //        copy.Description = $"{item.Description} -> copy ";
-    //        copy = await _ticketRepository2.UpdateAsync(copy);
-    //    }
-    //    catch (Exception ex)
-    //    {
-
-    //    }
-    //    return new string[] { "value1", "value2" };
-    //}
 
 }
 #endif
