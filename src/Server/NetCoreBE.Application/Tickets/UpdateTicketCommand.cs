@@ -50,10 +50,8 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
             if (entity is null)
                 return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} not found", HttpStatusCode.NotFound);
 
-            if (entity.RowVersion != request.Dto.RowVersion)
-                return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} has been modified by another user", HttpStatusCode.Conflict);
-
-            //todo domain entity update method  
+            //must include RowVersion for optimistic concurrency
+            entity.RowVersion = request.Dto.RowVersion; 
             var upd = entity.Update(request.Dto.Status, request.Dto.Note, _dateTimeService.UtcNow);
             if (upd.IsFailure)
                 return ResultCom<TicketDto>.Failure(upd.ErrorMessage, HttpStatusCode.BadRequest);

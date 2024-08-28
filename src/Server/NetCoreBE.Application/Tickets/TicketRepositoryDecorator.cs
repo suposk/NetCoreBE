@@ -72,6 +72,8 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
             if (entity is null)
                 return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} not found", HttpStatusCode.NotFound);
 
+            //must include RowVersion for optimistic concurrency
+            entity.RowVersion = dtoUpdate.RowVersion;
             if (entity.RowVersion != dtoUpdate.RowVersion)
                 return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} has been modified by another user", HttpStatusCode.Conflict);
 
