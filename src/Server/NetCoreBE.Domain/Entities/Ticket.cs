@@ -112,8 +112,7 @@ public class Ticket : EntityBase
         if (note.IsNotNullOrEmptyExt())
         {
             Notes ??= new();
-            Notes.Add(note);
-            
+            Notes.Add(note);            
         }
         ModifiedAt = utc;
         //status changes added
