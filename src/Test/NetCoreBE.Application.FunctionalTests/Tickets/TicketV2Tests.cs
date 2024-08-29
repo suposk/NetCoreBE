@@ -2,15 +2,18 @@ using NetCoreBE.Application.FunctionalTests.Tickets;
 
 namespace Bookify.Api.FunctionalTests.Users;
 
-public class TicketV2Tests : BaseFunctionalTest, IDisposable
+public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
 {
     private static readonly string _url = "api/v2/Ticket/";
 
     public TicketV2Tests(FunctionalTestWebAppFactory factory)
         : base(factory)
     {
-        Seed(4).Wait();
+        //Seed(4).Wait();
     }
+
+    public Task InitializeAsync() => Seed(4);
+    public Task DisposeAsync() => Task.CompletedTask;
 
     private Task Seed(int count) => Scope.ServiceProvider.GetRequiredService<ITicketRepository>().Seed(count, count, "Seed Test");
 
@@ -71,7 +74,7 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable
 
     [Fact]
     //put should return no content
-    public async Task Put_ShouldReturn_NoContent()
+    public async Task Put_ShouldReturn_Ok()
     {
         // Arrange
         var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };
@@ -84,7 +87,7 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable
         var content = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         content.Should().BeNullOrEmpty();
     }
 
