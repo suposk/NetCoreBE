@@ -9,7 +9,12 @@ public class CommandsTest : TicketIntegrationTest, IAsyncLifetime
     {
         //Seed(4).Wait();
     }
-    public Task InitializeAsync() => Seed(4);
+    public async Task InitializeAsync()
+    {
+        await Seed(4);
+        DbContext.ChangeTracker.Clear();
+    }
+
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
@@ -19,7 +24,6 @@ public class CommandsTest : TicketIntegrationTest, IAsyncLifetime
         // Arrange
         var dto = TicketData.Update;
         dto.Note = $"Update {nameof(UpdateTicketCommand_ShouldReturn_Ok)}";
-        // Arrange
         var command = new UpdateTicketCommand() { Dto = dto };
 
         // Act

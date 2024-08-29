@@ -7,7 +7,7 @@ public class QueryTest : TicketIntegrationTest
     public QueryTest(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
-        Seed(4).Wait();
+        Seed(4).Wait();    
     }
 
     [Fact]
