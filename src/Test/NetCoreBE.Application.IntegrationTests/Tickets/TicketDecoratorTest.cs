@@ -95,12 +95,12 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task Update_ShouldReturn_Failed()
     {
-        // Act
-        var obj = TicketData.Update;
-        obj.Note = "Update test";
+        // Arrange
+        var dto = TicketData.Update;
+        dto.Note = "Update test";
 
         // Act
-        var result = await _decorator.UpdateDtoAsync2(obj);
+        var result = await _decorator.UpdateDtoAsync2(dto);
 
         // Assert
         result.IsSuccess.Should().BeFalse();        
