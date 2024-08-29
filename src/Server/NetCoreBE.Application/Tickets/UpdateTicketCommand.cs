@@ -64,7 +64,7 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
             if (res is null)
                 return ResultCom<TicketDto>.Failure($"Entity with id {request.Dto.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
 
-            dbTransaction.Commit();
+            dbTransaction?.Commit();
 
             var dto = _mapper.Map<TicketDto>(res);
             _logger.LogInformation("Completed");

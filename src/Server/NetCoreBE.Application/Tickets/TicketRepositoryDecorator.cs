@@ -65,11 +65,11 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
         if (dtoUpdate.Id.IsNullOrEmptyExt())
             return ResultCom<TicketDto>.Failure($"{nameof(dtoUpdate.Id)} parameter is missing");
 
-        IDbContextTransaction? dbTransaction = null;
+        //IDbContextTransaction? dbTransaction = null;
         try
         {
-            dbTransaction = Repository.GetTransaction();
-            _repositoryTicketHistory.UseTransaction(dbTransaction);
+            //dbTransaction = Repository.GetTransaction();
+            //_repositoryTicketHistory.UseTransaction(dbTransaction);
 
             var entity = await Repository.GetId(dtoUpdate.Id);
 
@@ -80,28 +80,35 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
             if (upd.IsFailure)
                 return ResultCom<TicketDto>.Failure(upd.ErrorMessage, HttpStatusCode.BadRequest);
 
-            var resHistory = await _repositoryTicketHistory.AddAsync(entity.TicketHistoryList.Last());
+            //var resHistory = await _repositoryTicketHistory.AddAsync(entity.TicketHistoryList.Last());
+            _repositoryTicketHistory.Add(entity.TicketHistoryList.Last());
 
             //todo Fix invlidate cache
             entity.AddDomainEvent(new UpdatedEvent<Ticket>(entity)); //raise event to invaliated cache
-            var res = await Repository.UpdateAsync(entity);
-            if (res is null)
+
+            //var res = await Repository.UpdateAsync(entity);
+            //if (res is null)
+            //    return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
+            Repository.Update(entity);
+
+            var res = await Repository.SaveChangesAsync();
+            if (res is false)
                 return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
 
-            dbTransaction.Commit();
+            //dbTransaction?.Commit();
 
             var dto = Mapper.Map<TicketDto>(res);
             return ResultCom<TicketDto>.Success(dto);
         }
         catch (Exception ex)
         {
-            dbTransaction?.Rollback();
+            //dbTransaction?.Rollback();
             Logger.LogError(ex, "Error");
             return ResultCom<TicketDto>.Failure($"{ex.Message}", HttpStatusCode.InternalServerError);
         }
         finally
         {
-            dbTransaction?.Dispose();
+            //dbTransaction?.Dispose();
         }
     }
 
