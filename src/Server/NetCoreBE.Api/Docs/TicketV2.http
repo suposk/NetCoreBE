@@ -45,10 +45,7 @@ Content-Type: application/json
   "ticketType": "New Laptop",
   "notes": [
     "Put 1",
-    "Up $5:30 PM",
-    "Up $5:43 PM",
-    "Put 2",
-    "Put 3"
+    "Put 2"
   ],
   "note": "Post http file",        
   "createdBy": "Api"
@@ -65,7 +62,7 @@ Content-Type: application/json
 {
   "id": "Ticket-01",
   "note": "Put 2",        
-  "rowVersion": 1207  
+  "rowVersion": 832  
 }
 
 ###
