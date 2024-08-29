@@ -43,6 +43,13 @@ Content-Type: application/json
 {
   "id": "Ticket-01",
   "ticketType": "New Laptop",
+  "notes": [
+    "Put 1",
+    "Up $5:30 PM",
+    "Up $5:43 PM",
+    "Put 2",
+    "Put 3"
+  ],
   "note": "Post http file",        
   "createdBy": "Api"
 }

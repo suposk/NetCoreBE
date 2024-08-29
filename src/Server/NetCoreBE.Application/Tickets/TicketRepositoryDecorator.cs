@@ -34,15 +34,18 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
 
     protected override Task<bool> CanModifyFunc(Ticket entity) => base.CanModifyFunc(entity);
 
+    /// <summary>
+    /// not needed anymore. Holds note value from request to be added to entity.
+    /// </summary>
     string? _NoteToAdd;
 
-    public override Task<ResultCom<TicketDto>> AddAsyncDto(TicketDto dto, bool saveChanges = true)
-    {
-        //1. Store note value from request
-        dto.Notes?.Clear();
-        _NoteToAdd = dto.Note;
-        return base.AddAsyncDto(dto, saveChanges);
-    }
+    //public override Task<ResultCom<TicketDto>> AddAsyncDto(TicketDto dto, bool saveChanges = true)
+    //{
+    //    //1. Store note value from request
+    //    //dto.Notes?.Clear();
+    //    //_NoteToAdd = dto.Note;
+    //    return base.AddAsyncDto(dto, saveChanges);
+    //}
 
     public async override Task<ResultCom<Ticket>> AddEntityAsync(Ticket entity, bool saveChanges = true)
     {
@@ -52,8 +55,8 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
         return await base.AddEntityAsync(entity, saveChanges);        
     }
 
-    //public override async Task<ResultCom<TicketDto>> UpdateDtoAsync(TicketDto dto, bool saveChanges = true) =>      
-    //    throw new NotImplementedException($"Use  {nameof(UpdateTicketCommand)} instead");    
+    public override Task<ResultCom<TicketDto>> UpdateDtoAsync(TicketDto dto, bool saveChanges = true) =>
+        throw new NotImplementedException($"Use  {nameof(UpdateTicketCommand)} or {nameof(UpdateDtoAsync)} with {nameof(TicketUpdateDto)} instead");
 
     public async Task<ResultCom<TicketDto>> UpdateDtoAsync(TicketUpdateDto? dtoUpdate)
     {        
@@ -69,14 +72,9 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
             _repositoryTicketHistory.UseTransaction(dbTransaction);
 
             var entity = await Repository.GetId(dtoUpdate.Id);
-            if (entity is null)
-                return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} not found", HttpStatusCode.NotFound);
 
             //must include RowVersion for optimistic concurrency
             entity.RowVersion = dtoUpdate.RowVersion;
-            if (entity.RowVersion != dtoUpdate.RowVersion)
-                return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} has been modified by another user", HttpStatusCode.Conflict);
-
             //todo domain entity update method  
             var upd = entity.Update(dtoUpdate.Status, dtoUpdate.Note, _dateTimeService.UtcNow);
             if (upd.IsFailure)
