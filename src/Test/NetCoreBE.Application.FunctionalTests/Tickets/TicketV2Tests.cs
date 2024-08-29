@@ -15,7 +15,11 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
     public Task InitializeAsync() => Seed(4);
     public Task DisposeAsync() => Task.CompletedTask;
 
-    private Task Seed(int count) => Scope.ServiceProvider.GetRequiredService<ITicketRepository>().Seed(count, count, "Seed Test");
+    private async Task Seed(int count)
+    {
+        await Scope.ServiceProvider.GetRequiredService<ITicketRepository>().Seed(count, count, "Seed Test");
+        DbContext.ChangeTracker.Clear();
+    }
 
     [Theory]
     //[InlineData(" ")]//return Ok
@@ -88,7 +92,7 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        content.Should().BeNullOrEmpty();
+        content.Should().NotBeNullOrEmpty();
     }
 
     [Fact]    
