@@ -91,8 +91,8 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
         result.ErrorMessage.Should().BeNullOrEmpty();
     }
 
-    //[Fact(Skip = "Not using UpdateDtoAsync")]
-    [Fact]
+    [Fact(Skip = "Not using UpdateDtoAsync")]
+    //[Fact]
     public async Task Update_ShouldReturn_Failed()
     {
         // Arrange
