@@ -83,7 +83,7 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
         old.Note = "Update test";
 
         // Act        
-        var result = await _decorator.UpdateDtoAsync2(new TicketUpdateDto { Id = old.Id, Note = old.Note, RowVersion = old.RowVersion });
+        var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = old.Note, RowVersion = old.RowVersion });
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -100,7 +100,7 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
         dto.Note = "Update test";
 
         // Act
-        var result = await _decorator.UpdateDtoAsync2(dto);
+        var result = await _decorator.UpdateDto(dto);
 
         // Assert
         result.IsSuccess.Should().BeFalse();        

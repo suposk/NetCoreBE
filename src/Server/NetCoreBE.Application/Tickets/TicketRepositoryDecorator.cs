@@ -4,7 +4,7 @@ namespace NetCoreBE.Application.Tickets;
 
 public interface ITicketRepositoryDecorator : IRepositoryDecoratorBase<Ticket, TicketDto>
 {
-    Task<ResultCom<TicketDto>> UpdateDtoAsync2(TicketUpdateDto? dtoUpdate);
+    Task<ResultCom<TicketDto>> UpdateDto(TicketUpdateDto? dtoUpdate);
 }
 
 public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketDto>, ITicketRepositoryDecorator
@@ -56,9 +56,9 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
     }
 
     public override Task<ResultCom<TicketDto>> UpdateDtoAsync(TicketDto dto, bool saveChanges = true) =>
-        throw new NotImplementedException($"Use  {nameof(UpdateTicketCommand)} or {nameof(UpdateDtoAsync2)} with {nameof(TicketUpdateDto)} instead");
+        throw new NotImplementedException($"Use  {nameof(UpdateTicketCommand)} or {nameof(UpdateDto)} with {nameof(TicketUpdateDto)} instead");
 
-    //public async Task<ResultCom<TicketDto>> UpdateDtoAsync2(TicketUpdateDto? dtoUpdate)
+    //public async Task<ResultCom<TicketDto>> UpdateDto(TicketUpdateDto? dtoUpdate)
     //{        
     //    if (dtoUpdate is null)
     //        return ResultCom<TicketDto>.Failure($"{nameof(dtoUpdate)} parameter is null", HttpStatusCode.BadRequest);
@@ -114,7 +114,7 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
     //    }
     //}
 
-    public async Task<ResultCom<TicketDto>> UpdateDtoAsync2(TicketUpdateDto? dtoUpdate)
+    public async Task<ResultCom<TicketDto>> UpdateDto(TicketUpdateDto? dtoUpdate)
     {
         Logger.LogInformation("Started");
 
