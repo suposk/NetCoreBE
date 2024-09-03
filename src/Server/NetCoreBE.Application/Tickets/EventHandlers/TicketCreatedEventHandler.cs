@@ -99,8 +99,9 @@ public class TicketCreatedEventHandler(
                 ticketHistoryRepository.UseTransaction(dbTransaction);                
 
                 await ticketHistoryRepository.AddAsync(addHistory, addHistory.CreatedBy);                
-                await outboxDomaintEventRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler));
-                await repository.UpdateAsync(ticket, nameof(TicketCreatedEventHandler));    
+                await repository.UpdateAsync(ticket, nameof(TicketCreatedEventHandler));                
+                await outboxDomaintEventRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler)); //v1 set to processed                
+                //await outboxDomaintEventRepository.RemoveAsync(outboxMessage?.Id); //v2 delete, keep only items that are not processed and move this to some history table
                 dbTransaction.Commit();
                 
                 _logger.LogInformation("Domain Event: {DomainEvent} processed", type.FullName);
