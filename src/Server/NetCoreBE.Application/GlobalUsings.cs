@@ -39,7 +39,6 @@ global using CommonCleanArch.Application.Services;
 global using NetCoreBE.Application;
 global using NetCoreBE.Application.Interfaces;
 global using NetCoreBE.Application.Tickets;
-global using NetCoreBE.Application.OldTickets;
 global using NetCoreBE.Application.OutboxDomaintEvents;
 
 //Domain

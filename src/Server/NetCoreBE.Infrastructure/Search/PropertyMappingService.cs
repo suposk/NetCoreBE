@@ -4,16 +4,6 @@ namespace NetCoreBE.Infrastructure.Search;
 
 public class PropertyMappingService : IPropertyMappingService
 {
-    private Dictionary<string, PropertyMappingValue> _OldTicketPropertyMapping =
-      new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
-      {
-           { nameof(DtoBase.Id), new PropertyMappingValue(new List<string>() { nameof(EntityBase.Id) } ) },
-           { nameof(DtoBase.CreatedAt), new PropertyMappingValue(new List<string>() { nameof(EntityBase.CreatedAt) } , true) },
-           { nameof(OldTicketDto.Description), new PropertyMappingValue(new List<string>() { nameof(OldTicket.Description) } )},
-           { nameof(OldTicketDto.IsOnBehalf), new PropertyMappingValue(new List<string>() { nameof(OldTicket.IsOnBehalf) } )},
-           { nameof(OldTicketDto.RequestedFor), new PropertyMappingValue(new List<string>() { nameof(OldTicket.RequestedFor) } )},           
-      };
-
     private Dictionary<string, PropertyMappingValue> _TicketPropertyMapping =
       new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
       {
@@ -29,8 +19,7 @@ public class PropertyMappingService : IPropertyMappingService
     private IList<IPropertyMapping> _propertyMappings = new List<IPropertyMapping>();
 
     public PropertyMappingService()
-    {
-        _propertyMappings.Add(new PropertyMapping<OldTicketDto, OldTicket>(_OldTicketPropertyMapping));
+    {        
         _propertyMappings.Add(new PropertyMapping<TicketDto, Ticket>(_TicketPropertyMapping));
     }
 

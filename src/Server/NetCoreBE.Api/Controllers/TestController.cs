@@ -14,7 +14,7 @@ namespace NetCoreBE.Api.Controllers;
 [Route("api/v{version:apiVersion}/test")]
 public class TestController : ControllerBase
 {
-    private readonly IOldTicketRepository _OldTicketRepository;
+    //private readonly IOldTicketRepository _OldTicketRepository;
     private readonly ITicketRepository _ticketRepository;
     private readonly IRepository<TicketHistory> _repositoryTicketHistory;
     string _id = "10000000-0000-0000-0000-000000000000";
@@ -22,12 +22,12 @@ public class TestController : ControllerBase
 
     public TestController
         (
-        IOldTicketRepository OldTicketRepository, 
+        //IOldTicketRepository OldTicketRepository, 
         ITicketRepository ticketRepository, 
         IRepository<TicketHistory> repositoryTicketHistory
         )
     {
-        _OldTicketRepository = OldTicketRepository;
+        //_OldTicketRepository = OldTicketRepository;
         _ticketRepository = ticketRepository;
         _repositoryTicketHistory = repositoryTicketHistory;
     }
@@ -98,31 +98,6 @@ public class TestController : ControllerBase
     //    }
     //    return sb.ToString();
     //}
-
-    //[HttpGet]
-    [HttpGet("Search/{text}")]
-    public async Task<PagedList<OldTicket>> Search(string commnad)
-    {
-        try
-        {
-            TicketSearchParameters p1 = new();
-            p1.Description = commnad;
-            var res = await _OldTicketRepository.Search(p1);
-
-            var previousPageLink = res.HasPrevious;
-            var nextPageLink = res.HasNext;
-            var totalCount = res.TotalCount;
-            var pageSize = res.PageSize;
-            var currentPage = res.CurrentPage;
-            var totalPages = res.TotalPages;
-            return res;
-        }
-        catch (Exception ex)
-        {
-
-        }
-        return null;
-    }
 
     //[HttpGet]
     [HttpGet("Test1")]

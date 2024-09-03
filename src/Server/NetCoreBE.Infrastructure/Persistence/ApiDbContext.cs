@@ -27,7 +27,6 @@ public class ApiDbContext : DbContext, IApiDbContext
     }
     #endregion
 
-    public DbSet<OldTicket> OldTickets { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<TicketHistory> TicketHistorys { get; set; }
     public DbSet<OutboxDomaintEvent> OutboxDomaintEvents { get; set; }
@@ -42,7 +41,6 @@ public class ApiDbContext : DbContext, IApiDbContext
         //        .HasDefaultValue(0)
         //        .IsRowVersion();
 
-        builder.Entity<OldTicket>().Property(c => c.RowVersion).IsRowVersion();
         builder.Entity<Ticket>().Property(c => c.RowVersion).IsRowVersion();
         builder.Entity<TicketHistory>().Property(c => c.RowVersion).IsRowVersion();
     }
