@@ -47,13 +47,13 @@ public class SearchQueryHandler : IRequestHandler<SearchTicketQuery, ResultCom<P
                 collection = collection.Where(a => a.Status.Contains(searchParameters.Status.Trim()));
             
             if (!string.IsNullOrWhiteSpace(searchParameters.Note))                            
-                collection = collection.Where(a => a.Note.Contains(searchParameters.Note.Trim()));
+                collection = collection.Where(a => a.Notes.Contains(searchParameters.Note.Trim()));
             
             if (!string.IsNullOrWhiteSpace(searchParameters.SearchTerm))
             {
                 var searchQuery = searchParameters.SearchTerm.Trim();
                 collection = collection.Where(a => (a.Status != null && a.Status.Contains(searchQuery))
-                    || (a.Note != null && a.Note.Contains(searchQuery))
+                    || (a.Notes != null && a.Notes.Contains(searchQuery))
                     //|| (a.TicketType != null && a.TicketType.Contains(searchQuery))
                     );
             }

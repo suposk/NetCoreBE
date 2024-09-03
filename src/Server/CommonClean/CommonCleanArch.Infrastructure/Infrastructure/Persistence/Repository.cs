@@ -1,9 +1,10 @@
 ﻿using CommonCleanArch.Application.Services;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CommonCleanArch.Infrastructure.Persistence;
 
 
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
+public class Repository<TEntity> : IDisposable, IRepository<TEntity> where TEntity : EntityBase
 {
     public DbContext DatabaseContext { get; }
     public IApiIdentity ApiIdentity { get; }
@@ -14,6 +15,27 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBa
         DatabaseContext = context ?? throw new ArgumentNullException(nameof(context));
         ApiIdentity = apiIdentity ?? throw new ArgumentNullException(nameof(apiIdentity));
         DateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+    }
+
+    private IDbContextTransaction? _CurrentTransaction;
+    public virtual IDbContextTransaction GetTransaction(bool newTransaction = false)
+    {
+        if (newTransaction)
+        {
+            _CurrentTransaction?.Dispose();
+            _CurrentTransaction = DatabaseContext.Database.BeginTransaction();
+            return _CurrentTransaction;
+        }
+        if (_CurrentTransaction is not null)
+            return _CurrentTransaction;
+        _CurrentTransaction = DatabaseContext.Database.BeginTransaction();
+        return _CurrentTransaction;
+    }
+
+    public virtual void UseTransaction(IDbContextTransaction transaction)
+    {
+        _CurrentTransaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
+        DatabaseContext.Database.UseTransaction(transaction.GetDbTransaction());
     }
 
     public virtual void Add(TEntity entity, string UserId = null)
@@ -183,5 +205,28 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBa
     }
 
     public Task<int> CountAsync() => DatabaseContext.Set<TEntity>().AsNoTracking().CountAsync();
-    
+
+    #region IDisposable
+
+    private bool _disposed = false;
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _CurrentTransaction?.Dispose();
+                DatabaseContext.Dispose();
+            }
+            _disposed = true;
+        }
+    }
+
+    public virtual void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    #endregion
 }

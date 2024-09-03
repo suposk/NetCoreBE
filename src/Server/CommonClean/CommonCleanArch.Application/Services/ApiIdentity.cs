@@ -71,7 +71,9 @@ public class ApiIdentity : IApiIdentity
         if (!string.IsNullOrWhiteSpace(userName))
             return userName;
 
-        var remoteIpAddress = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+        //var remoteIpAddress = _context.HttpContext.Connection.RemoteIpAddress.ToString(); //null exception
+        var remoteIpAddress = _context.HttpContext.Connection?.RemoteIpAddress?.ToString();
+        return remoteIpAddress;
 #if DEBUG
         return string.Equals("::1", remoteIpAddress) ? null : $"Ip:{remoteIpAddress}";
 #else

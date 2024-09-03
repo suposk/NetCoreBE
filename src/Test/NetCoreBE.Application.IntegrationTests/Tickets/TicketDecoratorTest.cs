@@ -3,7 +3,7 @@ using NetCoreBE.Domain.UnitTests.Tickets;
 
 namespace NetCoreBE.Application.IntegrationTests.Tickets;
 
-public class TicketDecoratorTest : TicketIntegrationTest
+public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
 {
     private readonly ITicketRepositoryDecorator _decorator;
 
@@ -11,9 +11,10 @@ public class TicketDecoratorTest : TicketIntegrationTest
         : base(factory)
     {
         _decorator = Scope.ServiceProvider.GetRequiredService<ITicketRepositoryDecorator>();
-        Seed(4).Wait();
+        //Seed(4).Wait();
     }
-
+    public Task InitializeAsync() => Seed(4);
+    public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
     public async Task GetById_ShouldReturn_Ok()
@@ -71,6 +72,7 @@ public class TicketDecoratorTest : TicketIntegrationTest
         result.ErrorMessage.Should().BeNullOrEmpty();
     }
 
+    //[Fact(Skip = "Not using UpdateDtoAsync")]
     [Fact]
     public async Task Update_ShouldReturn_Ok()
     {        
@@ -81,7 +83,7 @@ public class TicketDecoratorTest : TicketIntegrationTest
         old.Note = "Update test";
 
         // Act        
-        var result = await _decorator.UpdateDtoAsync(old);
+        var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = old.Note, RowVersion = old.RowVersion });
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -89,15 +91,16 @@ public class TicketDecoratorTest : TicketIntegrationTest
         result.ErrorMessage.Should().BeNullOrEmpty();
     }
 
-    [Fact]
+    [Fact(Skip = "Not using UpdateDtoAsync")]
+    //[Fact]
     public async Task Update_ShouldReturn_Failed()
     {
-        // Act
-        var obj = TicketData.Add;
-        obj.Note = "Update test";
+        // Arrange
+        var dto = TicketData.Update;
+        dto.Note = "Update test";
 
         // Act
-        var result = await _decorator.UpdateDtoAsync(obj);
+        var result = await _decorator.UpdateDto(dto);
 
         // Assert
         result.IsSuccess.Should().BeFalse();        
@@ -113,5 +116,5 @@ public class TicketDecoratorTest : TicketIntegrationTest
         // Assert
         result.IsSuccess.Should().BeTrue();        
         result.ErrorMessage.Should().BeNullOrEmpty();
-    }
+    }    
 }

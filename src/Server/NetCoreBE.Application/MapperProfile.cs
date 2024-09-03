@@ -14,6 +14,8 @@ public class MapperProfile : Profile
             .ReverseMap();
 
         CreateMap<TicketDto, Ticket>()
+            //.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes)) //only for mapping from dto to entity
+            .ForMember(dest => dest.Notes, opt => opt.Ignore())  //clears Notes list and automaticaly sets notes with message from note          
             .ReverseMap();
 
         CreateMap<TicketHistoryDto, TicketHistory>()

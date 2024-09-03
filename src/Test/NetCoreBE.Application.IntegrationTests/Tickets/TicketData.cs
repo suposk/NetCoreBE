@@ -12,4 +12,11 @@ internal static class TicketData
         Note = "add test",
         CreatedBy = "Test",
     };
+
+    public static readonly TicketUpdateDto Update = new()
+    {
+        Id = TicketId,        
+        Note = "Update 1",  
+        RowVersion = 739,
+    };
 }

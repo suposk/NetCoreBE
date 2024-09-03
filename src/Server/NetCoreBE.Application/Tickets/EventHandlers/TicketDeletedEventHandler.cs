@@ -13,7 +13,8 @@ public class TicketDeletedEventHandler(
         try
         {
             _logger.LogInformation("Domain Event: {DomainEvent}, started", notification.GetType().FullName);
-            _cacheProvider.ClearCacheOnlyKeyAndId(notification.GetPrimaryCacheKeyExt(), notification.Entity.Id); //clear cache for all Ids
+            //_cacheProvider.ClearCacheOnlyKeyAndId(notification.GetPrimaryCacheKeyExt(), notification.Entity.Id); wrong cache key
+            _cacheProvider.ClearCacheOnlyKeyAndId(notification.Entity.GetPrimaryCacheKeyExt(), notification.Entity.Id); //ok clear cache for all Ids
         }
         catch (Exception ex)
         {

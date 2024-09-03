@@ -22,7 +22,7 @@ public class PropertyMappingService : IPropertyMappingService
            { nameof(DtoBase.CreatedBy), new PropertyMappingValue(new List<string>() { nameof(EntityBase.CreatedBy) } , true) },
            { nameof(Ticket.TicketType), new PropertyMappingValue(new List<string>() { nameof(Ticket.TicketType) } )},
            { nameof(Ticket.Status), new PropertyMappingValue(new List<string>() { nameof(Ticket.Status) } )},
-           { nameof(Ticket.Note), new PropertyMappingValue(new List<string>() { nameof(Ticket.Note) } )},           
+           //{ nameof(Ticket.Note), new PropertyMappingValue(new List<string>() { nameof(Ticket.Note) } )},           
            //{ "Name", new PropertyMappingValue(new List<string>() { "FirstName", "LastName" }) }
       };
 

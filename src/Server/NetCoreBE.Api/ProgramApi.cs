@@ -133,10 +133,9 @@ using (var scope = app.Services.CreateScope())
             catch { }
             if (DbTypeEnum == DbTypeEnum.PostgreSQL)
             {
-                //dbContext.Database.EnsureDeleted();
                 dbContext.Database.Migrate();
-                
-                //dbContext.Database.Migrate();
+
+                //dbContext.Database.EnsureDeleted();
                 //dbContext.Database.EnsureCreated();
             }
             else
@@ -146,11 +145,11 @@ using (var scope = app.Services.CreateScope())
                 dbContext.Database.EnsureCreated();
             }
 
-            var OldTicketRepo = sp.GetRequiredService<IOldTicketRepository>();
-            var s2 = await OldTicketRepo.Seed(2, 2, "SEED Startup");
-            //seed data
-            var TicketRepository = sp.GetRequiredService<ITicketRepository>();
-            var s4 = await TicketRepository.Seed(4, 4, "SEED Startup");
+            //var OldTicketRepo = sp.GetRequiredService<IOldTicketRepository>();
+            //var s2 = await OldTicketRepo.Seed(2, 2, "SEED Startup");
+            ////seed data
+            //var TicketRepository = sp.GetRequiredService<ITicketRepository>();
+            //var s4 = await TicketRepository.Seed(4, 4, "SEED Startup");
         }
         else        
             dbContext.Database.Migrate();

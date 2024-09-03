@@ -3,12 +3,12 @@
 /// <summary>
 /// Only sample Query
 /// </summary>
-public class SearchQuery : IRequest<bool>
+public class SearchQuery : IRequest<ResultCom<object>>
 {
-    public string SomePam { get; set; }
+    public string QParam { get; set; }
 }
 
-public class RQueryHandler : IRequestHandler<SearchQuery, bool>
+public class RQueryHandler : IRequestHandler<SearchQuery, ResultCom<object>>
 {
     private readonly ILogger<RQueryHandler> _logger;
 
@@ -18,12 +18,12 @@ public class RQueryHandler : IRequestHandler<SearchQuery, bool>
     {
         _logger = logger;
     }
-    public async Task<bool> Handle(SearchQuery request, CancellationToken cancellationToken)
+    public async Task<ResultCom<object>> Handle(SearchQuery request, CancellationToken cancellationToken)
     {
         await Task.Yield();
-        if (request is null || string.IsNullOrWhiteSpace(request.SomePam))
-            return false;
+        if (request is null || string.IsNullOrWhiteSpace(request.QParam))
+            return ResultCom<object>.Failure($"{nameof(request.QParam)} parameter is missing");
         else
-            return true;
+            return ResultCom<object>.Success(null);
     }
 }

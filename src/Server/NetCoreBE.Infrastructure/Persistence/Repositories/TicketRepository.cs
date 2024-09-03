@@ -37,15 +37,12 @@ public class TicketRepository : Repository<Ticket>, ITicketRepository
         for (int i = countExisintg + 1; i <= newTotal; i++)
         {
             cycle++;
-            var Ticket = new Ticket
-            {
-                Note = $"note {cycle} / {addCount} / {newTotal}",                
-                TicketType = i % 2 == 0 ? "Access" : "New Laptop",
-            };
+            string? id = null;
             if (countExisintg == 0)
-                Ticket.Id = $"{nameof(Ticket)}-{i}";
-            Ticket.Create(DateTime.UtcNow);
-            list.Add(Ticket);
+                id = $"{nameof(Ticket)}-{i}";
+
+            var ticket = Ticket.Create(id, i % 2 == 0 ? "Access" : "New Laptop", $"note {cycle} / {addCount} / {newTotal}", UserId);            
+            list.Add(ticket);
         }
         _repository.AddRange(list, UserId);
         await _repository.SaveChangesAsync();

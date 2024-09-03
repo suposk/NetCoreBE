@@ -9,3 +9,12 @@ public class ValidatorTicketDto : AbstractValidator<TicketDto>
     }
 }
 
+public class ValidatorTicketUpdateDto : AbstractValidator<TicketUpdateDto>
+{
+    public ValidatorTicketUpdateDto()
+    {
+        RuleFor(p => p.Id).NotEmpty();
+        RuleFor(p => p.RowVersion).GreaterThan(uint.MinValue);
+    }
+}
+

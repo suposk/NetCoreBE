@@ -1,17 +1,20 @@
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace NetCoreBE.Application.Tickets.EventHandlers;
 
 public class TicketCreatedEventHandler(
-        ICacheProvider cacheProvider,
+    ICacheProvider cacheProvider,
     IServiceScopeFactory serviceScopeFactory,
+    IDateTimeService dateTimeService,
     ILogger<TicketCreatedEventHandler> logger
     ) : INotificationHandler<CreatedEvent<Ticket>>
 {
     private readonly ICacheProvider _cacheProvider = cacheProvider;
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
+    private readonly IDateTimeService _dateTimeService = dateTimeService;
     private readonly ILogger<TicketCreatedEventHandler> _logger = logger;
-    private readonly Stopwatch _timer = new Stopwatch();
+    private readonly Stopwatch _timer = new Stopwatch();    
 
     public async Task Handle(CreatedEvent<Ticket> notification, CancellationToken cancellationToken)
     {
@@ -22,39 +25,100 @@ public class TicketCreatedEventHandler(
 
             _logger.LogInformation("Domain Event: {DomainEvent}, started", notification.GetType().FullName);
             _timer.Start();
-            //simulate some processsing
-            await Task.Delay(20 * 1000, cancellationToken);
-
+            var type = notification.GetType();                        
+            OutboxDomaintEvent? outboxMessage = null;
             var scope = _serviceScopeFactory.CreateScope();
-            var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
-            var add = new TicketHistory(ticketId: notification.Entity.Id, operation: "AwaitingConfirmation", createdBy: $"{nameof(TicketCreatedEventHandler)}", details : $"Email sent to {notification.Entity.CreatedBy} for request {notification.Entity.Id}", null);            
+            var outboxDomaintEventRepository = scope.ServiceProvider.GetRequiredService<IOutboxDomaintEventRepository>();
 
-            //simulate email service
-            await emailService.SendEmail("abc.com", "toemaul", "Ticket Confirmation", "Please confirm your request", true);
-
-            //must use IServiceScopeFactory. context is already disposed.
-            var RequestRepository = scope.ServiceProvider.GetRequiredService<ITicketRepository>();
-            var request = await RequestRepository.GetId(add.TicketId).ConfigureAwait(false);
-            if (request is null)
+            //1. Store event to OutboxDomaintEvent process later            
+            if (notification.IsProcessing is false && notification?.Entity?.Id?.HasValueExt() is true)
             {
-                _logger.LogWarning("Ticket not found for RequestId: {RequestId}", add.TicketId);
+
+                //check for duplicate messages
+                if (await outboxDomaintEventRepository.Exist(entityId: notification.Entity.Id, type.FullName))
+                {
+                    _logger.LogWarning("Domain Event: {DomainEvent} already exist, {@notification}", type, notification);
+                    return;
+                }
+                string json = JsonConvert.SerializeObject(notification, CaHelper.JsonSerializerSettingsNone);
+                outboxMessage = OutboxDomaintEvent.Create(entityId: notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, json);
+                var res = await outboxDomaintEventRepository.AddAsync(outboxMessage, nameof(TicketCreatedEventHandler));
+                _logger.LogDebug("Domain Event: {DomainEvent}", type);
                 return;
             }
-            if (request.CanAddHistory() is false)
+
+            //2. Process Stored Event
+            var result = ResultCom.Success();
+            IDbContextTransaction? dbTransaction = null;
+            try
             {
-                _logger.LogWarning("Ticket status is Closed for RequestId: {RequestId}", add.TicketId);
-                return;
+                outboxMessage = await outboxDomaintEventRepository.GetId(notification.Id);
+                if (outboxMessage is null)
+                {
+                    _logger.LogWarning("Process Domain Event: {DomainEvent} not found, {@notification}", type, notification);
+                    return;
+                }
+
+                //simulate some processsing
+                //await Task.Delay(10 * 1000, cancellationToken);
+
+                var addHistory = TicketHistory.Create(ticketId: notification.Entity.Id, operation: "ConfimationSent", createdBy: $"{nameof(TicketCreatedEventHandler)}", details: $"Email sent to {notification.Entity.CreatedBy} for request {notification.Entity.Id}", null);
+
+                //must use IServiceScopeFactory. context is already disposed.
+                var repository = scope.ServiceProvider.GetRequiredService<ITicketRepository>();
+                var ticket = await repository.GetId(addHistory.TicketId!).ConfigureAwait(false);
+                if (ticket is null)
+                {
+                    _logger.LogWarning("Ticket not found for TicketId: {TicketId}", addHistory.TicketId);
+                    result = ResultCom.Failure($"Ticket not found for TicketId: {addHistory.TicketId}");                    
+                }
+
+                if (result.IsSuccess && Ticket.CanAddUpdate(notification.Entity.Status) is false)
+                {
+                    _logger.LogWarning("Can't update Ticket, status is {status} for TicketId: {TicketId}", ticket?.Status, addHistory.TicketId);
+                    result = ResultCom.Failure($"Can't update Ticket, status is {ticket?.Status} for TicketId: {addHistory.TicketId}");                    
+                }
+
+                if (result.IsFailure)
+                {
+                    outboxMessage.SetToIgnored(_dateTimeService.UtcNow, result.ErrorMessage);
+                    await outboxDomaintEventRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler));
+                    return;
+                }
+
+                var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                await emailService.SendEmail("abc.com", "toemaul", "Ticket Confirmation", "This is confirmation of your request", true);
+
+                var ticketHistoryRepository = scope.ServiceProvider.GetRequiredService<IRepository<TicketHistory>>();
+                addHistory.AddDomainEvent(new CreatedEvent<TicketHistory>(addHistory));
+                outboxMessage.SetProcessed(_dateTimeService.UtcNow);
+                ticket?.Update(ticket.Status, "Email sent to user", _dateTimeService.UtcNow);
+
+                dbTransaction = outboxDomaintEventRepository.GetTransaction(); //use transaction, to garanty consistency
+                repository.UseTransaction(dbTransaction);
+                ticketHistoryRepository.UseTransaction(dbTransaction);                
+
+                await ticketHistoryRepository.AddAsync(addHistory, addHistory.CreatedBy);                
+                await repository.UpdateAsync(ticket, nameof(TicketCreatedEventHandler));                
+                await outboxDomaintEventRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler)); //v1 set to processed                
+                //await outboxDomaintEventRepository.RemoveAsync(outboxMessage?.Id); //v2 delete, keep only items that are not processed and move this to some history table
+                dbTransaction.Commit();
+                
+                _logger.LogInformation("Domain Event: {DomainEvent} processed", type.FullName);
+                _cacheProvider.ClearCacheOnlyKeyAndId(notification.Entity.GetPrimaryCacheKeyExt(), notification.Entity.Id); //ok clear cache for all Ids
             }
-
-            var RequestHistoryRepository = scope.ServiceProvider.GetRequiredService<IRepository<TicketHistory>>();
-            add.AddDomainEvent(new CreatedEvent<TicketHistory>(add));
-            await RequestHistoryRepository.AddAsync(add, add.CreatedBy);
-
-            _cacheProvider.ClearCacheOnlyKeyAndId(notification.GetPrimaryCacheKeyExt(), notification.Entity.Id); //clear cache for all Ids
-
-            _timer.Stop();
-            _logger.LogInformation("Domain Event: {DomainEvent}, end {ElapsedMilliseconds}ms", notification.GetType().FullName,
-                _timer.ElapsedMilliseconds);
+            catch (Exception ex)
+            {
+                dbTransaction?.Rollback();
+                _logger.LogError(ex, null, ex);
+            }
+            finally 
+            {
+                //scope.Dispose(); //not needed
+                dbTransaction?.Dispose();
+                _timer.Stop();
+                _logger.LogInformation("Domain Event: {DomainEvent}, end {ElapsedMilliseconds}ms", type.FullName, _timer.ElapsedMilliseconds);
+            }
         }
         catch (Exception ex)
         {

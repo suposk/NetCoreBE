@@ -64,9 +64,12 @@ public static class DependencyInjection
             else if (DbTypeEnum == DbTypeEnum.InMemory)
                 m.UseInMemoryDatabase(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}InMemory"));
             else if (DbTypeEnum == DbTypeEnum.PostgreSQL)
-                //m.UseNpgsql(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL"), x => x.MigrationsAssembly(_namespace));
-                //m.UseNpgsql(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL")).UseSnakeCaseNamingConvention();
-                m.UseNpgsql(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL"));
+            //m.UseNpgsql(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL"), x => x.MigrationsAssembly(_namespace));
+            //m.UseNpgsql(configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL")).UseSnakeCaseNamingConvention();
+            {
+                var connectionString = configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL");
+                m.UseNpgsql(connectionString);
+            }
             else
                 m.UseSqlServer(configuration.GetConnectionString(InfrastructureConstants.ConnectionStrings.Database), x => x.MigrationsAssembly(_namespace));
         });
