@@ -31,7 +31,7 @@ Content-Type: application/json
   "searchTerm": "",
   "TicketType": "Laptop",
   "Status": "",
-  "Note": "21",
+  "Note": "",
   "currentPage": 1,
   "pageSize": 15,
   "orderBy": "CreatedAt"  

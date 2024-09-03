@@ -58,6 +58,7 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
     public override Task<ResultCom<TicketDto>> UpdateDtoAsync(TicketDto dto, bool saveChanges = true) =>
         throw new NotImplementedException($"Use  {nameof(UpdateTicketCommand)} or {nameof(UpdateDto)} with {nameof(TicketUpdateDto)} instead");
 
+    #region UpdateDto version without transaction, failing in functional tests
     //public async Task<ResultCom<TicketDto>> UpdateDto(TicketUpdateDto? dtoUpdate)
     //{        
     //    if (dtoUpdate is null)
@@ -113,6 +114,7 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
     //        //dbTransaction?.Dispose();
     //    }
     //}
+    #endregion
 
     public async Task<ResultCom<TicketDto>> UpdateDto(TicketUpdateDto? dtoUpdate)
     {
