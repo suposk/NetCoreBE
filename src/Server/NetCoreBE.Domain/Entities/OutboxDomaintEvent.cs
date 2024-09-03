@@ -84,4 +84,12 @@ public sealed class OutboxDomaintEvent : EntityBase
                 NextRetryUtc = nextRetryUtc.Value;
         }
     }
+
+    public void SetToIgnored(DateTime utcNow, string? error)
+    {        
+        if (error.HasValueExt()) Error = error; //dont want to ovveride error message        
+        IsProcessed = true;
+        ProcessedUtc = utcNow;
+        NextRetryUtc = null;
+    }
 }
