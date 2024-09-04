@@ -16,7 +16,7 @@ public enum StatusTicketType
 
 public class Ticket : EntityBase
 {
-    public static Ticket EmptyTicket = Create("1", "None", "", "");
+    public static Ticket EmptyTicket = Create("1", nameof(StatusTicketType.None), "", null);
 
     private Ticket() { }
 
