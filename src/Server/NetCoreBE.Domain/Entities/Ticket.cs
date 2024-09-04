@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR.Protocol;
-using SharedCommon;
-using System.Net.Sockets;
+﻿using SharedCommon;
 using System.Text;
 
-public enum StatusTicketType
+namespace NetCoreBE.Domain.Entities;
+
+public enum StatusEnum
 {
     None,
     Draft, 
@@ -14,9 +14,17 @@ public enum StatusTicketType
     Closed
 }
 
+public enum TicketTypeEnum
+{
+    None,
+    Access,
+    Problem,
+    Question,
+}
+
 public class Ticket : EntityBase
 {
-    public static Ticket EmptyTicket = Create("1", nameof(StatusTicketType.None), "", null);
+    public static Ticket EmptyTicket = Create("1", nameof(TicketTypeEnum.None), "", null);
 
     private Ticket() { }
 
@@ -50,13 +58,13 @@ public class Ticket : EntityBase
     [MaxLength(50)]
     public string? Status { get; private set; }
 
-    public StatusTicketType? StatusEnum
+    public StatusEnum? StatusEnum
     {
         get
         {
             if (!string.IsNullOrEmpty(Status))
                 return null;
-            _ = Enum.TryParse<StatusTicketType>(Status, out var status);
+            _ = Enum.TryParse<StatusEnum>(Status, out var status);
             return status;
         }
     }
@@ -68,7 +76,7 @@ public class Ticket : EntityBase
         //var ticket = new Ticket(id, ticketType, note, status: StatusTicketType.Submited.ToString(), createdBy, null);
         if (ticketType.IsNullOrEmptyExt())
             throw new ArgumentException("ticketType must be provided");
-        var ticket = new Ticket() { Id = id, TicketType = ticketType, Status = StatusTicketType.Submited.ToString(), CreatedBy = createdBy, TicketHistoryList = new() };
+        var ticket = new Ticket() { Id = id, TicketType = ticketType, Status = Entities.StatusEnum.Submited.ToString(), CreatedBy = createdBy, TicketHistoryList = new() };
         if (note.IsNotNullOrEmptyExt())
             ticket.Notes.Add(note);
         ticket.AddHistory(ticket.Status, null, DateTime.UtcNow);
@@ -81,8 +89,8 @@ public class Ticket : EntityBase
             return ResultCom.Failure($"Can not add history. Current status is {Status}");
 
         Id ??= StringHelper.GetStringGuidExt();
-        if (StatusEnum is not StatusTicketType.Submited || StatusEnum is not StatusTicketType.Draft)            
-            Status = StatusTicketType.Submited.ToString();
+        if (StatusEnum is not Entities.StatusEnum.Submited || StatusEnum is not Entities.StatusEnum.Draft)
+            Status = Entities.StatusEnum.Submited.ToString();
 
         if (note.IsNotNullOrEmptyExt())
             Notes.Add(note);
@@ -127,5 +135,5 @@ public class Ticket : EntityBase
         TicketHistoryList.Add(ticketHistory);
     }
 
-    public static bool CanAddUpdate(string? status) => status is null || status != nameof(StatusTicketType.Closed);
+    public static bool CanAddUpdate(string? status) => status is null || status != nameof(Entities.StatusEnum.Closed);
 }

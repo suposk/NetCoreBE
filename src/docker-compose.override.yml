@@ -7,6 +7,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=6606
       - ASPNETCORE_HTTPS_PORTS=6006
       - DbTypeEnum=PostgreSQL  
+      - SeedDb=False
       - ConnectionStrings__DatabasePostgreSQL=Host=netcorebe-db;Port=5432;Database=netcorebe;Username=postgres;Password=postgres; 
     ports:
       - 6606:6606
