@@ -68,7 +68,7 @@ public class Ticket : EntityBase
         //var ticket = new Ticket(id, ticketType, note, status: StatusTicketType.Submited.ToString(), createdBy, null);
         if (ticketType.IsNullOrEmptyExt())
             throw new ArgumentException("ticketType must be provided");
-        var ticket = new Ticket() { Id = id, TicketType = ticketType,Status = StatusTicketType.Submited.ToString(), CreatedBy = createdBy, TicketHistoryList = new() };
+        var ticket = new Ticket() { Id = id, TicketType = ticketType, Status = StatusTicketType.Submited.ToString(), CreatedBy = createdBy, TicketHistoryList = new() };
         if (note.IsNotNullOrEmptyExt())
             ticket.Notes.Add(note);
         ticket.AddHistory(ticket.Status, null, DateTime.UtcNow);
@@ -81,7 +81,7 @@ public class Ticket : EntityBase
             return ResultCom.Failure($"Can not add history. Current status is {Status}");
 
         Id ??= StringHelper.GetStringGuidExt();
-        if (StatusEnum is not StatusTicketType.Submited)            
+        if (StatusEnum is not StatusTicketType.Submited || StatusEnum is not StatusTicketType.Draft)            
             Status = StatusTicketType.Submited.ToString();
 
         if (note.IsNotNullOrEmptyExt())
