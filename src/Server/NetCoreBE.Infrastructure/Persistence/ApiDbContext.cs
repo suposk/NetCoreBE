@@ -30,6 +30,7 @@ public class ApiDbContext : DbContext, IApiDbContext
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<TicketHistory> TicketHistorys { get; set; }
     public DbSet<OutboxDomaintEvent> OutboxDomaintEvents { get; set; }
+    public DbSet<CrudExample> CrudExamples { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -43,6 +44,7 @@ public class ApiDbContext : DbContext, IApiDbContext
 
         builder.Entity<Ticket>().Property(c => c.RowVersion).IsRowVersion();
         builder.Entity<TicketHistory>().Property(c => c.RowVersion).IsRowVersion();
+        builder.Entity<CrudExample>().Property(c => c.RowVersion).IsRowVersion();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
