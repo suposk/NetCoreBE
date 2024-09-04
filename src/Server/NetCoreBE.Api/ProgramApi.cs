@@ -149,6 +149,9 @@ using (var scope = app.Services.CreateScope())
                 //seed data
                 var TicketRepository = sp.GetRequiredService<ITicketRepository>();
                 var s4 = await TicketRepository.Seed(4, 4, "SEED Startup");
+
+                var CrudExampleRepository = sp.GetRequiredService<ICrudExampleRepository>();
+                var s10 = await CrudExampleRepository.Seed(10, 10, "SEED Startup");
             }
         }
         else        

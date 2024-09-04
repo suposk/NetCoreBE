@@ -17,5 +17,9 @@ public class MapperProfile : Profile
 
         CreateMap<TicketHistoryDto, TicketHistory>()
             .ReverseMap();
+
+        CreateMap<CrudExampleDto, CrudExample>()
+            .ReverseMap();
+
     }
 }

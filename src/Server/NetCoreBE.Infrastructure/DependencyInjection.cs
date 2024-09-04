@@ -82,7 +82,7 @@ public static class DependencyInjection
 
         
         services.AddScoped<ITicketRepository, TicketRepository>();
-
+        services.AddScoped<ICrudExampleRepository, CrudExampleRepository>();
         
         services.AddScoped<ITicketRepositoryDecorator, TicketRepositoryDecorator>();
         services.AddScoped<IOutboxDomaintEventRepository, OutboxDomaintEventRepository>();
