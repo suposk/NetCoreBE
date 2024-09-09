@@ -10,17 +10,32 @@ public class PropertyMappingService : IPropertyMappingService
            { nameof(DtoBase.Id), new PropertyMappingValue(new List<string>() { nameof(EntityBase.Id) } ) },
            { nameof(DtoBase.CreatedAt), new PropertyMappingValue(new List<string>() { nameof(EntityBase.CreatedAt) } , true) },
            { nameof(DtoBase.CreatedBy), new PropertyMappingValue(new List<string>() { nameof(EntityBase.CreatedBy) } , true) },
-           { nameof(Ticket.TicketType), new PropertyMappingValue(new List<string>() { nameof(Ticket.TicketType) } )},
-           { nameof(Ticket.Status), new PropertyMappingValue(new List<string>() { nameof(Ticket.Status) } )},
+           { nameof(TicketDto.TicketType), new PropertyMappingValue(new List<string>() { nameof(Ticket.TicketType) } )},
+           { nameof(TicketDto.Status), new PropertyMappingValue(new List<string>() { nameof(Ticket.Status) } )},
            //{ nameof(Ticket.Note), new PropertyMappingValue(new List<string>() { nameof(Ticket.Note) } )},           
            //{ "Name", new PropertyMappingValue(new List<string>() { "FirstName", "LastName" }) }
       };
+
+    private Dictionary<string, PropertyMappingValue> _CrudExamplePropertyMapping =
+      new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
+      {
+           { nameof(DtoBase.Id), new PropertyMappingValue(new List<string>() { nameof(EntityBase.Id) } ) },
+           { nameof(DtoBase.CreatedAt), new PropertyMappingValue(new List<string>() { nameof(EntityBase.CreatedAt) } , true) },
+           { nameof(DtoBase.CreatedBy), new PropertyMappingValue(new List<string>() { nameof(EntityBase.CreatedBy) } , true) },
+           { nameof(CrudExampleDto.Name), new PropertyMappingValue(new List<string>() { nameof(CrudExample.Name) } )},
+           { nameof(CrudExampleDto.Description), new PropertyMappingValue(new List<string>() { nameof(CrudExample.Description) } )},
+           { nameof(CrudExampleDto.IsActive), new PropertyMappingValue(new List<string>() { nameof(CrudExample.IsActive) } )},
+           //{ nameof(Ticket.Note), new PropertyMappingValue(new List<string>() { nameof(Ticket.Note) } )},           
+           //{ "Name", new PropertyMappingValue(new List<string>() { "FirstName", "LastName" }) }
+      };
+
 
     private IList<IPropertyMapping> _propertyMappings = new List<IPropertyMapping>();
 
     public PropertyMappingService()
     {        
         _propertyMappings.Add(new PropertyMapping<TicketDto, Ticket>(_TicketPropertyMapping));
+        _propertyMappings.Add(new PropertyMapping<CrudExampleDto, CrudExample>(_CrudExamplePropertyMapping));
     }
 
     public bool ValidMappingExistsFor<TSource, TDestination>(string fields)

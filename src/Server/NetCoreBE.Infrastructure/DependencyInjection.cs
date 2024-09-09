@@ -80,13 +80,14 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(ApiRepositoryBase<>));        
         services.AddScoped(typeof(IRepositoryDecoratorBase<,>), typeof(ApiRepositoryDecoratorBase<,>));
 
-        
-        services.AddScoped<ITicketRepository, TicketRepository>();
-        services.AddScoped<ICrudExampleRepository, CrudExampleRepository>();
-        
-        services.AddScoped<ITicketRepositoryDecorator, TicketRepositoryDecorator>();
-        services.AddScoped<IOutboxDomaintEventRepository, OutboxDomaintEventRepository>();
 
+        services.AddScoped<IOutboxDomaintEventRepository, OutboxDomaintEventRepository>();
+        services.AddScoped<ITicketRepository, TicketRepository>();
+        services.AddScoped<ICrudExampleRepository, CrudExampleRepository>();        
+
+        services.AddScoped<ITicketRepositoryDecorator, TicketRepositoryDecorator>();
+        services.AddScoped<ICrudExampleRepositoryDecorator, CrudExampleRepositoryDecorator>();
+        
         ////factory methods, not used yet
         //services.AddScoped<IDbContextFactory<ApiDbContext>, DbContextFactory<ApiDbContext>>();
         //services.AddTransient<IApiDbContext>(provider =>    

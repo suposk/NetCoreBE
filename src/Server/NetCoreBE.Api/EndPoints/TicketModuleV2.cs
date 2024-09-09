@@ -76,7 +76,7 @@ public class TicketModuleV2 : CarterModule
         }).MapToApiVersion(AppApiVersions.V2);
 
 #if DEBUG
-        app.MapPost("/Seed/{countToCreate}", async (int countToCreate, ITicketRepository repository, ITicketRepositoryDecorator decorator, ICacheProvider cacheProvider) =>
+        app.MapPost("/Seed/{countToCreate}", async (int countToCreate, ITicketRepository repository, ICacheProvider cacheProvider) =>
         {
             var PrimaryCacheKey = $"{typeof(Ticket).Name}{CommonCleanArch.Application.Helpers.OtherHelper.CACHECONST}";
             var res = await repository.Seed(countToCreate, null, "SEED API").ConfigureAwait(false);            
