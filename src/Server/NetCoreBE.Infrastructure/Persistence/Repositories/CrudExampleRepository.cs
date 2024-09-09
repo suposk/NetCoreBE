@@ -33,7 +33,7 @@ public class CrudExampleRepository : Repository<CrudExample>, ICrudExampleReposi
             if (countExisintg == 0)
                 id = $"{nameof(CrudExample)}-{i}";
 
-            CrudExample crudExample = new() { Name = $"{UserId} Name {i}" };
+            CrudExample crudExample = new() { Id = id, Name = $"{UserId} Name {i}" };
             crudExample.IsActive = (i % 2 == 0);
             crudExample.Description = (i % 3 == 0) ? $"{UserId} Description {cycle} / {addCount} / {newTotal}" : null;            
             list.Add(crudExample);
