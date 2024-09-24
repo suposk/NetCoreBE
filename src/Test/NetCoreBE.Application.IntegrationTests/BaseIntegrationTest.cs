@@ -13,7 +13,7 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppF
         Sender = Scope.ServiceProvider.GetRequiredService<ISender>();
         DbContext = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
 
-        DbContext.Database.EnsureDeleted();
-        DbContext.Database.EnsureCreated();
+        //DbContext.Database.EnsureDeleted();
+        //DbContext.Database.EnsureCreated();
     }
 }

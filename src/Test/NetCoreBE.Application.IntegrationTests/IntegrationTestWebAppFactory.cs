@@ -46,10 +46,19 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<ProgramApi>, I
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
+        InitDb();
     }
 
     public new async Task DisposeAsync()
     {
         await _dbContainer.StopAsync();
+    }
+
+    private void InitDb()
+    {
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
     }
 }
