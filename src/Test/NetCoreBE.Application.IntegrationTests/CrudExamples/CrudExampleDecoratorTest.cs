@@ -16,6 +16,19 @@ public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifeti
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
+    public async Task Validate_RowVersion_Ok()
+    {
+        // Arrange        
+
+        // Act
+        var result = await _decorator.GetIdDto(CrudExampleData.CrudExampleId);
+
+        // Assert
+        result.Value.Should().NotBeNull();        
+        result.Value?.RowVersion.Should().Be(CrudExampleData.Update.RowVersion);
+    }
+
+    [Fact]
     public async Task GetById_ShouldReturn_Ok()
     {
         // Arrange        
@@ -101,7 +114,7 @@ public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifeti
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Value.Should().BeNull();
-        result.ErrorMessage.Should().NotBeNullOrEmpty();
+        result.ErrorMessage.Should().NotBeEmpty();
     }
 
     [Fact]

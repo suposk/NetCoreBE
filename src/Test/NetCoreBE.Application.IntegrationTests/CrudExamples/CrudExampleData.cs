@@ -20,6 +20,7 @@ internal static class CrudExampleData
         IsActive = false,
         Name = "Name put 1",
         Description = "Description put 1",
-        RowVersion = 758,
+        //RowVersion = 758,
+        RowVersion = 741,
     };
 }
