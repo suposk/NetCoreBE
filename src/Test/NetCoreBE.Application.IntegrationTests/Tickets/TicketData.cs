@@ -16,7 +16,8 @@ internal static class TicketData
     public static readonly TicketUpdateDto Update = new()
     {
         Id = TicketId,        
-        Note = "Update 1",  
-        RowVersion = 739,
+        Note = "Update 1",
+        //RowVersion = 739,
+        RowVersion = 741,
     };
 }

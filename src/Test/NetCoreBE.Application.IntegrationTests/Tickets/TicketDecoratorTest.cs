@@ -17,6 +17,19 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
+    public async Task Validate_RowVersion_Ok()
+    {
+        // Arrange        
+
+        // Act
+        var result = await _decorator.GetIdDto(TicketData.TicketId);
+
+        // Assert
+        result.Value.Should().NotBeNull();
+        result.Value?.RowVersion.Should().Be(TicketData.Update.RowVersion);
+    }
+
+    [Fact]
     public async Task GetById_ShouldReturn_Ok()
     {
         // Arrange        
@@ -91,12 +104,13 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
         result.ErrorMessage.Should().BeNullOrEmpty();
     }
 
-    [Fact(Skip = "Not using UpdateDtoAsync")]
-    //[Fact]
+    //[Fact(Skip = "Not using UpdateDtoAsync")]
+    [Fact]
     public async Task Update_ShouldReturn_Failed()
     {
         // Arrange
         var dto = TicketData.Update;
+        dto.RowVersion = 1;
         dto.Note = "Update test";
 
         // Act
