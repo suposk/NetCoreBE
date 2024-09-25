@@ -185,20 +185,37 @@ public abstract class RepositoryDecoratorBase<TEntity, TDto> : IRepository<TEnti
         if (repoObj == null)            
             return ResultCom<TEntity>.Failure($"{nameof(UpdateEntityAsync)} {nameof(entity)} {entity.Id} {HttpStatusCode.NotFound}", HttpStatusCode.NotFound);
 
-        repoObj = Mapper.Map<TEntity>(entity);
-        if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
+        IDbContextTransaction? dbTransaction = null;
+        try
         {
-            entity.AddDomainEvent(new UpdatedEvent<TEntity>(entity));
-            if (saveChanges)
-                await Repository.UpdateAsync(repoObj);
+            dbTransaction = Repository.GetTransaction();
+            Repository.UseTransaction(dbTransaction);
+
+            repoObj = Mapper.Map<TEntity>(entity);
+            if (await CanModify(repoObj, CanModifyFunc).ConfigureAwait(false))
+            {
+                entity.AddDomainEvent(new UpdatedEvent<TEntity>(entity));
+                if (saveChanges)
+                    await Repository.UpdateAsync(repoObj);
+                else
+                    Repository.Update(repoObj);
+            }
             else
-                Repository.Update(repoObj);
-        }      
-        else        
-            return ResultCom<TEntity>.Failure($"{nameof(UpdateEntityAsync)} {nameof(entity)} is {HttpStatusCode.Forbidden}", HttpStatusCode.Forbidden);
-        
-        ResetCache(entity.Id);
-        return ResultCom<TEntity>.Success(entity);
+                return ResultCom<TEntity>.Failure($"{nameof(UpdateEntityAsync)} {nameof(entity)} is {HttpStatusCode.Forbidden}", HttpStatusCode.Forbidden);
+
+            ResetCache(entity.Id);
+            return ResultCom<TEntity>.Success(entity);
+        }
+        catch (Exception ex)
+        {
+            dbTransaction?.Rollback();
+            Logger.LogError(ex, "Error");
+            return ResultCom<TEntity>.Failure($"{ex.Message}", HttpStatusCode.Conflict);
+        }
+        finally
+        {
+            dbTransaction?.Dispose();
+        }
     }
 
     #endregion
