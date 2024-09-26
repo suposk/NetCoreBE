@@ -21,21 +21,6 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task Validate_RowVersion_Ok()
-    {
-        // Arrange        
-
-        // Act
-        var result = await _decorator.GetIdDto(TicketData.TicketId);
-
-        // Assert
-        result.Value.Should().NotBeNull();
-        result.Value?.RowVersion.Should().Be(TicketData.Update.RowVersion);
-
-        _testOutputHelper.WriteLine($"RowVersion: {result.Value?.RowVersion}");
-    }
-
-    [Fact]
     public async Task GetById_ShouldReturn_Ok()
     {
         // Arrange        
@@ -94,23 +79,41 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
     //[Fact(Skip = "Not using UpdateDtoAsync")]
     [Fact]
     public async Task Update_ShouldReturn_Ok()
-    {        
-        //// Arrange        
-        //var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };                
-        //var old = (await Sender.Send(q)).Value;
-        //DbContext.ChangeTracker.Clear();
+    {
+        ////// Arrange        
+        ////var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };                
+        ////var old = (await Sender.Send(q)).Value;
+        ////DbContext.ChangeTracker.Clear();
+        ////old.Note = "Update test";
+
+        ////// Act        
+        ////var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = old.Note, RowVersion = old.RowVersion });
+
+        //// Arrange       
+        //var old = (await _decorator.GetIdDto(TicketData.TicketId)).Value;        
+        //_decorator.DatabaseContext.ChangeTracker.Clear();
         //old.Note = "Update test";
+        //_testOutputHelper.WriteLine($"Old Id: {old.Id},  RowVersion: {old?.RowVersion}");
+
+        ////var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+        //var ctx = _decorator.DatabaseContext as ApiDbContext;
+        //var all = await ctx.Tickets.ToListAsync();
+        //foreach (var item in all)        
+        //    _testOutputHelper.WriteLine($"Id: {item.Id},  RowVersion: {item.RowVersion}");        
+        //ctx.ChangeTracker.Clear();        
 
         //// Act        
         //var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = old.Note, RowVersion = old.RowVersion });
 
-        // Arrange       
-        var old = (await _decorator.GetIdDto(TicketData.TicketId)).Value;        
-        _decorator.DatabaseContext.ChangeTracker.Clear();
-        old.Note = "Update test";
+        //works, returns same RowVersion 
+        var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();        
+        var old = await ctx.Tickets.FirstOrDefaultAsync(x => x.Id == TicketData.TicketId);
+        _testOutputHelper.WriteLine($"Old Id: {old.Id},  RowVersion: {old?.RowVersion}");
+        ctx.ChangeTracker.Clear();
+        var dto = new TicketUpdateDto { Id = old.Id, Note = "Update t1", RowVersion = old.RowVersion };
 
         // Act        
-        var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = old.Note, RowVersion = old.RowVersion });
+        var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = "Update t1", RowVersion = old.RowVersion });
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -119,23 +122,25 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
         result.Value?.RowVersion.Should().NotBe(old.RowVersion);
     }
 
-    ////[Fact(Skip = "Not using UpdateDtoAsync")]
-    //[Fact]
-    //public async Task Update_ShouldReturn_Failed()
-    //{
-    //    // Arrange
-    //    var dto = TicketData.Update;        
-    //    dto.RowVersion += 1;
-    //    //dto.Note = "Update test";
+    //[Fact(Skip = "Not using UpdateDtoAsync")]
+    [Fact]
+    public async Task Update_ShouldReturn_Failed()
+    {
+        // Arrange
+        var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+        var old = await ctx.Tickets.FirstOrDefaultAsync(x => x.Id == TicketData.TicketId);
+        _testOutputHelper.WriteLine($"Old Id: {old.Id},  RowVersion: {old?.RowVersion}");
+        ctx.ChangeTracker.Clear();
+        var dto = new TicketUpdateDto { Id = old.Id, Note = "Update t1", RowVersion = old.RowVersion };
+        dto.RowVersion += 1;
 
-    //    // Act
-    //    var result = await _decorator.UpdateDto(dto);
-    //    dto.RowVersion -= 1;
+        // Act
+        var result = await _decorator.UpdateDto(dto);        
 
-    //    // Assert
-    //    result.IsSuccess.Should().BeFalse();        
-    //    result.ErrorMessage.Should().NotBeEmpty();
-    //}
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().NotBeEmpty();
+    }
 
     [Fact]
     public async Task Remove_ShouldReturn_NoContent()
