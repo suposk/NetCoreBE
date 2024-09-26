@@ -11,6 +11,16 @@ public abstract class CrudExampleIntegrationTest : BaseIntegrationTest, IClassFi
 
     public async  Task Seed(int count)
     {
+        var sc =  Factory.Services.CreateScope();
+        var ctx = sc.ServiceProvider.GetRequiredService<ApiDbContext>();
+        
+        //await ctx.Database.ExecuteSqlRawAsync($"DELETE FROM CrudExample");
+        //await ctx.Database.ExecuteSqlRawAsync($"DELETE FROM {nameof(ctx.CrudExamples)}");
+
+        ctx.CrudExamples.RemoveRange(ctx.CrudExamples);
+        await ctx.SaveChangesAsync();
+        ctx.ChangeTracker.Clear();
+
         await Repository.Seed(count, count, "Seed Test");
         DbContext.ChangeTracker.Clear();
     }
