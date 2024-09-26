@@ -1,16 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NetCoreBE.Domain.UnitTests.Tickets;
+using Xunit.Abstractions;
 
 namespace NetCoreBE.Application.IntegrationTests.Tickets;
 
 public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
 {
     private readonly ITicketRepositoryDecorator _decorator;
+    private readonly ITestOutputHelper _testOutputHelper;
 
-    public TicketDecoratorTest(IntegrationTestWebAppFactory factory)
+    public TicketDecoratorTest(IntegrationTestWebAppFactory factory, ITestOutputHelper testOutputHelper)
         : base(factory)
     {
         _decorator = Scope.ServiceProvider.GetRequiredService<ITicketRepositoryDecorator>();
+        _testOutputHelper = testOutputHelper;
         //Seed(4).Wait();
     }
     public Task InitializeAsync() => Seed(4);
@@ -27,6 +30,8 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
         // Assert
         result.Value.Should().NotBeNull();
         result.Value?.RowVersion.Should().Be(TicketData.Update.RowVersion);
+
+        _testOutputHelper.WriteLine($"RowVersion: {result.Value?.RowVersion}");
     }
 
     [Fact]
@@ -102,6 +107,7 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.ErrorMessage.Should().BeNullOrEmpty();
+        result.Value?.RowVersion.Should().NotBe(old.RowVersion);
     }
 
     //[Fact(Skip = "Not using UpdateDtoAsync")]
@@ -109,12 +115,13 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
     public async Task Update_ShouldReturn_Failed()
     {
         // Arrange
-        var dto = TicketData.Update;
-        dto.RowVersion = 1;
-        dto.Note = "Update test";
+        var dto = TicketData.Update;        
+        dto.RowVersion += 1;
+        //dto.Note = "Update test";
 
         // Act
         var result = await _decorator.UpdateDto(dto);
+        dto.RowVersion -= 1;
 
         // Assert
         result.IsSuccess.Should().BeFalse();        

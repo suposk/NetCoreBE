@@ -1,15 +1,18 @@
 ﻿
 using NetCoreBE.Domain.UnitTests.CrudExamples;
+using Xunit.Abstractions;
 
 namespace NetCoreBE.Application.IntegrationTests.CrudExamples;
 public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifetime
 {
     private readonly ICrudExampleRepositoryDecorator _decorator;
+    private readonly ITestOutputHelper _testOutputHelper;
 
-    public CrudExampleDecoratorTest(IntegrationTestWebAppFactory factory)
+    public CrudExampleDecoratorTest(IntegrationTestWebAppFactory factory, ITestOutputHelper testOutputHelper)
         : base(factory)
     {
-        _decorator = Scope.ServiceProvider.GetRequiredService<ICrudExampleRepositoryDecorator>();        
+        _decorator = Scope.ServiceProvider.GetRequiredService<ICrudExampleRepositoryDecorator>();
+        _testOutputHelper = testOutputHelper;
     }
 
     public Task InitializeAsync() => Seed(4);
@@ -26,6 +29,8 @@ public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifeti
         // Assert
         result.Value.Should().NotBeNull();        
         result.Value?.RowVersion.Should().Be(CrudExampleData.Update.RowVersion);
+
+        _testOutputHelper.WriteLine($"RowVersion: {result.Value?.RowVersion}");
     }
 
     [Fact]
@@ -98,18 +103,19 @@ public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifeti
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.ErrorMessage.Should().BeNullOrEmpty();
+        result.Value?.RowVersion.Should().NotBe(dto.RowVersion);
     }
 
     [Fact]
     public async Task Update_ShouldReturn_Failed()
-    {
-        // Arrange        
-        // Arrange        
+    {        
+        // Arrange, bug will set static       
         var dto = CrudExampleData.Update;
-        dto.RowVersion = 0;
+        dto.RowVersion += 1;
 
         // Act
         var result = await _decorator.UpdateDtoAsync(dto);
+        dto.RowVersion -= 1;
 
         // Assert
         result.IsSuccess.Should().BeFalse();
