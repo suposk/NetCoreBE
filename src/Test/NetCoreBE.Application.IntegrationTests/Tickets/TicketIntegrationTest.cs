@@ -11,6 +11,12 @@ public abstract class TicketIntegrationTest : BaseIntegrationTest, IClassFixture
 
     public async  Task Seed(int count)
     {
+        var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+        ctx.TicketHistorys.RemoveRange(ctx.TicketHistorys);
+        ctx.Tickets.RemoveRange(ctx.Tickets);
+        await ctx.SaveChangesAsync();
+        ctx.ChangeTracker.Clear();
+
         await Repository.Seed(count, count, "Seed Test");
         DbContext.ChangeTracker.Clear();
     }

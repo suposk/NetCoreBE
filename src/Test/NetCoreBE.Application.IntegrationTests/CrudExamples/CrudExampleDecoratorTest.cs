@@ -83,7 +83,6 @@ public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifeti
         //var dto = CrudExampleData.Update;
 
         //Arange with Read from Seed Record
-        _decorator.DisableCache();
         var old = await _decorator.GetIdDto(CrudExampleData.CrudExampleId);
         _decorator.DatabaseContext.ChangeTracker.Clear();
         var dto = old.Value;
@@ -114,7 +113,6 @@ public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifeti
         //var dto = CrudExampleData.Update;
 
         //Arange with Read from Seed Record
-        _decorator.DisableCache();
         var old = await _decorator.GetIdDto(CrudExampleData.CrudExampleId);
         _decorator.DatabaseContext.ChangeTracker.Clear();
         var dto = old.Value;
