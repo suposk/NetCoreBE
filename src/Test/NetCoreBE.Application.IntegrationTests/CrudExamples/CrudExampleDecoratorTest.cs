@@ -20,21 +20,6 @@ public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifeti
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task Validate_RowVersion_Ok()
-    {
-        // Arrange        
-
-        // Act
-        var result = await _decorator.GetIdDto(CrudExampleData.CrudExampleId);
-
-        // Assert
-        result.Value.Should().NotBeNull();        
-        result.Value?.RowVersion.Should().Be(CrudExampleData.Update.RowVersion);
-
-        _testOutputHelper.WriteLine($"RowVersion: {result.Value?.RowVersion}");
-    }
-
-    [Fact]
     public async Task GetById_ShouldReturn_Ok()
     {
         // Arrange        
@@ -97,20 +82,10 @@ public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifeti
         // Arrange        
         //var dto = CrudExampleData.Update;
 
-        //_decorator.DisableCache();
+        //Arange with Read from Seed Record
+        _decorator.DisableCache();
         var old = await _decorator.GetIdDto(CrudExampleData.CrudExampleId);
         _decorator.DatabaseContext.ChangeTracker.Clear();
-
-        var context = _decorator.DatabaseContext as ApiDbContext;
-        if (context == null)
-            throw new Exception("context is null");
-
-        var ids = await context.CrudExamples.Select(a => a.Id).ToListAsync();
-        _testOutputHelper.WriteLine($"ids: {string.Join(", ", ids)}");
-
-        if (old.IsFailure)
-            throw new Exception($"IsFailure {CrudExampleData.CrudExampleId}, error = {old.ErrorMessage}");
-
         var dto = old.Value;
         dto.Name = CrudExampleData.Update.Name;
         dto.Description = CrudExampleData.Update.Description;
@@ -128,18 +103,23 @@ public class CrudExampleDecoratorTest : CrudExampleIntegrationTest, IAsyncLifeti
         result.ErrorMessage.Should().BeNullOrEmpty();
         result.Value?.RowVersion.Should().NotBe(dto.RowVersion);
 
-        _testOutputHelper.WriteLine($"RowVersion: {result.Value?.RowVersion}");
-        //if (result.ErrorMessage.HasValueExt())
-            _testOutputHelper.WriteLine($"ErrorMessage", result.ErrorMessage);
+        _testOutputHelper.WriteLine($"RowVersion: {result.Value?.RowVersion}");        
+        _testOutputHelper.WriteLine($"ErrorMessage", result.ErrorMessage);
     }
 
     [Fact]
     public async Task Update_ShouldReturn_Failed()
     {
-        // Arrange, bug will set static       
-        var dto = CrudExampleData.Update;
-        await Seed(1);
+        //// Arrange, bug will set static       
+        //var dto = CrudExampleData.Update;
+
+        //Arange with Read from Seed Record
+        _decorator.DisableCache();
+        var old = await _decorator.GetIdDto(CrudExampleData.CrudExampleId);
         _decorator.DatabaseContext.ChangeTracker.Clear();
+        var dto = old.Value;
+        dto.Name = CrudExampleData.Update.Name;
+        dto.Description = CrudExampleData.Update.Description;
 
         dto.RowVersion += 1;
 
