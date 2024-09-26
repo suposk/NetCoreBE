@@ -23,6 +23,7 @@ public interface IRepositoryDecoratorBase<TEntity, TDto> where TEntity : EntityB
     Task<ResultCom<TEntity>> AddOrUpdateEntityAsync(TEntity entity, bool saveChanges = true);
     IDbContextTransaction GetTransaction(bool newTransaction = false);
     void UseTransaction(IDbContextTransaction transaction);
+    void DisableCache();
 }
 
 public abstract class RepositoryDecoratorBase<TEntity, TDto> : IRepository<TEntity>, IRepositoryDecoratorBase<TEntity, TDto> where TEntity : EntityBase where TDto : IDtoBase
@@ -42,7 +43,10 @@ public abstract class RepositoryDecoratorBase<TEntity, TDto> : IRepository<TEnti
     /// </summary>
     public virtual string PrimaryCacheKey => $"{typeof(TEntity).Name}{Helpers.OtherHelper.CACHECONST}";
 
-    protected bool IsCacheEnabled => CacheDurationMinutes > 0;
+    public virtual void DisableCache() => _disabledCache = true;
+
+    private bool _disabledCache;
+    protected bool IsCacheEnabled => _disabledCache is false && CacheDurationMinutes > 0;
     //protected void ResetCache()
     //{
     //    Logger?.LogInformation($"{PrimaryCacheKey} {nameof(ResetCache)}");
@@ -181,13 +185,13 @@ public abstract class RepositoryDecoratorBase<TEntity, TDto> : IRepository<TEnti
         if (entity is null)            
             return ResultCom<TEntity>.Failure($"{nameof(UpdateEntityAsync)} {nameof(entity)} is null", HttpStatusCode.BadRequest);
 
-        var repoObj = await Repository.GetId(entity.Id).ConfigureAwait(false);
-        if (repoObj == null)            
-            return ResultCom<TEntity>.Failure($"{nameof(UpdateEntityAsync)} {nameof(entity)} {entity.Id} {HttpStatusCode.NotFound}", HttpStatusCode.NotFound);
-
         IDbContextTransaction? dbTransaction = null;
         try
         {
+            var repoObj = await Repository.GetId(entity.Id).ConfigureAwait(false);
+            if (repoObj == null)
+                return ResultCom<TEntity>.Failure($"{nameof(UpdateEntityAsync)} {nameof(entity)} {entity.Id} {HttpStatusCode.NotFound}", HttpStatusCode.NotFound);
+
             dbTransaction = Repository.GetTransaction();
             Repository.UseTransaction(dbTransaction);
 
