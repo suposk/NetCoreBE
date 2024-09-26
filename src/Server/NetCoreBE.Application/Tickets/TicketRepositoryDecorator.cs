@@ -58,62 +58,6 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
     public override Task<ResultCom<TicketDto>> UpdateDtoAsync(TicketDto dto, bool saveChanges = true) =>
         throw new NotImplementedException($"Use  {nameof(UpdateTicketCommand)} or {nameof(UpdateDto)} with {nameof(TicketUpdateDto)} instead");
 
-    //public async Task<ResultCom<TicketDto>> UpdateDto(TicketUpdateDto? dtoUpdate)
-    //{        
-    //    if (dtoUpdate is null)
-    //        return ResultCom<TicketDto>.Failure($"{nameof(dtoUpdate)} parameter is null", HttpStatusCode.BadRequest);
-    //    if (dtoUpdate.Id.IsNullOrEmptyExt())
-    //        return ResultCom<TicketDto>.Failure($"{nameof(dtoUpdate.Id)} parameter is missing");
-
-    //    //IDbContextTransaction? dbTransaction = null;
-    //    try
-    //    {
-    //        //dbTransaction = Repository.GetTransaction();
-    //        //_repositoryTicketHistory.UseTransaction(dbTransaction);
-
-    //        var entity = await Repository.GetId(dtoUpdate.Id);
-    //        if (entity is null)
-    //            return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} not found", HttpStatusCode.NotFound);
-
-    //        //must include RowVersion for optimistic concurrency
-    //        entity.RowVersion = dtoUpdate.RowVersion;
-    //        //todo domain entity update method  
-    //        var upd = entity.Update(dtoUpdate.Status, dtoUpdate.Note, _dateTimeService.UtcNow);
-    //        if (upd.IsFailure)
-    //            return ResultCom<TicketDto>.Failure(upd.ErrorMessage, HttpStatusCode.BadRequest);
-
-    //        //var resHistory = await _repositoryTicketHistory.AddAsync(entity.TicketHistoryList.Last());
-    //        _repositoryTicketHistory.Add(entity.TicketHistoryList.Last());
-
-    //        //todo Fix invlidate cache
-    //        entity.AddDomainEvent(new UpdatedEvent<Ticket>(entity)); //raise event to invaliated cache
-
-    //        //var res = await Repository.UpdateAsync(entity);
-    //        //if (res is null)
-    //        //    return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
-    //        Repository.Update(entity);
-
-    //        var res = await Repository.SaveChangesAsync();
-    //        if (res is false)
-    //            return ResultCom<TicketDto>.Failure($"Entity with id {dtoUpdate.Id} failed UpdateAsync", HttpStatusCode.InternalServerError);
-
-    //        //dbTransaction?.Commit();
-
-    //        var dto = Mapper.Map<TicketDto>(res);
-    //        return ResultCom<TicketDto>.Success(dto);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        //dbTransaction?.Rollback();
-    //        Logger.LogError(ex, "Error");
-    //        return ResultCom<TicketDto>.Failure($"{ex.Message}", HttpStatusCode.InternalServerError);
-    //    }
-    //    finally
-    //    {
-    //        //dbTransaction?.Dispose();
-    //    }
-    //}
-
     public async Task<ResultCom<TicketDto>> UpdateDto(TicketUpdateDto? dtoUpdate)
     {
         Logger.LogInformation("Started");

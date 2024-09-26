@@ -21,7 +21,7 @@ GET https://{{host}}/api/{{version}}/Ticket/Ticket-1
 
 # ###
 
-GET https://{{host}}/api/{{version}}/Ticket/SearchQuery?Note=21&currentPage=2&TicketType=Laptop
+GET https://{{host}}/api/{{version}}/Ticket/SearchQuery?currentPage=1&TicketType=Access
 
 ###
 
@@ -29,9 +29,9 @@ GET https://{{host}}/api/{{version}}/Ticket/Search
 Content-Type: application/json
 {
   "searchTerm": "",
-  "TicketType": "Laptop",
+  "TicketType": "Access",
   "Status": "",
-  "Note": "21",
+  "Note": "",
   "currentPage": 1,
   "pageSize": 15,
   "orderBy": "CreatedAt"  
@@ -42,7 +42,7 @@ POST https://{{host}}/api/{{version}}/Ticket/
 Content-Type: application/json
 {
   "id": "Ticket-01",
-  "ticketType": "New Laptop",
+  "ticketType": "Access",
   "notes": [
     "Put 1",
     "Put 2"

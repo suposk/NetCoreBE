@@ -80,13 +80,14 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(ApiRepositoryBase<>));        
         services.AddScoped(typeof(IRepositoryDecoratorBase<,>), typeof(ApiRepositoryDecoratorBase<,>));
 
-        services.AddScoped<IOldTicketRepository, OldTicketRepository>();      
-        services.AddScoped<ITicketRepository, TicketRepository>();
 
-        services.AddScoped<IOldTicketRepositoryDecorator, OldTicketRepositoryDecorator>();
-        services.AddScoped<ITicketRepositoryDecorator, TicketRepositoryDecorator>();
         services.AddScoped<IOutboxDomaintEventRepository, OutboxDomaintEventRepository>();
+        services.AddScoped<ITicketRepository, TicketRepository>();
+        services.AddScoped<ICrudExampleRepository, CrudExampleRepository>();        
 
+        services.AddScoped<ITicketRepositoryDecorator, TicketRepositoryDecorator>();
+        services.AddScoped<ICrudExampleRepositoryDecorator, CrudExampleRepositoryDecorator>();
+        
         ////factory methods, not used yet
         //services.AddScoped<IDbContextFactory<ApiDbContext>, DbContextFactory<ApiDbContext>>();
         //services.AddTransient<IApiDbContext>(provider =>    
@@ -109,11 +110,6 @@ public static class DependencyInjection
             typeof(GetByIdQueryHandler<TicketHistory, TicketHistoryDto>));
         services.AddScoped(typeof(IRequestHandler<GetListQuery<TicketHistoryDto>, ResultCom<List<TicketHistoryDto>>>),
             typeof(GetListQueryHandler<TicketHistory, TicketHistoryDto>));
-
-        services.AddScoped(typeof(IRequestHandler<GetByIdQuery<OldTicketDto>, ResultCom<OldTicketDto>>),
-            typeof(GetByIdQueryHandler<OldTicket, OldTicketDto>));
-        services.AddScoped(typeof(IRequestHandler<GetListQuery<OldTicketDto>, ResultCom<List<OldTicketDto>>>),
-            typeof(GetListQueryHandler<OldTicket, OldTicketDto>));
     }
 
     private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)

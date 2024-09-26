@@ -1,0 +1,59 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+@hostname=localhost
+@port=6006
+#@port=8081
+@host={{hostname}}:{{port}}
+@version=v1
+@id=CrudExample-01
+
+#GET https://localhost:6006/api/v2/CrudExample/
+
+GET https://{{host}}/api/{{version}}/CrudExample/
+
+###
+
+GET https://{{host}}/api/{{version}}/CrudExample/{{id}}
+
+# ###
+
+GET https://{{host}}/api/{{version}}/CrudExample/CrudExample-1
+
+# ###
+
+POST https://{{host}}/api/{{version}}/CrudExample/
+Content-Type: application/json
+{
+  "id": "CrudExample-01",
+  "isActive": true,
+  "name": "Name 1",
+  "description" : "POST http Api",
+  "createdBy": "Api"
+}
+
+###
+
+GET https://{{host}}/api/{{version}}/CrudExample/CrudExample-01
+
+# ###
+
+PUT https://{{host}}/api/{{version}}/CrudExample/
+Content-Type: application/json
+{
+  "id": "CrudExample-01",
+  "isActive": false,
+  "name": "Name put 1",
+  "description" : "Updated http Api",      
+  "rowVersion": 921  
+}
+
+###
+
+DELETE https://{{host}}/api/{{version}}/CrudExample/{{id}}
+
+###
+
+#Seed Data. Only works if count is less Seed/number
+POST https://{{host}}/api/{{version}}/CrudExample/Seed/21
+
+###

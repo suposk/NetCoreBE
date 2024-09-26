@@ -7,8 +7,8 @@ public interface IApiDbContext
 {
     DbSet<TicketHistory> TicketHistorys { get; set; }
     DbSet<Ticket> Tickets { get; set; }
-    DbSet<OldTicket> OldTickets { get; set; }
     DbSet<OutboxDomaintEvent> OutboxDomaintEvents { get; set; }
+    DbSet<CrudExample> CrudExamples { get; set; }
 
     ///// <summary>
     ///// Not sure if needed

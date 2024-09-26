@@ -46,7 +46,7 @@ global using NetCoreBE.Infrastructure.Persistence;
 global using NetCoreBE.Application;
 global using NetCoreBE.Application.Interfaces;
 global using NetCoreBE.Application.Tickets;
-global using NetCoreBE.Application.OldTickets;
+global using NetCoreBE.Application.CrudExamples;
 global using NetCoreBE.Application.OutboxDomaintEvents;
 
 //Domain

@@ -41,7 +41,7 @@ public class TicketRepository : Repository<Ticket>, ITicketRepository
             if (countExisintg == 0)
                 id = $"{nameof(Ticket)}-{i}";
 
-            var ticket = Ticket.Create(id, i % 2 == 0 ? "Access" : "New Laptop", $"note {cycle} / {addCount} / {newTotal}", UserId);            
+            var ticket = Ticket.Create(id, i % 2 == 0 ? TicketTypeEnum.Access.ToString() : TicketTypeEnum.Problem.ToString(), $"note {cycle} / {addCount} / {newTotal}", UserId);            
             list.Add(ticket);
         }
         _repository.AddRange(list, UserId);

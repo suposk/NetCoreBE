@@ -10,9 +10,6 @@ public class MapperProfile : Profile
         //     .ForMember(destination => destination.Price, x => x.MapFrom(source => source.Price))
         //https://stackoverflow.com/questions/37072286/how-to-use-mapper-map-inside-mapperconfiguration-of-automapper
 
-        CreateMap<OldTicketDto, OldTicket>()
-            .ReverseMap();
-
         CreateMap<TicketDto, Ticket>()
             //.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes)) //only for mapping from dto to entity
             .ForMember(dest => dest.Notes, opt => opt.Ignore())  //clears Notes list and automaticaly sets notes with message from note          
@@ -20,5 +17,9 @@ public class MapperProfile : Profile
 
         CreateMap<TicketHistoryDto, TicketHistory>()
             .ReverseMap();
+
+        CreateMap<CrudExampleDto, CrudExample>()
+            .ReverseMap();
+
     }
 }

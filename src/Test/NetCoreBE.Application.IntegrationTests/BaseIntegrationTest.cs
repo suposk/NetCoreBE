@@ -5,6 +5,7 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppF
     protected readonly IServiceScope Scope;
     protected readonly ISender Sender;
     protected readonly ApiDbContext DbContext;
+    protected readonly IntegrationTestWebAppFactory Factory;
 
     protected BaseIntegrationTest(IntegrationTestWebAppFactory factory)
     {
@@ -12,8 +13,9 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppF
 
         Sender = Scope.ServiceProvider.GetRequiredService<ISender>();
         DbContext = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+        Factory = factory;
 
-        DbContext.Database.EnsureDeleted();
-        DbContext.Database.EnsureCreated();
-    }
+        //DbContext.Database.EnsureDeleted();
+        //DbContext.Database.EnsureCreated();
+    }    
 }
