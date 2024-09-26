@@ -80,40 +80,49 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task Update_ShouldReturn_Ok()
     {
-        ////// Arrange        
-        ////var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };                
-        ////var old = (await Sender.Send(q)).Value;
-        ////DbContext.ChangeTracker.Clear();
+        //////// Arrange        
+        //////var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };                
+        //////var old = (await Sender.Send(q)).Value;
+        //////DbContext.ChangeTracker.Clear();
+        //////old.Note = "Update test";
+
+        //////// Act        
+        //////var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = old.Note, RowVersion = old.RowVersion });
+
+        ////// Arrange       
+        ////var old = (await _decorator.GetIdDto(TicketData.TicketId)).Value;        
+        ////_decorator.DatabaseContext.ChangeTracker.Clear();
         ////old.Note = "Update test";
+        ////_testOutputHelper.WriteLine($"Old Id: {old.Id},  RowVersion: {old?.RowVersion}");
+
+        //////var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+        ////var ctx = _decorator.DatabaseContext as ApiDbContext;
+        ////var all = await ctx.Tickets.ToListAsync();
+        ////foreach (var item in all)        
+        ////    _testOutputHelper.WriteLine($"Id: {item.Id},  RowVersion: {item.RowVersion}");        
+        ////ctx.ChangeTracker.Clear();        
 
         ////// Act        
         ////var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = old.Note, RowVersion = old.RowVersion });
 
-        //// Arrange       
-        //var old = (await _decorator.GetIdDto(TicketData.TicketId)).Value;        
-        //_decorator.DatabaseContext.ChangeTracker.Clear();
-        //old.Note = "Update test";
+        ////works, returns same RowVersion 
+        //var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();        
+        //var old = await ctx.Tickets.FirstOrDefaultAsync(x => x.Id == TicketData.TicketId);
         //_testOutputHelper.WriteLine($"Old Id: {old.Id},  RowVersion: {old?.RowVersion}");
-
-        ////var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
-        //var ctx = _decorator.DatabaseContext as ApiDbContext;
-        //var all = await ctx.Tickets.ToListAsync();
-        //foreach (var item in all)        
-        //    _testOutputHelper.WriteLine($"Id: {item.Id},  RowVersion: {item.RowVersion}");        
-        //ctx.ChangeTracker.Clear();        
+        //ctx.ChangeTracker.Clear();
+        //var dto = new TicketUpdateDto { Id = old.Id, Note = "Update t1", RowVersion = old.RowVersion };
 
         //// Act        
-        //var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = old.Note, RowVersion = old.RowVersion });
+        //var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = "Update t1", RowVersion = old.RowVersion });
 
-        //works, returns same RowVersion 
-        var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();        
-        var old = await ctx.Tickets.FirstOrDefaultAsync(x => x.Id == TicketData.TicketId);
-        _testOutputHelper.WriteLine($"Old Id: {old.Id},  RowVersion: {old?.RowVersion}");
-        ctx.ChangeTracker.Clear();
+
+        //Arrange
+        var old = (await _decorator.AddAsyncDto(TicketData.Add)).Value;
+        DbContext.ChangeTracker.Clear();
         var dto = new TicketUpdateDto { Id = old.Id, Note = "Update t1", RowVersion = old.RowVersion };
 
-        // Act        
-        var result = await _decorator.UpdateDto(new TicketUpdateDto { Id = old.Id, Note = "Update t1", RowVersion = old.RowVersion });
+        // Act
+        var result = await _decorator.UpdateDto(dto);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -127,10 +136,9 @@ public class TicketDecoratorTest : TicketIntegrationTest, IAsyncLifetime
     public async Task Update_ShouldReturn_Failed()
     {
         // Arrange
-        var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
-        var old = await ctx.Tickets.FirstOrDefaultAsync(x => x.Id == TicketData.TicketId);
-        _testOutputHelper.WriteLine($"Old Id: {old.Id},  RowVersion: {old?.RowVersion}");
-        ctx.ChangeTracker.Clear();
+        //Arrange
+        var old = (await _decorator.AddAsyncDto(TicketData.Add)).Value;
+        DbContext.ChangeTracker.Clear();
         var dto = new TicketUpdateDto { Id = old.Id, Note = "Update t1", RowVersion = old.RowVersion };
         dto.RowVersion += 1;
 
