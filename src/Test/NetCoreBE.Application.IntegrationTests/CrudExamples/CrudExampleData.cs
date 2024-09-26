@@ -2,8 +2,9 @@
 
 internal static class CrudExampleData
 {
-    public static readonly string CrudExampleId = "CrudExample-1";
-    public static readonly string AddCrudExample = "CrudExample-01";
+    public const string CrudExampleId = "CrudExample-1";
+    public const string AddCrudExample = "CrudExample-01";
+    public const uint RowVersion = 741;
 
     public static readonly CrudExampleDto Add = new()
     {
@@ -21,6 +22,6 @@ internal static class CrudExampleData
         Name = "Name put 1",
         Description = "Description put 1",
         //RowVersion = 758,
-        RowVersion = 741,
+        RowVersion = RowVersion,
     };
 }

@@ -2,8 +2,8 @@
 
 internal static class TicketData
 {
-    public static readonly string TicketId = "Ticket-1";
-    public static readonly string AddTicketId = "Ticket-01";
+    public const string TicketId = "Ticket-1";
+    public const string AddTicketId = "Ticket-01";
 
     public static readonly TicketDto Add = new()
     {
