@@ -13,8 +13,9 @@ public abstract class BaseFunctionalTest : IClassFixture<FunctionalTestWebAppFac
         Scope = factory.Services.CreateScope();
         Sender = Scope.ServiceProvider.GetRequiredService<ISender>();
         DbContext = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
-        DbContext.Database.EnsureDeleted();
-        DbContext.Database.EnsureCreated();
+
+        //DbContext.Database.EnsureDeleted();
+        //DbContext.Database.EnsureCreated();
 
         HttpClient = factory.CreateClient();
     }

@@ -1,6 +1,4 @@
-using NetCoreBE.Application.FunctionalTests.Tickets;
-
-namespace Bookify.Api.FunctionalTests.Users;
+namespace NetCoreBE.Application.FunctionalTests.Tickets;
 
 public class TicketV1Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
 {
@@ -17,7 +15,13 @@ public class TicketV1Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
 
     private async Task Seed(int count)
     {
-        await Scope.ServiceProvider.GetRequiredService<ITicketRepository>().Seed(count, count, "Seed Test");
+        var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+        ctx.TicketHistorys.RemoveRange(ctx.TicketHistorys);
+        ctx.Tickets.RemoveRange(ctx.Tickets);
+        await ctx.SaveChangesAsync();
+        ctx.ChangeTracker.Clear();
+
+        var s = await Scope.ServiceProvider.GetRequiredService<ITicketRepository>().Seed(count, count, "Seed Test");
         DbContext.ChangeTracker.Clear();
     }
 
@@ -31,7 +35,7 @@ public class TicketV1Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
         // Arrange
 
         // Act
-        HttpResponseMessage response = await HttpClient.GetAsync(_url  + id);
+        HttpResponseMessage response = await HttpClient.GetAsync(_url + id);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -77,7 +81,6 @@ public class TicketV1Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
     }
 
     [Fact]
-    //put should return no content
     public async Task Put_ShouldReturn_Ok()
     {
         // Arrange
@@ -95,7 +98,7 @@ public class TicketV1Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
         content.Should().NotBeNullOrEmpty();
     }
 
-    [Fact]    
+    [Fact]
     public async Task Delete_ShouldReturn_NoContent()
     {
         // Arrange
@@ -107,7 +110,7 @@ public class TicketV1Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
-    [Fact]    
+    [Fact]
     public async Task Delete_ShouldReturn_NotFound()
     {
         // Arrange
