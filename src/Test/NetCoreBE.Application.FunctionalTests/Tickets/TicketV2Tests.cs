@@ -25,22 +25,6 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
         DbContext.ChangeTracker.Clear();
     }
 
-    [Theory]
-    //[InlineData(" ")]//return Ok
-    [InlineData("1")]
-    [InlineData("Ticket-Fake")]
-    public async Task Register_ShouldReturnBadRequest_WhenRequestIsInvalid(
-        string id)
-    {
-        // Arrange
-
-        // Act
-        HttpResponseMessage response = await HttpClient.GetAsync(_url + id);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
     [Fact]
     public async Task Get_ShouldReturn_Ok()
     {
@@ -63,6 +47,22 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+
+    [Theory]
+    //[InlineData(" ")]//return Ok
+    [InlineData("1")]
+    [InlineData("Ticket-Fake")]
+    public async Task GetById_ShouldReturn_NotFound(string id)
+    {
+        // Arrange
+
+        // Act
+        HttpResponseMessage response = await HttpClient.GetAsync(_url + id);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
