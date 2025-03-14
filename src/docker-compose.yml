@@ -8,9 +8,9 @@ services:
       context: .
       dockerfile: Server/NetCoreBE.Api/Dockerfile
     depends_on:
-      - netcorebe-db
+      - netcorebe.db
 
-  netcorebe-db:
+  netcorebe.db:
     image: postgres:latest
     container_name: NetCoreBE.Db
     environment:
@@ -18,7 +18,10 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       #- DbTypeEnum=PostgreSQL nefunguje, iba override
+    # volumes:
+    #   - ./.containers/database:/var/lib/postgresql/data
     volumes:
-      - ./.containers/database:/var/lib/postgresql/data
+      - ./.containers/database:/var/lib/postgresql/data2
     ports:
-      - 5432:5432
+      #- 5432:5432
+       - 54320:5432

@@ -1,6 +1,4 @@
-using NetCoreBE.Application.FunctionalTests.Tickets;
-
-namespace Bookify.Api.FunctionalTests.Users;
+namespace NetCoreBE.Application.FunctionalTests.Tickets;
 
 public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
 {
@@ -17,24 +15,14 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
 
     private async Task Seed(int count)
     {
+        var ctx = Scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+        ctx.TicketHistorys.RemoveRange(ctx.TicketHistorys);
+        ctx.Tickets.RemoveRange(ctx.Tickets);
+        await ctx.SaveChangesAsync();
+        ctx.ChangeTracker.Clear();
+
         await Scope.ServiceProvider.GetRequiredService<ITicketRepository>().Seed(count, count, "Seed Test");
         DbContext.ChangeTracker.Clear();
-    }
-
-    [Theory]
-    //[InlineData(" ")]//return Ok
-    [InlineData("1")]
-    [InlineData("Ticket-Fake")]
-    public async Task Register_ShouldReturnBadRequest_WhenRequestIsInvalid(
-        string id)
-    {
-        // Arrange
-
-        // Act
-        HttpResponseMessage response = await HttpClient.GetAsync(_url  + id);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -61,6 +49,22 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
+
+    [Theory]
+    //[InlineData(" ")]//return Ok
+    [InlineData("1")]
+    [InlineData("Ticket-Fake")]
+    public async Task GetById_ShouldReturn_NotFound(string id)
+    {
+        // Arrange
+
+        // Act
+        HttpResponseMessage response = await HttpClient.GetAsync(_url + id);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
     [Fact]
     public async Task Post_ShouldReturn_Ok()
     {
@@ -77,7 +81,6 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
     }
 
     [Fact]
-    //put should return no content
     public async Task Put_ShouldReturn_Ok()
     {
         // Arrange
@@ -95,7 +98,7 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
         content.Should().NotBeNullOrEmpty();
     }
 
-    [Fact]    
+    [Fact]
     public async Task Delete_ShouldReturn_NoContent()
     {
         // Arrange
@@ -107,7 +110,7 @@ public class TicketV2Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
-    [Fact]    
+    [Fact]
     public async Task Delete_ShouldReturn_NotFound()
     {
         // Arrange

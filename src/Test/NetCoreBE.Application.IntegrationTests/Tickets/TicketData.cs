@@ -8,7 +8,7 @@ internal static class TicketData
     public static readonly TicketDto Add = new()
     {
         Id = AddTicketId,
-        TicketType = "New Laptop",
+        TicketType = TicketTypeEnum.Access.ToString(),
         Note = "add test",
         CreatedBy = "Test",
     };

@@ -9,6 +9,8 @@ Add-Migration TicketNotes -Context ApiDbContext -OutputDir Persistence\Migration
 Add-Migration OldTicketRemoved -Context ApiDbContext -OutputDir Persistence\Migrations\PostgreSQL
 Add-Migration CrudExampleAdded -Context ApiDbContext -OutputDir Persistence\Migrations\PostgreSQL
 
+Add-Migration IsSuccessAdded -Context ApiDbContext -OutputDir Persistence\Migrations\PostgreSQL
+
 Update-Database -Context ApiDbContext
 Remove-Migration -Context ApiDbContext
 

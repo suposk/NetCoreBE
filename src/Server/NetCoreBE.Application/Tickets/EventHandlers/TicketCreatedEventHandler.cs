@@ -81,7 +81,8 @@ public class TicketCreatedEventHandler(
 
                 if (result.IsFailure)
                 {
-                    outboxMessage.SetToIgnored(_dateTimeService.UtcNow, result.ErrorMessage);
+                    //outboxMessage.SetToIgnored(_dateTimeService.UtcNow, result.ErrorMessage);
+                    outboxMessage.SetFailed(_dateTimeService.UtcNow, result.ErrorMessage);
                     await outboxDomaintEventRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler));
                     return;
                 }
@@ -119,6 +120,43 @@ public class TicketCreatedEventHandler(
                 _timer.Stop();
                 _logger.LogInformation("Domain Event: {DomainEvent}, end {ElapsedMilliseconds}ms", type.FullName, _timer.ElapsedMilliseconds);
             }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, null, ex);
+        }
+    }
+}
+
+/// <summary>
+/// Exaple of additional handler for Domain Event, example for statistics
+/// </summary>
+/// <param name="cacheProvider"></param>
+/// <param name="serviceScopeFactory"></param>
+/// <param name="dateTimeService"></param>
+/// <param name="logger"></param>
+public class TicketCreatedEventStatHandler(
+    ICacheProvider cacheProvider,
+    IServiceScopeFactory serviceScopeFactory,
+    IDateTimeService dateTimeService,
+    ILogger<TicketCreatedEventHandler> logger
+    ) : INotificationHandler<CreatedEvent<Ticket>>
+{
+    private readonly ICacheProvider _cacheProvider = cacheProvider;
+    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
+    private readonly IDateTimeService _dateTimeService = dateTimeService;
+    private readonly ILogger<TicketCreatedEventHandler> _logger = logger;
+    private readonly Stopwatch _timer = new Stopwatch();
+
+    public async Task Handle(CreatedEvent<Ticket> notification, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (notification.Entity?.CreatedBy?.Contains("Seed") == true)
+                return;
+
+            _logger.LogInformation("Domain Event Stat: {DomainEvent}, started", notification.GetType().FullName);
+            _timer.Start();
         }
         catch (Exception ex)
         {
