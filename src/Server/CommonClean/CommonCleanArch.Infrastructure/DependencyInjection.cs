@@ -29,7 +29,8 @@ public static class DependencyInjection
         //services.AddHttpContextAccessor(); comes from SharedCommon
         services.AddScoped<IApiIdentity, ApiIdentity>();
         //services.AddScoped<IDateTimeService, DateTimeService>();        
-        services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        //services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>(); //only publish domain events to mediator
+        services.AddScoped<ISaveChangesInterceptor, OutboxDispatchDomainEventsInterceptor>(); //use outbox pattern
         services.AddScoped<IEmailService, EmailService>();
 
         //AddSingleton

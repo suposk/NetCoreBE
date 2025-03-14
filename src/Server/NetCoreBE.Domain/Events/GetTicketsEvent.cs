@@ -5,7 +5,7 @@ using CommonCleanArch.Domain;
 
 namespace NetCoreBE.Domain.Events;
 
-public class GetTicketsEvent : DomainEvent
+public class GetTicketsEvent : DomainEvent, IMemoryEvent
 {
     public GetTicketsEvent(GetTickets item)
     {

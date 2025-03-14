@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CommonCleanArch.Domain;
 
 /// <summary>
 /// OutboxMessage pattern for some DomaintEvent
@@ -81,10 +83,11 @@ public sealed class OutboxDomaintEvent : EntityBase
         IsSuccess = false;
 
         //possible some domain event failed
-        if (error.HasValueExt() && !string.Equals(error, Error))
+        //if (error.HasValueExt() && !string.Equals(error, Error))
+        if (!string.IsNullOrWhiteSpace(error) && !string.Equals(error, Error))
             Error += error; //dont want to ovveride error message        
                 
-        if (RetryCount > 0 && (RetryCount % MaxRetryCount == 0)) //allow 
+        if (RetryCount > 0 && RetryCount % MaxRetryCount == 0) //allow 
         {
             SetToIgnored(utcNow); //final failed after some retry
         }

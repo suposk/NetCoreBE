@@ -57,9 +57,10 @@ public class ProcessOutboxDomaintEventsJob(
                     continue;
                 }                
                 await _publisher.Publish(domainEvent);                
+                
                 //move to event handler
-                //message.SetProcessed(_dateTimeService.UtcNow);
-                //await _outboxMessageRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));                           
+                message.SetProcessed(_dateTimeService.UtcNow);
+                await _outboxDomaintEventRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));                           
 
                 _logger.LogDebug("OutboxDomaintEvent: {DomainEvent} Published", message.Type);
             }

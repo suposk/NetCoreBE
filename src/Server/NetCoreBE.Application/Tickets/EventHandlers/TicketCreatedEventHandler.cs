@@ -1,3 +1,4 @@
+using CommonCleanArch.Domain;
 using Newtonsoft.Json;
 using System.Diagnostics;
 
@@ -29,23 +30,6 @@ public class TicketCreatedEventHandler(
             OutboxDomaintEvent? outboxMessage = null;
             var scope = _serviceScopeFactory.CreateScope();
             var outboxDomaintEventRepository = scope.ServiceProvider.GetRequiredService<IOutboxDomaintEventRepository>();
-
-            //1. Store event to OutboxDomaintEvent process later            
-            if (notification.IsProcessing is false && notification?.Entity?.Id?.HasValueExt() is true)
-            {
-
-                //check for duplicate messages
-                if (await outboxDomaintEventRepository.Exist(entityId: notification.Entity.Id, type.FullName))
-                {
-                    _logger.LogWarning("Domain Event: {DomainEvent} already exist, {@notification}", type, notification);
-                    return;
-                }
-                string json = JsonConvert.SerializeObject(notification, CaHelper.JsonSerializerSettingsNone);
-                outboxMessage = OutboxDomaintEvent.Create(entityId: notification.Entity.Id, _dateTimeService.UtcNow, type?.FullName, json);
-                var res = await outboxDomaintEventRepository.AddAsync(outboxMessage, nameof(TicketCreatedEventHandler));
-                _logger.LogDebug("Domain Event: {DomainEvent}", type);
-                return;
-            }
 
             //2. Process Stored Event
             var result = ResultCom.Success();
@@ -101,7 +85,7 @@ public class TicketCreatedEventHandler(
 
                 await ticketHistoryRepository.AddAsync(addHistory, addHistory.CreatedBy);                
                 await repository.UpdateAsync(ticket, nameof(TicketCreatedEventHandler));                
-                await outboxDomaintEventRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler)); //v1 set to processed                
+               // await outboxDomaintEventRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler)); //v1 set to processed                
                 //await outboxDomaintEventRepository.RemoveAsync(outboxMessage?.Id); //v2 delete, keep only items that are not processed and move this to some history table
                 dbTransaction.Commit();
                 
@@ -136,27 +120,17 @@ public class TicketCreatedEventHandler(
 /// <param name="dateTimeService"></param>
 /// <param name="logger"></param>
 public class TicketCreatedEventStatHandler(
-    ICacheProvider cacheProvider,
-    IServiceScopeFactory serviceScopeFactory,
-    IDateTimeService dateTimeService,
     ILogger<TicketCreatedEventHandler> logger
     ) : INotificationHandler<CreatedEvent<Ticket>>
 {
-    private readonly ICacheProvider _cacheProvider = cacheProvider;
-    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
-    private readonly IDateTimeService _dateTimeService = dateTimeService;
-    private readonly ILogger<TicketCreatedEventHandler> _logger = logger;
-    private readonly Stopwatch _timer = new Stopwatch();
+    private readonly ILogger<TicketCreatedEventHandler> _logger = logger;    
 
     public async Task Handle(CreatedEvent<Ticket> notification, CancellationToken cancellationToken)
     {
         try
         {
-            if (notification.Entity?.CreatedBy?.Contains("Seed") == true)
-                return;
-
-            _logger.LogInformation("Domain Event Stat: {DomainEvent}, started", notification.GetType().FullName);
-            _timer.Start();
+            await Task.Yield();
+            _logger.LogInformation("Domain Event Stat: {DomainEvent}, started", notification.GetType().FullName);                       
         }
         catch (Exception ex)
         {

@@ -1,3 +1,4 @@
+using CommonCleanArch.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
 
