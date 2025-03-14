@@ -39,6 +39,8 @@ public class ProcessOutboxDomaintEventsJob(
                 if (_assembliesTypesNotifications.TryGetValue(message.Type, out var type) == false)
                 {
                     _logger.LogWarning("OutboxDomaintEvent: {DomainEvent} type not found", message.Type);
+                    message.SetFailed(_dateTimeService.UtcNow, $"{message.Type} type not found");
+                    await _outboxDomaintEventRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));
                     continue;
                 }
 
