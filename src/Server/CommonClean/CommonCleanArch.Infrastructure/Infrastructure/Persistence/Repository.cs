@@ -1,5 +1,4 @@
-﻿using CommonCleanArch.Application.Services;
-using Microsoft.EntityFrameworkCore.Storage;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CommonCleanArch.Infrastructure.Persistence;
 

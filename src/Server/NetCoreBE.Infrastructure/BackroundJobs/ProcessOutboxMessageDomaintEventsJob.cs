@@ -28,7 +28,8 @@ public class ProcessOutboxDomaintEventsJob(
             return; //nothing to process        
         }
 
-        //Read types from cache        
+        //Read types from cache
+        //all types that implement INotificationHandler<>
         Dictionary<string?, Type> _assembliesTypesNotifications = await LoadTypesFromCahce();
 
         foreach (var message in messages)
@@ -67,8 +68,8 @@ public class ProcessOutboxDomaintEventsJob(
             catch (Exception ex)
             {
 
-                //message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1)); //add 1 minute to retry
-                message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddSeconds(10));
+                message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1)); //add 1 minute to retry
+                //message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddSeconds(10));
                 await _outboxDomaintEventRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));    
                 _logger.LogError(ex, $"{nameof(ProcessOutboxDomaintEventsJob)} failed", ex);
             }
