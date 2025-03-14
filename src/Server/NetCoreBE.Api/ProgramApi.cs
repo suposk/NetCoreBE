@@ -7,8 +7,11 @@ using Asp.Versioning;
 using NetCoreBE.Api.OpenApi;
 using SharedCommon;
 using System.Configuration;
+using NetCoreBE.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, loggerConfig) => loggerConfig.ReadFrom.Configuration(context.Configuration));
 
 //for retriving secrets from Azure Key Vault only
 using var loggerFactory = LoggerFactory.Create(builder =>
@@ -93,6 +96,9 @@ app.UseSwaggerUI(options =>
         options.SwaggerEndpoint(url, name);
     }
 });
+
+app.UseLogContext();
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
