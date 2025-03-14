@@ -13,15 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, loggerConfig) => loggerConfig.ReadFrom.Configuration(context.Configuration));
 
-//for retriving secrets from Azure Key Vault only
-using var loggerFactory = LoggerFactory.Create(builder =>
-{
-    builder.SetMinimumLevel(LogLevel.Information);
-    builder.AddConsole();
-    builder.AddEventSourceLogger();
-});
-var _logger = loggerFactory.CreateLogger(nameof(ProgramApi));
-_logger.LogInformation($"Created {nameof(ProgramApi)} _logger");
+////for retriving secrets from Azure Key Vault only
+//using var loggerFactory = LoggerFactory.Create(builder =>
+//{
+//    builder.SetMinimumLevel(LogLevel.Information);
+//    builder.AddConsole();
+//    builder.AddEventSourceLogger();
+//});
+//var _logger = loggerFactory.CreateLogger(nameof(ProgramApi));
+//_logger.LogInformation($"Created {nameof(ProgramApi)} _logger");
 
 // Add services to the container.
 
@@ -57,7 +57,8 @@ builder.Host.UseSerilog((context, config) =>
 var services = builder.Services;
 var Configuration = builder.Configuration;
 
-services.RegisterCommonCleanArchServices(Configuration, _logger);
+//services.RegisterCommonCleanArchServices(Configuration, _logger);
+services.RegisterCommonCleanArchServices(Configuration, null);
 services.RegisterSharedCommonServices(Configuration);
 
 services.AddMvc(options => //Validation filter
