@@ -23,7 +23,10 @@ public class ProcessOutboxDomaintEventsJob(
     {
         var messages = await _outboxDomaintEventRepository.GetListToProcess(1);
         if (messages.IsNullOrEmptyCollection())
+        {
+            _logger.LogDebug("No OutboxDomaintEvents to process");
             return; //nothing to process        
+        }
 
         //Read types from cache        
         Dictionary<string?, Type> _assembliesTypesNotifications = await LoadTypesFromCahce();
@@ -34,7 +37,7 @@ public class ProcessOutboxDomaintEventsJob(
             {
                 if (_assembliesTypesNotifications.TryGetValue(message.Type, out var type) == false)
                 {
-                    _logger.LogWarning("Domain Event: {DomainEvent} type not found", message.Type);
+                    _logger.LogWarning("OutboxDomaintEvent: {DomainEvent} type not found", message.Type);
                     continue;
                 }
 
@@ -50,7 +53,7 @@ public class ProcessOutboxDomaintEventsJob(
                 //var domainEvent = JsonConvert.DeserializeObject<TicketCreatedEvent>(message.Content); //works 
                 if (domainEvent == null)
                 {
-                    _logger.LogWarning("Domain Event: {DomainEvent} deserialization failed", message.Type);
+                    _logger.LogWarning("OutboxDomaintEvent: {DomainEvent} deserialization failed", message.Type);
                     continue;
                 }                
                 await _publisher.Publish(domainEvent);                
@@ -58,7 +61,7 @@ public class ProcessOutboxDomaintEventsJob(
                 //message.SetProcessed(_dateTimeService.UtcNow);
                 //await _outboxMessageRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));                           
 
-                _logger.LogDebug("Domain Event: {DomainEvent} Published", message.Type);
+                _logger.LogDebug("OutboxDomaintEvent: {DomainEvent} Published", message.Type);
             }
             catch (Exception ex)
             {
