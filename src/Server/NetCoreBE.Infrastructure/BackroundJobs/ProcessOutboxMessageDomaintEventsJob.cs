@@ -37,6 +37,9 @@ public class ProcessOutboxDomaintEventsJob(
                     _logger.LogWarning("Domain Event: {DomainEvent} type not found", message.Type);
                     continue;
                 }
+
+                //test failed logic.
+                //throw new Exception("Test failed logic");
                 var domainEvent = JsonConvert.DeserializeObject(message.Content, type);
                 var de = domainEvent as DomainEvent;
                 if (de != null)
@@ -58,8 +61,10 @@ public class ProcessOutboxDomaintEventsJob(
                 _logger.LogDebug("Domain Event: {DomainEvent} Published", message.Type);
             }
             catch (Exception ex)
-            {                
-                message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1));
+            {
+
+                //message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1)); //add 1 minute to retry
+                message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddSeconds(10));
                 await _outboxDomaintEventRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));    
                 _logger.LogError(ex, $"{nameof(ProcessOutboxDomaintEventsJob)} failed", ex);
             }

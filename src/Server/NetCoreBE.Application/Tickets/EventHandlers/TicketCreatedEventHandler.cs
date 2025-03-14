@@ -81,7 +81,8 @@ public class TicketCreatedEventHandler(
 
                 if (result.IsFailure)
                 {
-                    outboxMessage.SetToIgnored(_dateTimeService.UtcNow, result.ErrorMessage);
+                    //outboxMessage.SetToIgnored(_dateTimeService.UtcNow, result.ErrorMessage);
+                    outboxMessage.SetFailed(_dateTimeService.UtcNow, result.ErrorMessage);
                     await outboxDomaintEventRepository.UpdateAsync(outboxMessage, nameof(TicketCreatedEventHandler));
                     return;
                 }

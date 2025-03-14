@@ -14,7 +14,11 @@ public sealed class OutboxDomaintEvent : EntityBase
     }
 
     [NotMapped]
+#if DEBUG
+    public const int MaxRetryCount = 2;
+#else
     public const int MaxRetryCount = 5;
+#endif
 
     /// <summary>
     /// EntityId related to this domain event
@@ -23,8 +27,13 @@ public sealed class OutboxDomaintEvent : EntityBase
     [MaxLength(36)]
     public string? EntityId { get; set; }
 
-    public bool? IsProcessed { get; set; }
-    
+    public bool? IsProcessed { get; private set; }
+
+    /// <summary>
+    /// Event is processed successfully
+    /// </summary>
+    public bool? IsSuccess { get; private set; }
+
     [MaxLength(500)]
     public string? Error { get; set; }
 
@@ -37,8 +46,8 @@ public sealed class OutboxDomaintEvent : EntityBase
     public string? Content { get; set; }
     public DateTime OccuredUtc { get; set; }
     public DateTime? ProcessedUtc { get; set; }
-    public int RetryCount { get; set; }
-    public DateTime? NextRetryUtc { get; set; }
+    public int RetryCount { get; private set; }
+    public DateTime? NextRetryUtc { get; private set; }
 
     public static OutboxDomaintEvent Create(string? entityId, DateTime utcNow, string type, string content)
     {
@@ -55,7 +64,8 @@ public sealed class OutboxDomaintEvent : EntityBase
 
     public void SetProcessed(DateTime utcNow)
     {
-        //possible some domain event is completed
+        //domain event is completed
+        IsSuccess = true;
         IsProcessed = true;
         ProcessedUtc = utcNow;        
         NextRetryUtc = null;        
@@ -68,13 +78,15 @@ public sealed class OutboxDomaintEvent : EntityBase
     /// <param name="nextRetryUtc"></param>
     public void SetFailed(DateTime utcNow, string? error, DateTime? nextRetryUtc = null)
     {
+        IsSuccess = false;
+
         //possible some domain event failed
-        if (error.HasValueExt()) Error = error; //dont want to ovveride error message        
-        if (RetryCount >= MaxRetryCount)
+        if (error.HasValueExt() && !string.Equals(error, Error))
+            Error += error; //dont want to ovveride error message        
+                
+        if (RetryCount > 0 && (RetryCount % MaxRetryCount == 0)) //allow 
         {
-            IsProcessed = false; //final failed
-            ProcessedUtc = utcNow;            
-            NextRetryUtc = null;            
+            SetToIgnored(utcNow); //final failed after some retry
         }
         else
         {            
@@ -85,9 +97,26 @@ public sealed class OutboxDomaintEvent : EntityBase
         }
     }
 
-    public void SetToIgnored(DateTime utcNow, string? error)
-    {        
-        if (error.HasValueExt()) Error = error; //dont want to ovveride error message        
+    /// <summary>
+    /// If need to process again/replay domain event
+    /// </summary>
+    /// <param name="utcNow"></param>
+    /// <param name="nextRetryUtc"></param>
+    public void ReplayEvent(DateTime utcNow)
+    {
+        IsSuccess = null;
+        IsProcessed = false;
+        ProcessedUtc = utcNow;
+        NextRetryUtc = null;
+        RetryCount = 0;
+    }
+
+    /// <summary>
+    /// If need to ignore domain event, after some retry
+    /// </summary>
+    /// <param name="utcNow"></param>
+    private void SetToIgnored(DateTime utcNow)
+    {               
         IsProcessed = true;
         ProcessedUtc = utcNow;
         NextRetryUtc = null;

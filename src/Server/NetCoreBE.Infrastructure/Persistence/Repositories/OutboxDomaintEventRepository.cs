@@ -28,7 +28,7 @@ public class OutboxDomaintEventRepository : Repository<OutboxDomaintEvent>, IOut
     {
         // not using AsNoTracking() because will update them
         var collection = _context.OutboxDomaintEvents
-            .Where(a => (a.IsProcessed == null && a.NextRetryUtc == null) || (a.IsProcessed != true && a.NextRetryUtc <= DateTimeService.UtcNow))
+            .Where(a => (a.IsProcessed != true && a.NextRetryUtc == null) || (a.IsProcessed != true && a.NextRetryUtc <= DateTimeService.UtcNow))
             .OrderBy(a => a.OccuredUtc)
             .Take(countToProcess);
         return collection.ToListAsync();
