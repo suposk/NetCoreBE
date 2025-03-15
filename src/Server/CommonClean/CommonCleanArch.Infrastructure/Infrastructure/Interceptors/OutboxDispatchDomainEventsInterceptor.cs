@@ -51,9 +51,7 @@ public class OutboxDispatchDomainEventsInterceptor : SaveChangesInterceptor
         {
             string json = JsonConvert.SerializeObject(domainEvent, CaHelper.JsonSerializerSettingsNone);
             Type? type = domainEvent.GetType();
-            OutboxDomaintEvent outboxMessage = OutboxDomaintEvent.Create(entityId: domainEvent.Id, _dateTimeService.UtcNow, type?.FullName, json);
-            outboxMessage.Id ??= StringHelper.GetStringGuidExt();
-            outboxMessage.CreatedAt ??= _dateTimeService.UtcNow;
+            OutboxDomaintEvent outboxMessage = OutboxDomaintEvent.Create(entityId: domainEvent.Id, _dateTimeService.UtcNow, type?.FullName, json);                        
             OutboxDomaintEvents.Add(outboxMessage);
         }
         if (OutboxDomaintEvents.Any())

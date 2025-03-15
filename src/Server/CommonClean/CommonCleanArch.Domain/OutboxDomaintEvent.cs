@@ -54,12 +54,14 @@ public sealed class OutboxDomaintEvent : EntityBase
     public static OutboxDomaintEvent Create(string? entityId, DateTime utcNow, string type, string content)
     {
         return new OutboxDomaintEvent
-        {            
+        {
+            Id = StringHelper.GetStringGuidExt(),
             EntityId = entityId ?? throw new ArgumentNullException(nameof(entityId)),
             Type = type ?? throw new ArgumentNullException(nameof(type)),            
             Content = content ?? throw new ArgumentNullException(nameof(type)),
             //TypeDetail = typeDetail,
             OccuredUtc = utcNow,
+            CreatedAt = utcNow,
             RetryCount = 0
         };
     }
