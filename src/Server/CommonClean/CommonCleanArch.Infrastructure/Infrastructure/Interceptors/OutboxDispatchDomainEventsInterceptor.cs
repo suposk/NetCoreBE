@@ -20,8 +20,6 @@ public class OutboxDispatchDomainEventsInterceptor : SaveChangesInterceptor
         return await base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
-    public record outPut(IReadOnlyCollection<IDomainEvent> domainEvents, string json);
-
     public async Task DispatchDomainEvents(DbContext? context, CancellationToken cancellationToken)
     {
         if (context == null) return;
