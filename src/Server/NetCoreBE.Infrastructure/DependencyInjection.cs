@@ -15,12 +15,12 @@ using System.Configuration;
 using System.Xml.Linq;
 using CommonCleanArch.Infrastructure.Infrastructure.Configuration;
 using NetCoreBE.Application.Tickets.IntegrationEvents;
-using NetCoreBE.Infrastructure.EventBus;
 using CommonCleanArch.Application.EventBus;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Trace;
 using Npgsql;
 using OpenTelemetry.Resources;
+using NetCoreBE.Infrastructure.EventBus.Tickets;
 
 namespace NetCoreBE.Infrastructure;
 
