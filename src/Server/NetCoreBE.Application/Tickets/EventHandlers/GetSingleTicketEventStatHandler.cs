@@ -10,7 +10,7 @@ public class GetSingleTicketEventStatHandler(
     {
         try
         {
-            _logger.LogInformation("Domain Event: {DomainEvent}, started with = {@value}", notification.GetType().FullName, notification);
+            _logger.LogInformation("Domain Event: {DomainEvent}, started = {@value}", notification.GetType().FullName, notification.Item);
             await Task.CompletedTask;
 
             #region not needed in most cases
