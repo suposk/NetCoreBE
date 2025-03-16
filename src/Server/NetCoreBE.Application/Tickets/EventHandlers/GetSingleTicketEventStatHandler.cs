@@ -8,6 +8,7 @@ public class GetSingleTicketEventStatHandler(
 
     public async Task Handle(GetSingleTicketEventStat notification, CancellationToken cancellationToken)
     {
+        //throw new NotImplementedException("Testing publisher"); //testing publisher
         try
         {
             _logger.LogInformation("Domain Event: {DomainEvent}, started = {@value}", notification.GetType().FullName, notification.Item);
