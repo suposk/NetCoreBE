@@ -1,6 +1,8 @@
 ﻿using Azure.Identity;
 using CommonCleanArch.Infrastructure;
+using CommonCleanArch.Infrastructure.Infrastructure.EventBus;
 using CommonCleanArch.Infrastructure.Interceptors;
+using MassTransit;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -35,6 +37,7 @@ public static class DependencyInjection
 
         //AddSingleton
         //services.AddSingleton<ICacheProvider, CacheProvider>(); //can be configer in config setting in appsettings.json
+
 
         KeyVaultConfig? keyVaultConfig = Configuration.GetSection(nameof(KeyVaultConfig)).Get<KeyVaultConfig>();
         AzureAppConfigurationConfig? azureAppConfigurationConfig = Configuration.GetSection(nameof(azureAppConfigurationConfig)).Get<AzureAppConfigurationConfig>();

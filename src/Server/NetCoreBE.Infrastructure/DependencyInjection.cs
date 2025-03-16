@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using CommonCleanArch.Infrastructure.Infrastructure.EventBus;
+using MassTransit;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,11 @@ using NetCoreBE.Infrastructure.BackroundJobs;
 using Quartz;
 using System.Configuration;
 using System.Xml.Linq;
+using CommonCleanArch.Infrastructure.Infrastructure.Configuration;
+using NetCoreBE.Application.Tickets.IntegrationEvents;
+using NetCoreBE.Infrastructure.EventBus;
+using CommonCleanArch.Application.EventBus;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace NetCoreBE.Infrastructure;
 
@@ -36,6 +43,27 @@ public static class DependencyInjection
         //AddHealthChecks(services, configuration);
 
         AddBackgroundJobs(services, configuration);
+
+
+        services.TryAddSingleton<IEventBus, CommonCleanArch.Infrastructure.Infrastructure.EventBus.EventBus>();
+        var rabbitMqSettings = new RabbitMqSettings(configuration.GetConnectionStringOrThrow("Queue"));
+        services.AddMassTransit(configure =>
+        {
+            configure.AddConsumer<TicketCanceledIntegrationEventConsumer>();
+
+            configure.SetKebabCaseEndpointNameFormatter();
+
+            configure.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(new Uri(rabbitMqSettings.Host), h =>
+                {
+                    h.Username(rabbitMqSettings.Username);
+                    h.Password(rabbitMqSettings.Password);
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         return services;
     }

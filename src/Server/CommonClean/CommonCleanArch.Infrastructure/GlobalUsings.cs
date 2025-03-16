@@ -20,3 +20,5 @@ global using CommonCleanArch.Application.Helpers;
 global using CommonCleanArch.Application.CustomExceptions;
 global using CommonCleanArch.Domain.Events;
 global using CommonCleanArch.Application.Services;
+global using CommonCleanArch.Infrastructure.Infrastructure.Configuration;
+global using CommonCleanArch.Application.EventBus;

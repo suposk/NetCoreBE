@@ -28,9 +28,24 @@ services:
 
   netcorebe.seq:
     image: datalust/seq:latest
-    container_name: netcorebe.Seq
+    container_name: NetCoreBE.Seq
     environment:
       - ACCEPT_EULA=Y
     ports:
       - 5341:5341
       - 8081:80
+
+  netcorebe.queue:
+    image: rabbitmq:management-alpine
+    container_name: NetCoreBE.Queue
+    hostname: netcorebe-queue
+    volumes:
+        - ./.containers/queue/data/:/var/lib/rabbitmq
+        - ./.containers/queue/log/:/var/log/rabbitmq
+    environment:
+        RABBITMQ_DEFAULT_USER: guest
+        RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - 5672:5672
+      - 15672:15672
+

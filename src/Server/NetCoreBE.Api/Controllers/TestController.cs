@@ -1,7 +1,9 @@
 ﻿#if DEBUG
 using Azure.Core;
+using CommonCleanArch.Application.EventBus;
 using CommonCleanArch.Domain;
 using Microsoft.EntityFrameworkCore.Storage;
+using NetCoreBE.Application.Tickets.IntegrationEvents;
 using System.Data;
 
 namespace NetCoreBE.Api.Controllers;
@@ -32,6 +34,21 @@ public class TestController : ControllerBase
         _repositoryTicketHistory = repositoryTicketHistory;
     }
 
+
+    [HttpGet("Cancel")]
+    //[HttpGet("Cancel/id={id}")]
+    public async Task<IActionResult> Cancel([FromServices] IEventBus eventBus)
+    {
+        try
+        {
+            await eventBus.PublishAsync(new TicketCanceledIntegrationEvent(Guid.NewGuid(), DateTime.UtcNow, "Ticket-1"));            
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        return Ok();
+    }
 
     [HttpGet("TestTransaction")]
     public async Task<object> TestTransaction()
