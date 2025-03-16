@@ -7,8 +7,17 @@ using Asp.Versioning;
 using NetCoreBE.Api.OpenApi;
 using SharedCommon;
 using System.Configuration;
+using NetCoreBE.Api.Middleware;
+using Microsoft.Extensions.Configuration;
+using System.Xml.Linq;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
+using CommonCleanArch.Infrastructure.Infrastructure.Configuration;
+using CommonCleanArch.Infrastructure.Infrastructure.EventBus;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, loggerConfig) => loggerConfig.ReadFrom.Configuration(context.Configuration));
 
 //for retriving secrets from Azure Key Vault only
 using var loggerFactory = LoggerFactory.Create(builder =>
@@ -55,6 +64,7 @@ var services = builder.Services;
 var Configuration = builder.Configuration;
 
 services.RegisterCommonCleanArchServices(Configuration, _logger);
+//services.RegisterCommonCleanArchServices(Configuration, null);
 services.RegisterSharedCommonServices(Configuration);
 
 services.AddMvc(options => //Validation filter
@@ -76,6 +86,38 @@ builder.Services.AddRateLimiter(_ =>
         options.QueueLimit = 2;
     }));
 
+DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
+var configuration = builder.Configuration;
+string? databaseConnectionString;
+try
+{    
+    DbTypeEnum = configuration.GetValue<DbTypeEnum>(nameof(DbTypeEnum));
+}
+catch { }
+if (DbTypeEnum == DbTypeEnum.Unknown)
+    throw new Exception("DbTypeEnum is unknown");
+
+if (DbTypeEnum == DbTypeEnum.SqlLite)
+    databaseConnectionString = configuration.GetConnectionStringOrThrow($"{InfrastructureConstants.ConnectionStrings.Database}Lite");
+else if (DbTypeEnum == DbTypeEnum.InMemory)
+    databaseConnectionString = configuration.GetConnectionStringOrThrow($"{InfrastructureConstants.ConnectionStrings.Database}InMemory");
+else if (DbTypeEnum == DbTypeEnum.PostgreSQL)
+    databaseConnectionString = configuration.GetConnectionStringOrThrow($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL");    
+else
+    databaseConnectionString = configuration.GetConnectionStringOrThrow(InfrastructureConstants.ConnectionStrings.Database);
+
+
+var rabbitMqSettings = new RabbitMqSettings(builder.Configuration.GetConnectionStringOrThrow("Queue"));
+if (DbTypeEnum == DbTypeEnum.PostgreSQL)
+{    
+    builder.Services.AddHealthChecks()
+        .AddNpgSql(databaseConnectionString)
+        .AddRabbitMQ(rabbitConnectionString: rabbitMqSettings.Host)
+        ;
+}
+
+/* app *********************************************************************************************************************/
+
 var app = builder.Build();
 app.UseApiExceptionHandler(options =>
 {
@@ -93,11 +135,6 @@ app.UseSwaggerUI(options =>
         options.SwaggerEndpoint(url, name);
     }
 });
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-
 var ApiVersionSet = app.NewApiVersionSet()
     .HasApiVersion(new ApiVersion(AppApiVersions.V1))
     .HasApiVersion(new ApiVersion(AppApiVersions.V2))
@@ -106,10 +143,19 @@ var ApiVersionSet = app.NewApiVersionSet()
     .Build();
 
 var RouteGroupBuilder = app.MapGroup("api/v{version:apiVersion}").WithApiVersionSet(ApiVersionSet);
-RouteGroupBuilder.MapCarter(); 
-//app.MapCarter(); 
+RouteGroupBuilder.MapCarter();
 
-//app.UseSerilogRequestLogging();
+app.MapHealthChecks("health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+app.UseLogContext();
+app.UseSerilogRequestLogging();
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
 
 app.UseRateLimiter();
 app.AddKeyVaultExtensions();
@@ -119,18 +165,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var sp = scope.ServiceProvider;
-
         var dbContext = sp.GetRequiredService<ApiDbContext>();
-
         if (app.Environment.IsDevelopment())
-        {
-            var configuration = sp.GetRequiredService<IConfiguration>();
-            DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
-            try
-            {
-                DbTypeEnum = configuration.GetValue<DbTypeEnum>(nameof(DbTypeEnum));
-            }
-            catch { }
+        {            
+            //call migration
             if (DbTypeEnum == DbTypeEnum.PostgreSQL)
             {                
                 //dbContext.Database.EnsureDeleted();                
@@ -143,6 +181,7 @@ using (var scope = app.Services.CreateScope())
                 dbContext.Database.Migrate();
             }
 
+            //seed data
             var SeedDb = configuration.GetValue<bool>("SeedDb");
             if (SeedDb)
             {

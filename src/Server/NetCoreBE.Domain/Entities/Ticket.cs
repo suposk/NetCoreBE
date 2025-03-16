@@ -108,8 +108,11 @@ public class Ticket : EntityBase
             return ResultCom.Failure("Can not update");
 
         StringBuilder sb = new();
-        if (status.IsNotNullOrEmptyExt() && Status != status)                   
+        if (status.IsNotNullOrEmptyExt() && Status != status)
+        {
             sb.Append($"Status changed to {status}");
+            Status = status;
+        }
         if (note.NotNullOrEmptyExt())
             sb.Append($"Note added: {note}");
 

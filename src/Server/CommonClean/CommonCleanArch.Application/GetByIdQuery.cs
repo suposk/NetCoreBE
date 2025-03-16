@@ -45,6 +45,11 @@ public class GetByIdQueryHandler<TEntity, TDto>(
     public virtual string PrimaryCacheKey => $"{typeof(TEntity).Name}{Helpers.OtherHelper.CACHECONST}";
 
     /// <summary>
+    /// Override this to add custom logic before execution, To avoid caching problems
+    /// </summary>
+    public virtual ValueTask OnStart(string Id) => new ValueTask(Task.CompletedTask);
+
+    /// <summary>
     /// Disable cache or set duration
     /// </summary>
     public virtual TimeSpan? CacheDuration { get; } = TimeSpan.FromMinutes(5);
@@ -79,6 +84,8 @@ public class GetByIdQueryHandler<TEntity, TDto>(
             //    repo = await CacheProvider.GetOrAddAsync(PrimaryCacheKey, (int)CacheDuration.Value.TotalSeconds, () => Repository.GetId(request.Id), request.Id);
             //else
             //    repo = await Repository.GetId(request.Id).ConfigureAwait(false);
+
+            await OnStart(request.Id);
 
             TEntity repo;
             if (IsCacheEnabled)

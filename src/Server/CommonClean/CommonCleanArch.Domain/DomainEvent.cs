@@ -3,7 +3,15 @@
 
 namespace CommonCleanArch.Domain;
 
-public abstract class DomainEvent : INotification
+public interface IDomainEvent : INotification
+{
+    public bool IsProcessing { get; set; }
+    public string? Id { get; set; }
+    public DateTimeOffset DateOccurred { get; }
+    public void SetToProcess(string id);
+}
+
+public abstract class DomainEvent : IDomainEvent
 {
     protected DomainEvent()
     {

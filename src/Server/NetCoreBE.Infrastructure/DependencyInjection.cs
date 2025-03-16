@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using CommonCleanArch.Infrastructure.Infrastructure.EventBus;
+using MassTransit;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,14 @@ using NetCoreBE.Infrastructure.BackroundJobs;
 using Quartz;
 using System.Configuration;
 using System.Xml.Linq;
+using CommonCleanArch.Infrastructure.Infrastructure.Configuration;
+using NetCoreBE.Application.Tickets.IntegrationEvents;
+using CommonCleanArch.Application.EventBus;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Trace;
+using Npgsql;
+using OpenTelemetry.Resources;
+using NetCoreBE.Infrastructure.EventBus.Tickets;
 
 namespace NetCoreBE.Infrastructure;
 
@@ -23,7 +33,7 @@ public static class DependencyInjection
         // register PropertyMappingService for Search functionality
         services.AddTransient<IPropertyMappingService, PropertyMappingService>();
 
-        AddPersistence(services, configuration);
+        DbTypeEnum DbTypeEnum = AddPersistence(services, configuration);
 
         AddQueries(services);
 
@@ -33,14 +43,55 @@ public static class DependencyInjection
 
         AddAuthorization(services);
 
-        AddHealthChecks(services, configuration);
+        //AddHealthChecks(services, configuration);
 
         AddBackgroundJobs(services, configuration);
+
+
+        services.TryAddSingleton<IEventBus, CommonCleanArch.Infrastructure.Infrastructure.EventBus.EventBus>();
+        var rabbitMqSettings = new RabbitMqSettings(configuration.GetConnectionStringOrThrow("Queue"));
+        services.AddMassTransit(configure =>
+        {
+            configure.AddConsumer<TicketCanceledIntegrationEventConsumer>();
+
+            configure.SetKebabCaseEndpointNameFormatter();
+
+            configure.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(new Uri(rabbitMqSettings.Host), h =>
+                {
+                    h.Username(rabbitMqSettings.Username);
+                    h.Password(rabbitMqSettings.Password);
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
+        //todo not working properly. Need to investigate
+        var serviceName = "NetCoreBE";
+        services
+            .AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService(serviceName))
+            .WithTracing(tracing =>
+            {
+                tracing
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation()
+                    //.AddRedisInstrumentation()
+                    //.AddNpgsql()
+                    .AddSource(MassTransit.Logging.DiagnosticHeaders.DefaultListenerName);
+                //if (DbTypeEnum == DbTypeEnum.PostgreSQL)
+                //    tracing.AddNpgsql();
+
+                tracing.AddOtlpExporter();
+            });
 
         return services;
     }
 
-    private static void AddPersistence(IServiceCollection services, IConfiguration configuration)
+    private static DbTypeEnum AddPersistence(IServiceCollection services, IConfiguration configuration)
     {
         DbTypeEnum DbTypeEnum = DbTypeEnum.Unknown;
         try
@@ -87,11 +138,12 @@ public static class DependencyInjection
 
         services.AddScoped<ITicketRepositoryDecorator, TicketRepositoryDecorator>();
         services.AddScoped<ICrudExampleRepositoryDecorator, CrudExampleRepositoryDecorator>();
-        
+
         ////factory methods, not used yet
         //services.AddScoped<IDbContextFactory<ApiDbContext>, DbContextFactory<ApiDbContext>>();
         //services.AddTransient<IApiDbContext>(provider =>    
         //    provider.GetRequiredService<IDbContextFactory<ApiDbContext>>().CreateDbContext());
+        return DbTypeEnum;
     }
 
     private static void AddQueries(IServiceCollection services)
@@ -172,13 +224,13 @@ public static class DependencyInjection
         //services.AddSingleton<ICacheService, CacheService>();
     }
 
-    private static void AddHealthChecks(IServiceCollection services, IConfiguration configuration)
-    {
-        //services.AddHealthChecks()
-        //    .AddNpgSql(configuration.GetConnectionString("Database")!)
-        //    .AddRedis(configuration.GetConnectionString("Cache")!)
-        //    .AddUrlGroup(new Uri(configuration["KeyCloak:BaseUrl"]!), HttpMethod.Get, "keycloak");
-    }
+    //private static void AddHealthChecks(IServiceCollection services, IConfiguration configuration)
+    //{
+    //    //services.AddHealthChecks()
+    //    //    .AddNpgSql(configuration.GetConnectionString("Database")!)
+    //    //    .AddRedis(configuration.GetConnectionString("Cache")!)
+    //    //    .AddUrlGroup(new Uri(configuration["KeyCloak:BaseUrl"]!), HttpMethod.Get, "keycloak");
+    //}
 
     private static void AddBackgroundJobs(IServiceCollection services, IConfiguration configuration)
     {

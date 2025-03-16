@@ -1,4 +1,6 @@
-﻿namespace NetCoreBE.Application.OutboxDomaintEvents;
+﻿using CommonCleanArch.Domain;
+
+namespace NetCoreBE.Application.OutboxDomaintEvents;
 
 public interface IOutboxDomaintEventRepository : IRepository<OutboxDomaintEvent>
 {

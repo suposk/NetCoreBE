@@ -16,3 +16,9 @@ GET https://{{host}}/api/{{version}}/Test/TestTransaction
 GET https://{{host}}/api/{{version}}/Test/Test1
 
 # ###
+https://{{host}}/api/{{version}}/test/CancelTicket/Ticket-1
+
+# ###
+https://{{host}}/api/{{version}}/test/CancelTicket/Ticket-01
+
+# ###

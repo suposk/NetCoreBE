@@ -21,14 +21,21 @@ public class ProcessOutboxDomaintEventsJob(
 
     public async Task Execute(IJobExecutionContext context)
     {
-        var messages = await _outboxDomaintEventRepository.GetListToProcess(1);
+        //How many messages to process
+        int countToProcessMessages = 100;
+#if DEBUG       
+        countToProcessMessages = 1;
+#endif
+
+        var messages = await _outboxDomaintEventRepository.GetListToProcess(countToProcessMessages);
         if (messages.IsNullOrEmptyCollection())
         {
             _logger.LogDebug("No OutboxDomaintEvents to process");
             return; //nothing to process        
         }
 
-        //Read types from cache        
+        //Read types from cache
+        //all types that implement INotificationHandler<>
         Dictionary<string?, Type> _assembliesTypesNotifications = await LoadTypesFromCahce();
 
         foreach (var message in messages)
@@ -38,6 +45,8 @@ public class ProcessOutboxDomaintEventsJob(
                 if (_assembliesTypesNotifications.TryGetValue(message.Type, out var type) == false)
                 {
                     _logger.LogWarning("OutboxDomaintEvent: {DomainEvent} type not found", message.Type);
+                    message.SetFailed(_dateTimeService.UtcNow, $"{message.Type} type not found");
+                    await _outboxDomaintEventRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));
                     continue;
                 }
 
@@ -57,17 +66,18 @@ public class ProcessOutboxDomaintEventsJob(
                     continue;
                 }                
                 await _publisher.Publish(domainEvent);                
+                
                 //move to event handler
-                //message.SetProcessed(_dateTimeService.UtcNow);
-                //await _outboxMessageRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));                           
+                message.SetProcessed(_dateTimeService.UtcNow);
+                await _outboxDomaintEventRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));                           
 
                 _logger.LogDebug("OutboxDomaintEvent: {DomainEvent} Published", message.Type);
             }
             catch (Exception ex)
             {
 
-                //message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1)); //add 1 minute to retry
-                message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddSeconds(10));
+                message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddMinutes(1)); //add 1 minute to retry
+                //message.SetFailed(_dateTimeService.UtcNow, ex?.Message, _dateTimeService.UtcNow.AddSeconds(10));
                 await _outboxDomaintEventRepository.UpdateAsync(message, nameof(ProcessOutboxDomaintEventsJob));    
                 _logger.LogError(ex, $"{nameof(ProcessOutboxDomaintEventsJob)} failed", ex);
             }

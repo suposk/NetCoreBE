@@ -1,4 +1,5 @@
 ﻿using CommonCleanArch.Application.Services;
+using MediatR;
 
 namespace NetCoreBE.Application.Tickets;
 
@@ -7,24 +8,19 @@ public interface ITicketRepositoryDecorator : IRepositoryDecoratorBase<Ticket, T
     Task<ResultCom<TicketDto>> UpdateDto(TicketUpdateDto? dtoUpdate);
 }
 
-public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketDto>, ITicketRepositoryDecorator
+//primary constructor
+public class TicketRepositoryDecorator(
+    IDateTimeService dateTimeService,
+    IRepository<TicketHistory> repositoryTicketHistory,
+    ITicketRepository repository,
+    IApiIdentity apiIdentity,
+    IMapper mapper,
+    IMediator mediator,
+    ILoggerFactory logger,
+    ICacheProvider cacheProvider) : RepositoryDecoratorBase<Ticket, TicketDto>(repository, apiIdentity, mapper, logger, cacheProvider), ITicketRepositoryDecorator
 {
-    private readonly IDateTimeService _dateTimeService;
-    private readonly IRepository<TicketHistory> _repositoryTicketHistory;
-
-    public TicketRepositoryDecorator(
-        IDateTimeService dateTimeService,
-        IRepository<TicketHistory> repositoryTicketHistory,
-        ITicketRepository repository,
-        IApiIdentity apiIdentity,
-        IMapper mapper,
-        ILoggerFactory logger,
-        ICacheProvider cacheProvider)
-        : base(repository, apiIdentity, mapper, logger, cacheProvider)
-    {
-        _dateTimeService = dateTimeService;
-        _repositoryTicketHistory = repositoryTicketHistory;
-    }
+    private readonly IDateTimeService _dateTimeService = dateTimeService;
+    private readonly IRepository<TicketHistory> _repositoryTicketHistory = repositoryTicketHistory;
 
     //public override string PrimaryCacheKey => TicketCache.PrimaryCacheKey;
     public override int CacheDurationMinutes => 5;
@@ -46,6 +42,12 @@ public class TicketRepositoryDecorator : RepositoryDecoratorBase<Ticket, TicketD
     //    //_NoteToAdd = dto.Note;
     //    return base.AddAsyncDto(dto, saveChanges);
     //}
+
+    public override Task<ResultCom<TicketDto>> GetIdDto(string id)
+    {
+        mediator.Publish(new GetSingleTicketEventStat(new TicketStat(id, ApiIdentity.GetUserNameOrIp())));
+        return base.GetIdDto(id);
+    }
 
     public async override Task<ResultCom<Ticket>> AddEntityAsync(Ticket entity, bool saveChanges = true)
     {

@@ -10,7 +10,11 @@
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
-  <ItemGroup>    
+  <ItemGroup>
+	<PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="8.0.1" />
+	<PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="8.0.1" />
+	<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
+	<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
     <PackageReference Include="Asp.Versioning.Mvc" Version="8.0.0" />    
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />    
     <PackageReference Include="Azure.Identity" Version="1.11.2" />

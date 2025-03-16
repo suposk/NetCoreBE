@@ -34,6 +34,7 @@ global using CommonCleanArch.Application.CustomExceptions;
 global using CommonCleanArch.Application.Search;
 global using CommonCleanArch.Domain.Events;
 global using CommonCleanArch.Application.Services;
+global using CommonCleanArch.Application.EventBus;
 
 //Application
 global using NetCoreBE.Application;
