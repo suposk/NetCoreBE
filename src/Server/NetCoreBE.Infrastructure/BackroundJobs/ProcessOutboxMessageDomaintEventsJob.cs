@@ -21,7 +21,13 @@ public class ProcessOutboxDomaintEventsJob(
 
     public async Task Execute(IJobExecutionContext context)
     {
-        var messages = await _outboxDomaintEventRepository.GetListToProcess(1);
+        //How many messages to process
+        int countToProcessMessages = 100;
+#if DEBUG       
+        countToProcessMessages = 1;
+#endif
+
+        var messages = await _outboxDomaintEventRepository.GetListToProcess(countToProcessMessages);
         if (messages.IsNullOrEmptyCollection())
         {
             _logger.LogDebug("No OutboxDomaintEvents to process");

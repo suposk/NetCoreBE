@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
+using CommonCleanArch.Infrastructure.Infrastructure.Configuration;
+using CommonCleanArch.Infrastructure.Infrastructure.EventBus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -96,19 +98,21 @@ if (DbTypeEnum == DbTypeEnum.Unknown)
     throw new Exception("DbTypeEnum is unknown");
 
 if (DbTypeEnum == DbTypeEnum.SqlLite)
-    databaseConnectionString = configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}Lite");
+    databaseConnectionString = configuration.GetConnectionStringOrThrow($"{InfrastructureConstants.ConnectionStrings.Database}Lite");
 else if (DbTypeEnum == DbTypeEnum.InMemory)
-    databaseConnectionString = configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}InMemory");
+    databaseConnectionString = configuration.GetConnectionStringOrThrow($"{InfrastructureConstants.ConnectionStrings.Database}InMemory");
 else if (DbTypeEnum == DbTypeEnum.PostgreSQL)
-    databaseConnectionString = configuration.GetConnectionString($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL");    
+    databaseConnectionString = configuration.GetConnectionStringOrThrow($"{InfrastructureConstants.ConnectionStrings.Database}PostgreSQL");    
 else
-    databaseConnectionString = configuration.GetConnectionString(InfrastructureConstants.ConnectionStrings.Database);
+    databaseConnectionString = configuration.GetConnectionStringOrThrow(InfrastructureConstants.ConnectionStrings.Database);
 
+
+var rabbitMqSettings = new RabbitMqSettings(builder.Configuration.GetConnectionStringOrThrow("Queue"));
 if (DbTypeEnum == DbTypeEnum.PostgreSQL)
 {    
     builder.Services.AddHealthChecks()
         .AddNpgSql(databaseConnectionString)
-        //.AddRedis(redisConnectionString)
+        .AddRabbitMQ(rabbitConnectionString: rabbitMqSettings.Host)
         ;
 }
 

@@ -34,14 +34,13 @@ public class TestController : ControllerBase
         _repositoryTicketHistory = repositoryTicketHistory;
     }
 
-
-    [HttpGet("Cancel")]
-    //[HttpGet("Cancel/id={id}")]
-    public async Task<IActionResult> Cancel([FromServices] IEventBus eventBus)
+    //[HttpGet("CancelTicket")]
+    [HttpGet("CancelTicket/{id}")]
+    public async Task<IActionResult> CancelTicketId(string id, [FromServices] IEventBus eventBus)
     {
         try
         {
-            await eventBus.PublishAsync(new TicketCanceledIntegrationEvent(Guid.NewGuid(), DateTime.UtcNow, "Ticket-1"));            
+            await eventBus.PublishAsync(new TicketCanceledIntegrationEvent(Guid.NewGuid(), DateTime.UtcNow, id));
         }
         catch (Exception ex)
         {

@@ -16,7 +16,6 @@ GET https://{{host}}/api/{{version}}/Test/TestTransaction
 GET https://{{host}}/api/{{version}}/Test/Test1
 
 # ###
-#GET https://{{host}}/api/{{version}}/Test/Cancel/id?=Ticket-1
-GET https://{{host}}/api/{{version}}/Test/Cancel
+https://{{host}}/api/{{version}}/test/CancelTicket/Ticket-1
 
 # ###
