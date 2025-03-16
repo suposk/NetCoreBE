@@ -35,6 +35,14 @@ services:
       - 5341:5341
       - 8081:80
 
+  netcorebe.jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: NetCoreBE.Jaeger
+    ports:
+      - 4317:4317
+      - 4318:4318
+      - 16686:16686
+
   netcorebe.queue:
     image: rabbitmq:management-alpine
     container_name: NetCoreBE.Queue
