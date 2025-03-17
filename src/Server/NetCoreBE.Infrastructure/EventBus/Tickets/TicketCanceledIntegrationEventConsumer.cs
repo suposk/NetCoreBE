@@ -16,7 +16,7 @@ namespace NetCoreBE.Infrastructure.EventBus.Tickets
             var res = await mediator.Send(new UpdateTicketStatusCommand { TicketId = context.Message.TicketId, StatusEnum = StatusEnum.Cancelled });
             if (res.IsFailure)
             {
-                logger.LogWarning("TicketCanceledIntegrationEventConsumer: Entity with id {Id} not updated", context.Message.TicketId);
+                logger.LogWarning("TicketCanceledIntegrationEventConsumer: Entity with id {Id} not updated, Error = {er}", context.Message.TicketId, res.ErrorMessage);
                 return;
             }
         }

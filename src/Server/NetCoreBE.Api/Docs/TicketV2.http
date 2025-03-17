@@ -55,15 +55,20 @@ Content-Type: application/json
 
 GET https://{{host}}/api/{{version}}/Ticket/Ticket-01
 
-# ###
+###
 
 PUT https://{{host}}/api/{{version}}/Ticket/
 Content-Type: application/json
 {
   "id": "Ticket-01",
   "note": "Put 2",        
-  "rowVersion": 872  
+  "rowVersion": 829  
 }
+
+###
+
+#only for testing. Simulate internal bus event generated example from another micorservice
+https://{{host}}/api/{{version}}/Ticket/BusEventCancelTicket/Ticket-01
 
 ###
 

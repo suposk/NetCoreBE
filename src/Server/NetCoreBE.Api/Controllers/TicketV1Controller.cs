@@ -1,5 +1,8 @@
 ﻿// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
+using CommonCleanArch.Application.EventBus;
+using NetCoreBE.Application.Tickets.IntegrationEvents;
+
 namespace NetCoreBE.Api.Controllers;
 
 /// <summary>
@@ -54,6 +57,28 @@ public class TicketV1Controller : ControllerBase
         var res = await _decorator.UpdateDto(dto).ConfigureAwait(false);
         return res.GetIResultExt();
     }
+
+#if DEBUG
+    /// <summary>
+    /// Only for testing. Simulate internal bus event generated example from another micorservice
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="eventBus"></param>
+    /// <returns></returns>
+    [HttpGet("BusEventCancelTicket/{id}")]
+    public async Task<IActionResult> BusEventCancelTicket(string id, [FromServices] IEventBus eventBus)
+    {
+        try
+        {
+            await eventBus.PublishAsync(new TicketCanceledIntegrationEvent(Guid.NewGuid(), DateTime.UtcNow, id));
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+#endif
 
     [HttpDelete("{id}")]
     public async Task<IResult> Delete(string id)

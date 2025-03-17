@@ -17,8 +17,7 @@ public class UpdateTicketStatusCommandHandler(
         ) : IRequestHandler<UpdateTicketStatusCommand, ResultCom<Ticket>>
 {    
     private readonly ITicketRepository _repository = repository;
-    private readonly IRepository<TicketHistory> _repositoryTicketHistory = repositoryTicketHistory;
-    private readonly IDateTimeService _dateTimeService = dateTimeService;
+    private readonly IRepository<TicketHistory> _repositoryTicketHistory = repositoryTicketHistory;    
     private readonly ILogger<UpdateTicketStatusCommandHandler> _logger = logger;
 
     public async Task<ResultCom<Ticket>> Handle(UpdateTicketStatusCommand  request, CancellationToken cancellationToken)
@@ -27,7 +26,7 @@ public class UpdateTicketStatusCommandHandler(
 
         string ticketId = request.TicketId;
         if (string.IsNullOrWhiteSpace(ticketId))
-            return ResultCom<Ticket>.Failure($"{nameof(ticketId)} parameter is missing");
+            return ResultCom<Ticket>.Failure($"{nameof(ticketId)} parameter is missing", HttpStatusCode.BadRequest);
 
         IDbContextTransaction? dbTransaction = null;
         try
@@ -38,6 +37,9 @@ public class UpdateTicketStatusCommandHandler(
             var entity = await _repository.GetId(ticketId);
             if (entity is null)
                 return ResultCom<Ticket>.Failure($"Entity with id {ticketId} not found", HttpStatusCode.NotFound);
+
+            if (entity.Status == request.StatusEnum.ToString())
+                return ResultCom<Ticket>.Failure($"Entity with id {ticketId} is already set to {request.StatusEnum}", HttpStatusCode.Conflict);
 
             var upd = entity.Update(request.StatusEnum.ToString(), "Canceled by External system.", dateTimeService.UtcNow);
             if (upd.IsFailure)
