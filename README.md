@@ -39,7 +39,7 @@ NetCoreBE
    docker-compose up --build
    ```
 
-3. The API should now be running and accessible at `http://localhost:5000`.
+3. The API should now be running and accessible at `https://localhost:6006/`.
 
 ### Running Tests
 
