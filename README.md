@@ -48,10 +48,20 @@ To run the unit tests, use the following command:
 dotnet test
 ```
 
-## Documentation
-TicketV1.http
-TicketV2.http
-CrudExample.http
+### Summary of Docs Files
+
+**TicketV1.http**
+- Contains HTTP requests for managing tickets in version 1 of the API.
+- Includes GET, POST, PUT, DELETE requests for various endpoints such as `/Ticket/`, `/Ticket/{{id}}`, `/Ticket/Search`, and `/Ticket/Seed/{number}`.
+
+**TicketV2.http**
+- Contains HTTP requests for managing tickets in version 2 of the API.
+- Similar to TicketV1.http but adapted for API version 2.
+- Includes GET, POST, PUT, DELETE requests for various endpoints such as `/Ticket/`, `/Ticket/{{id}}`, `/Ticket/Search`, and `/Ticket/Seed/{number}`.
+
+**CrudExample.http**
+- Contains HTTP requests for managing CRUD examples.
+- Includes GET, POST, PUT, DELETE requests for various endpoints such as `/CrudExample/`, `/CrudExample/{{id}}`, and `/CrudExample/Seed/{number}`.
 
 
 ## Contributing
