@@ -48,6 +48,12 @@ To run the unit tests, use the following command:
 dotnet test
 ```
 
+## Documentation
+TicketV1.http
+TicketV2.http
+CrudExample.http
+
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
