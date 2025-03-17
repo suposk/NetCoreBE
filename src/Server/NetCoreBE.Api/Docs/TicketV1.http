@@ -49,26 +49,9 @@ Content-Type: application/json
 
 ###
 
-# PUT https://{{host}}/api/{{version}}/Ticket/
-# Content-Type: application/json
-# {
-#   "id": "Ticket-01",
-#   "createdAt": "2024-08-05T13:03:11.6467073Z",
-#   "ticketType": "Access",
-#   "note": "N Put 1",        
-#   "createdBy": "Api",
-#   "modifiedAt": null,
-#   "modifiedBy": null,
-#   "isDeleted": null,
-#   "rowVersion": 925,
-#   "email": null
-# }
-
-# ###
-
 GET https://{{host}}/api/{{version}}/Ticket/Ticket-01
 
-# ###
+###
 
 PUT https://{{host}}/api/{{version}}/Ticket/
 Content-Type: application/json
@@ -80,6 +63,10 @@ Content-Type: application/json
 
 ###
 
+#only for testing. Simulate internal bus event generated example from another micorservice
+https://{{host}}/api/{{version}}/Ticket/BusEventCancelTicket/Ticket-01
+
+###
 DELETE https://{{host}}/api/{{version}}/Ticket/{{id}}
 
 ###
