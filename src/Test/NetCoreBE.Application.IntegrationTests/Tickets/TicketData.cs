@@ -1,5 +1,8 @@
 ﻿namespace NetCoreBE.Domain.UnitTests.Tickets;
 
+/// <summary>
+/// Integration test data for Ticket
+/// </summary>
 internal static class TicketData
 {
     public const string TicketId = "Ticket-1";
