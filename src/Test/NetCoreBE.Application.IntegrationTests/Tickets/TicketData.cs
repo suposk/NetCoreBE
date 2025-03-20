@@ -1,5 +1,8 @@
 ﻿namespace NetCoreBE.Domain.UnitTests.Tickets;
 
+/// <summary>
+/// Integration test data for Ticket
+/// </summary>
 internal static class TicketData
 {
     public const string TicketId = "Ticket-1";
@@ -13,11 +16,12 @@ internal static class TicketData
         CreatedBy = "Test",
     };
 
-    public static readonly TicketUpdateDto Update = new()
-    {
-        Id = TicketId,        
-        Note = "Update 1",
-        //RowVersion = 739,
-        RowVersion = 741,
-    };
+    //public static readonly TicketUpdateDto Update = new()
+    //{
+    //    Id = TicketId,        
+    //    Note = "Update 1",
+    //    //RowVersion = 739,
+    //    //RowVersion = 741,
+    //    RowVersion = 750, //unreliable
+    //};
 }

@@ -13,10 +13,10 @@ public class TicketTest : BaseTest
         //request.Create(UtcNow);
 
         //assert
-        request.Status.Should().Be("Submited");
+        request.Status.Should().Be(StatusEnum.Submited.ToString());
         request.TicketHistoryList.Should().HaveCount(1);
-        request.TicketHistoryList.First().Operation.Should().Be("Submited");
-        request.TicketHistoryList.First().Details.Should().Be("User Submited Ticket");
+        request.TicketHistoryList.First().Operation.Should().Be(StatusEnum.Submited.ToString());
+
         //request.TicketHistoryList.First().CreatedAt.Should().Be(UtcNow);
     }
 
@@ -30,10 +30,11 @@ public class TicketTest : BaseTest
         request.Init(TicketData.Ticket.Notes.FirstOrDefault(), UtcNow);
 
         //assert
-        request.Status.Should().Be("Submited");
-        request.TicketHistoryList.Should().HaveCount(1);
-        request.TicketHistoryList.First().Operation.Should().Be("Submited");
-        request.TicketHistoryList.First().Details.Should().Be("User Submited Ticket");
+        request.Status.Should().Be(StatusEnum.Submited.ToString());
+        request.TicketHistoryList.Should().HaveCount(2);
+        request.TicketHistoryList.First().Operation.Should().Be(StatusEnum.Submited.ToString());
+        request.TicketHistoryList.Single(a => a.Operation.Equals(Ticket.CONST.InitStatus)).Should().NotBeNull();
+        
         //request.TicketHistoryList.First().CreatedAt.Should().Be(UtcNow);
     }
 

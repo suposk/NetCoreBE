@@ -22,8 +22,15 @@ public enum TicketTypeEnum
     Question,
 }
 
+
 public class Ticket : EntityBase
 {
+    public static class CONST
+    {
+        public const string InitStatus = $"Init{nameof(Entities.StatusEnum.Submited)}";
+    }
+
+
     public static Ticket EmptyTicket = Create("1", nameof(TicketTypeEnum.None), "", null);
 
     private Ticket() { }
@@ -62,7 +69,7 @@ public class Ticket : EntityBase
     {
         get
         {
-            if (!string.IsNullOrEmpty(Status))
+            if (string.IsNullOrEmpty(Status))
                 return null;
             _ = Enum.TryParse<StatusEnum>(Status, out var status);
             return status;
@@ -78,7 +85,7 @@ public class Ticket : EntityBase
             throw new ArgumentException("ticketType must be provided");
         var ticket = new Ticket() { Id = id, TicketType = ticketType, Status = Entities.StatusEnum.Submited.ToString(), CreatedBy = createdBy, TicketHistoryList = new() };
         if (note.IsNotNullOrEmptyExt())
-            ticket.Notes.Add(note);
+            ticket.Notes.Add(note!);
         ticket.AddHistory(ticket.Status, null, DateTime.UtcNow);
         return ticket;
     }
@@ -93,8 +100,8 @@ public class Ticket : EntityBase
             Status = Entities.StatusEnum.Submited.ToString();
 
         if (note.IsNotNullOrEmptyExt())
-            Notes.Add(note);
-        AddHistory($"{Status} Init", null, utc);
+            Notes.Add(note!);
+        AddHistory(CONST.InitStatus, nameof(Init), utc);
         CreatedAt = utc;
         return ResultCom.Success();
     }
@@ -123,7 +130,7 @@ public class Ticket : EntityBase
         if (note.IsNotNullOrEmptyExt())
         {
             Notes ??= new();
-            Notes.Add(note);            
+            Notes.Add(note!);            
         }
         ModifiedAt = utc;
         //status changes added
