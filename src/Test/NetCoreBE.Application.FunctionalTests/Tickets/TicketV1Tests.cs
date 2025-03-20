@@ -3,10 +3,12 @@ namespace NetCoreBE.Application.FunctionalTests.Tickets;
 public class TicketV1Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
 {
     private static readonly string _url = "api/v1/Ticket/";
+    private readonly ITicketRepositoryDecorator _decorator;
 
     public TicketV1Tests(FunctionalTestWebAppFactory factory)
         : base(factory)
     {
+        _decorator = Scope.ServiceProvider.GetRequiredService<ITicketRepositoryDecorator>();
         //Seed(4).Wait();
     }
 
@@ -82,11 +84,15 @@ public class TicketV1Tests : BaseFunctionalTest, IDisposable, IAsyncLifetime
     [Fact]
     public async Task Put_ShouldReturn_Ok()
     {
-        // Arrange
-        var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };
-        var request = (await Sender.Send(q)).Value;
-        DbContext.ChangeTracker.Clear();
+        //// Arrange
+        //var q = new GetByIdQuery<TicketDto> { Id = TicketData.TicketId };
+        //var request = (await Sender.Send(q)).Value;
+        //DbContext.ChangeTracker.Clear();
+        //request.Note = "Update test";
+
+        var request = (await _decorator.AddAsyncDto(TicketData.Add)).Value;
         request.Note = "Update test";
+        DbContext.ChangeTracker.Clear();
 
         // Act
         HttpResponseMessage response = await HttpClient.PutAsJsonAsync(_url, request);
